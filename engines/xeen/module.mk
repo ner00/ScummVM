@@ -2,7 +2,8 @@ MODULE := engines/xeen
 
 MODULE_OBJS := \
     xeen.o \
-    detection.o
+    detection.o \
+    ccfile.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)

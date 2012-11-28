@@ -24,13 +24,32 @@
 #define XEEN_XEEN_H
 
 #include "engines/engine.h"
+#include "gui/debugger.h"
 
 namespace XEEN {
+
+class Console;
+
+enum {
+	kXeenDebugVerbose = 1 << 0
+};
+
 
 class XeenEngine : public Engine {
 public:
     XeenEngine(OSystem *syst);
+    ~XeenEngine();
+    
 	Common::Error run();
+
+private:
+	Console *_console;
+};
+
+class Console : public GUI::Debugger {
+public:
+    Console(XeenEngine *vm) { }
+    virtual ~Console() { }
 };
 
 } // End of namespace XEEN
