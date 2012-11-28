@@ -30,63 +30,17 @@ XEEN::CCFileData::CCFileData() : id(0), openCount(0), size(0), data(0)
 
 }
 
-XEEN::CCTocReader::CCTocReader(Common::File& file) : _file(file), _key(0xAC)
+XEEN::CCToc::CCToc() : _entryCount(0), _entries(0), _key(0xAC)
 {
 
 }
 
-template<int COUNT>
-uint32 XEEN::CCTocReader::readValue()
-{
-    uint32 result = 0;
-
-    for(int i = 0; i != COUNT; i ++)
-    {
-        uint8 nextbyte = _file.readByte();
-        nextbyte = ((nextbyte << 2) | (nextbyte >> 6)) + _key;
-        
-        result |= nextbyte << (i * 8);
-        
-        _key += 0x67;
-    }
-    
-    return result;    
-}
-
-XEEN::CCFile::CCFile(const char* name) : _entryCount(0), _entries(0), _obfuscated(false)
-{
-    if(_file.open(name))
-    {
-        _entryCount = _file.readUint16LE();
-        _entries = new CCFileEntry[_entryCount];
- 
-        CCTocReader tocreader(_file);
-        
-        for(int i = 0; i != _entryCount; i ++)
-        {
-            _entries[i].id = tocreader.readValue<2>();
-            _entries[i].offset = tocreader.readValue<3>();
-            _entries[i].size = tocreader.readValue<2>();
-            _entries[i].padding = tocreader.readValue<1>();
-        }
-        
-        // If the file is named INTRO.CC or contains a save game record it is obfuscated
-        // (every byte past the TOC is XORed by 0x35.
-        // TODO: Check
-        _obfuscated = (_entries[0].id == 0x2A0C) || strcmp(name, "INTRO.CC");
-    }
-    else
-    {
-        debug("Failed to open %s", name);
-    }
-}
-
-XEEN::CCFile::~CCFile()
+XEEN::CCToc::~CCToc()
 {
     delete[] _entries;
 }
 
-const XEEN::CCFileEntry* XEEN::CCFile::getEntry(CCFileId id)
+const XEEN::CCFileEntry* XEEN::CCToc::getEntry(CCFileId id)
 {
     for(int i = 0; i != _entryCount; i ++)
     {
@@ -97,6 +51,59 @@ const XEEN::CCFileEntry* XEEN::CCFile::getEntry(CCFileId id)
     }
     
     return 0;
+}
+
+void XEEN::CCToc::readToc(Common::SeekableReadStream& data)
+{
+    _entryCount = data.readUint16LE();
+    _entries = new CCFileEntry[_entryCount];
+    
+    for(int i = 0; i != _entryCount; i ++)
+    {
+        _entries[i].id = readValue<2>(data);
+        _entries[i].offset = readValue<3>(data);
+        _entries[i].size = readValue<2>(data);
+        _entries[i].padding = readValue<1>(data);
+    }
+}
+
+template<int COUNT>
+uint32 XEEN::CCToc::readValue(Common::SeekableReadStream& data)
+{
+    uint32 result = 0;
+
+    for(int i = 0; i != COUNT; i ++)
+    {
+        uint8 nextbyte = data.readByte();
+        nextbyte = ((nextbyte << 2) | (nextbyte >> 6)) + _key;
+        
+        result |= nextbyte << (i * 8);
+        
+        _key += 0x67;
+    }
+    
+    return result;    
+}
+
+XEEN::CCFile::CCFile(const char* name) : _saveGame(0)
+{
+    if(_file.open(name))
+    {
+        readToc(_file);
+        
+        _saveGame = new CCSaveFile(*this);
+    }
+    else
+    {
+        debug("Failed to open %s", name);
+    }
+}
+
+XEEN::CCFile::~CCFile()
+{
+    delete _saveGame;
+
+    // TODO: Close files
 }
 
 Common::MemoryReadStream XEEN::CCFile::getFile(CCFileId id)
@@ -136,13 +143,108 @@ const XEEN::CCFileData* XEEN::CCFile::getFileRaw(CCFileId id)
         // Read bytes
         _file.seek(entry->offset);
         _file.read(file.data, file.size);
-        
-        if(_obfuscated)
+
+        // De-obfuscate        
+        for(uint32 i = 0; i != file.size; i ++)
         {
-            for(uint32 i = 0; i != file.size; i ++)
-            {
-                file.data[i] ^= 0x35;
-            }
+            file.data[i] ^= 0x35;
+        }
+    }
+    else
+    {
+        file.openCount ++;
+    }
+    
+    return &file;
+}
+
+XEEN::CCSaveFile& XEEN::CCFile::getSaveFile()
+{
+    return *_saveGame;
+}
+
+XEEN::CCSaveFile::CCSaveFile(CCFile& base) : _data(0), _size(0), _file(0)
+{
+    static const uint16 saveIDs[6] = {0x2A0C, 0x2A1C, 0x2A2C, 0x2A3C, 0x284C, 0x2A5C};
+    static const uint32 saveIDcount = 6;
+    
+    // Calculate size
+    for(uint32 i = 0; i != saveIDcount; i ++)
+    {
+        const CCFileEntry* entry = base.getEntry(saveIDs[i]);
+        _size += entry ? entry->size : 0;
+    }
+    
+    // Allocate
+    _data = new byte[_size];
+    
+    // Read
+    uint32 offset = 0;
+    
+    for(uint32 i = 0; i != saveIDcount; i ++)
+    {
+        const CCFileData* file = base.getFileRaw(saveIDs[i]);
+        
+        if(file)
+        {
+            memcpy(&_data[offset], file->data, file->size);
+            offset += file->size;
+        }    
+    }
+    
+    // Make Stream
+    _file = new Common::MemoryReadStream(_data, _size);
+    readToc(*_file);
+}
+
+XEEN::CCSaveFile::~CCSaveFile()
+{
+    delete[] _data;
+    delete _file;
+}
+
+Common::MemoryReadStream XEEN::CCSaveFile::getFile(CCFileId id)
+{
+    const XEEN::CCFileData* file = getFileRaw(id);
+    
+    if(!file)
+    {
+        static byte fakestream[8];
+        return Common::MemoryReadStream(fakestream, 0);    
+    }
+    else
+    {
+        return Common::MemoryReadStream(file->data, file->size);
+    }
+}
+
+const XEEN::CCFileData* XEEN::CCSaveFile::getFileRaw(CCFileId id)
+{
+    XEEN::CCFileData& file = _openFiles[id];
+    
+    if(file.openCount == 0)
+    {
+        const CCFileEntry* entry = getEntry(id);
+        
+        if(entry == 0)
+        {
+            debug("File not found: %d", (short)id);
+            return 0;
+        }
+        
+        file.id = id;
+        file.openCount = 1;
+        file.size = entry->size;
+        file.data = new byte[file.size];
+        
+        // Read bytes
+        _file->seek(entry->offset);
+        _file->read(file.data, file.size);
+
+        // De-obfuscate        
+        for(uint32 i = 0; i != file.size; i ++)
+        {
+            file.data[i] ^= 0x35;
         }
     }
     else

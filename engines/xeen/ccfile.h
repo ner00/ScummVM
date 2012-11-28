@@ -71,38 +71,66 @@ namespace XEEN
         byte* data;
     };
     
-    class CCTocReader
+    class CCToc
     {
         public:
-            CCTocReader(Common::File& file);
-            
-            template<int COUNT>
-            uint32 readValue();
-            
+            CCToc();
+            ~CCToc();
+
+            const CCFileEntry* getEntry(CCFileId id);
+
+        protected:
+            void readToc(Common::SeekableReadStream& data);
+        
         private:
-            Common::File& _file;
+            template<int COUNT>
+            uint32 readValue(Common::SeekableReadStream& data);
+
+        protected:
+            uint16 _entryCount;
+            CCFileEntry* _entries;
+
+        private:
             uint8 _key;
             
     };
 
-    class CCFile
+    class CCSaveFile;
+
+    class CCFile : public CCToc
     {
         public:
             CCFile(const char* name);
             ~CCFile();
             
-            const CCFileEntry* getEntry(CCFileId id);
             Common::MemoryReadStream getFile(CCFileId id);
             const CCFileData* getFileRaw(CCFileId id);
             
+            CCSaveFile& getSaveFile();
+            
         private:
             Common::File _file;
-        
-            uint16 _entryCount;
-            CCFileEntry* _entries;
             
-            bool _obfuscated;
+            Common::HashMap<uint16, CCFileData> _openFiles;
             
+            CCSaveFile* _saveGame;
+    };
+    
+    class CCSaveFile : public CCToc
+    {
+        public:
+            CCSaveFile(CCFile& base);
+            ~CCSaveFile();
+    
+            Common::MemoryReadStream getFile(CCFileId id);
+            const CCFileData* getFileRaw(CCFileId id);    
+    
+        private:
+            byte* _data;
+            uint32 _size;
+            
+            Common::MemoryReadStream* _file;
+
             Common::HashMap<uint16, CCFileData> _openFiles;
     };
 }
