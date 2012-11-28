@@ -25,6 +25,8 @@
 
 #include "common/scummsys.h"
 #include "common/file.h"
+#include "common/hashmap.h"
+#include "common/memstream.h"
 
 namespace XEEN
 {
@@ -57,6 +59,17 @@ namespace XEEN
         uint16 size;
         uint8 padding;
     };
+
+    struct CCFileData
+    {
+        CCFileData();
+    
+        uint16 id;
+        uint32 openCount;
+
+        uint32 size;
+        byte* data;
+    };
     
     class CCTocReader
     {
@@ -79,12 +92,17 @@ namespace XEEN
             ~CCFile();
             
             const CCFileEntry* getEntry(CCFileId id);
+            Common::MemoryReadStream getFile(CCFileId id);
             
         private:
+            Common::File _file;
+        
             uint16 _entryCount;
             CCFileEntry* _entries;
             
             bool _obfuscated;
+            
+            Common::HashMap<uint16, CCFileData> _openFiles;
     };
 }
 

@@ -25,6 +25,11 @@
 #include "common/file.h"
 #include "common/debug.h"
 
+XEEN::CCFileData::CCFileData() : id(0), openCount(0), size(0), data(0)
+{
+
+}
+
 XEEN::CCTocReader::CCTocReader(Common::File& file) : _file(file), _key(0xAC)
 {
 
@@ -50,14 +55,12 @@ uint32 XEEN::CCTocReader::readValue()
 
 XEEN::CCFile::CCFile(const char* name) : _entryCount(0), _entries(0), _obfuscated(false)
 {
-    Common::File f;
-
-    if(f.open(name))
+    if(_file.open(name))
     {
-        _entryCount = f.readUint16LE();
+        _entryCount = _file.readUint16LE();
         _entries = new CCFileEntry[_entryCount];
  
-        CCTocReader tocreader(f);
+        CCTocReader tocreader(_file);
         
         for(int i = 0; i != _entryCount; i ++)
         {
@@ -95,3 +98,45 @@ const XEEN::CCFileEntry* XEEN::CCFile::getEntry(CCFileId id)
     
     return 0;
 }
+
+Common::MemoryReadStream XEEN::CCFile::getFile(CCFileId id)
+{
+    XEEN::CCFileData& file = _openFiles[id];
+    
+    if(file.openCount == 0)
+    {
+        const CCFileEntry* entry = getEntry(id);
+        
+        if(entry == 0)
+        {
+            debug("File not found: %d", (short)id);
+            
+            static byte fakestream[8];
+            return Common::MemoryReadStream(fakestream, 0);
+        }
+        
+        file.id = id;
+        file.openCount = 1;
+        file.size = entry->size;
+        file.data = new byte[file.size];
+        
+        // Read bytes
+        _file.seek(entry->offset);
+        _file.read(file.data, file.size);
+        
+        if(_obfuscated)
+        {
+            for(uint32 i = 0; i != file.size; i ++)
+            {
+                file.data[i] ^= 0x35;
+            }
+        }
+    }
+    else
+    {
+        file.openCount ++;
+    }
+    
+    return Common::MemoryReadStream(file.data, file.size);
+}
+

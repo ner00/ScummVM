@@ -23,6 +23,7 @@
 #include "common/error.h"
 #include "common/debug.h"
 #include "common/debug-channels.h"
+#include "common/memstream.h"
 
 #include "engines/util.h"
 
@@ -49,7 +50,18 @@ Common::Error XEEN::XeenEngine::run()
     //
     
     XEEN::CCFile ccf("XEEN.CC");
+    Common::MemoryReadStream file = ccf.getFile("CHAR01.FAC");
     
+    uint16 frameCount = file.readUint16LE();
+    debug("FRAME COUNT: %d", frameCount);
+    
+    for(int i = 0; i != frameCount; i ++)
+    {
+        uint16 base = file.readUint16LE();
+        uint16 top = file.readUint16LE();
+        
+        debug("FRAME %d: %d %d", i, base, top);
+    }    
     //
 
     return Common::kNoError;
