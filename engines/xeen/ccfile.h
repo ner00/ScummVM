@@ -93,6 +93,7 @@ namespace XEEN
             
             const CCFileEntry* getEntry(CCFileId id);
             Common::MemoryReadStream getFile(CCFileId id);
+            const CCFileData* getFileRaw(CCFileId id);
             
         private:
             Common::File _file;

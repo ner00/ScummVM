@@ -20,39 +20,44 @@
  *
  */
 
-#include "common/error.h"
-#include "common/debug.h"
-#include "common/debug-channels.h"
+#ifndef XEEN_SPRITE_H
+#define XEEN_SPRITE_H
+
+#include "common/scummsys.h"
+#include "common/file.h"
+#include "common/hashmap.h"
 #include "common/memstream.h"
 
-#include "engines/util.h"
+#include "ccfile.h"
 
-#include "xeen/xeen.h"
-#include "xeen/ccfile.h"
-#include "xeen/sprite.h"
-
-XEEN::XeenEngine::XeenEngine(OSystem* syst) : Engine(syst), _console(0)
+namespace XEEN
 {
-	DebugMan.addDebugChannel(kXeenDebugVerbose, "verbose", "verbose");
+    class Sprite
+    {
+        public:
+            Sprite(CCFile& cc, CCFileId id);
+            ~Sprite();
+            
+            void drawCell(byte* out, uint16 index, uint16 xOffset, uint16 yOffset);
+            
+        private:
+            void drawFrame(byte* out, Common::MemoryReadStream& reader, uint16 xOffset, uint16 yOffset);
+            uint32 drawLine(byte* out, Common::MemoryReadStream& reader, uint16 xOffset);
+            
+        private:
+            CCFile& _cc;
+            CCFileId _id;
+            const CCFileData* _file;
+
+            struct Cell
+            {
+                uint16 first;
+                uint16 second;
+            };
+            
+            uint32 _cellCount;
+            Cell* _cells;
+    };
 }
 
-XEEN::XeenEngine::~XeenEngine()
-{
-    delete _console;
-	DebugMan.clearAllDebugChannels();
-}
-
-Common::Error XEEN::XeenEngine::run()
-{
-	initGraphics(320, 200, false);
-
-	_console = new Console(this);
-
-    //
-    
-    XEEN::CCFile ccf("XEEN.CC");    
-    XEEN::Sprite spriteTest(ccf, "TOWN.TIL");
-    //
-
-    return Common::kNoError;
-}
+#endif // XEEN_SPRITE_H

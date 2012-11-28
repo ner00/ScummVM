@@ -101,6 +101,21 @@ const XEEN::CCFileEntry* XEEN::CCFile::getEntry(CCFileId id)
 
 Common::MemoryReadStream XEEN::CCFile::getFile(CCFileId id)
 {
+    const XEEN::CCFileData* file = getFileRaw(id);
+    
+    if(!file)
+    {
+        static byte fakestream[8];
+        return Common::MemoryReadStream(fakestream, 0);    
+    }
+    else
+    {
+        return Common::MemoryReadStream(file->data, file->size);
+    }
+}
+
+const XEEN::CCFileData* XEEN::CCFile::getFileRaw(CCFileId id)
+{
     XEEN::CCFileData& file = _openFiles[id];
     
     if(file.openCount == 0)
@@ -110,9 +125,7 @@ Common::MemoryReadStream XEEN::CCFile::getFile(CCFileId id)
         if(entry == 0)
         {
             debug("File not found: %d", (short)id);
-            
-            static byte fakestream[8];
-            return Common::MemoryReadStream(fakestream, 0);
+            return 0;
         }
         
         file.id = id;
@@ -137,6 +150,6 @@ Common::MemoryReadStream XEEN::CCFile::getFile(CCFileId id)
         file.openCount ++;
     }
     
-    return Common::MemoryReadStream(file.data, file.size);
+    return &file;
 }
 
