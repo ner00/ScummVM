@@ -75,7 +75,7 @@ namespace XEEN
     {
         public:
             CCToc();
-            ~CCToc();
+            virtual ~CCToc();
 
             const CCFileEntry* getEntry(CCFileId id);
 
@@ -101,7 +101,7 @@ namespace XEEN
     {
         public:
             CCFile(const char* name);
-            ~CCFile();
+            virtual ~CCFile();
             
             Common::MemoryReadStream getFile(CCFileId id);
             const CCFileData* getFileRaw(CCFileId id);
@@ -120,7 +120,7 @@ namespace XEEN
     {
         public:
             CCSaveFile(CCFile& base);
-            ~CCSaveFile();
+            virtual ~CCSaveFile();
     
             Common::MemoryReadStream getFile(CCFileId id);
             const CCFileData* getFileRaw(CCFileId id);    
