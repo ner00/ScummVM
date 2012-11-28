@@ -70,7 +70,7 @@ Common::Error XEEN::XeenEngine::run()
         _system->getPaletteManager()->setPalette(palette, 0, 256);
     }
         
-    Map testMap(ccf, 20);
+    Map* testMap = ccf.getMapManager().getMap(28);
             
     while(!shouldQuit())
     {
@@ -89,7 +89,7 @@ Common::Error XEEN::XeenEngine::run()
 
         byte buffer[320 * 200];
         memset(buffer, 0, sizeof(buffer));        
-        testMap.draw(buffer);
+        testMap->draw(buffer);
         _system->copyRectToScreen(buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
     }

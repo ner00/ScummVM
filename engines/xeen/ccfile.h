@@ -29,6 +29,7 @@
 
 #include "xeen/utility.h"
 #include "xeen/sprite.h"
+#include "xeen/map.h"
 
 namespace XEEN
 {
@@ -93,12 +94,14 @@ namespace XEEN
             CCSaveFile& getSaveFile();
             
             SpriteManager& getSpriteManager() { return _spriteManager; }
+            MapManager& getMapManager() {return _mapManager; }
             
         private:
             Common::File _file;            
             CCSaveFile* _saveGame;
             
             SpriteManager _spriteManager;
+            MapManager _mapManager;
     };
     
     class CCSaveFile : public CCToc

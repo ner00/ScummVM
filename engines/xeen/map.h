@@ -32,19 +32,20 @@
 
 namespace XEEN
 {
+    class MapManager;
+
     class MazeSegment
     {
-        public:
+        friend class MapManager;
+    
+        private:
             MazeSegment(CCFile& cc, uint16 mapNumber);
-            ~MazeSegment();
-   
+
+        public:
             MazeSegment* getNorth() { return _north; }
             MazeSegment* getEast() { return _east; }
    
         private:
-            CCFile& _cc;
-            CCFileId _id;
-            
             MazeSegment* _north;
             MazeSegment* _east;
         
@@ -84,24 +85,22 @@ namespace XEEN
             ~MazeText();
             
         private:
-            CCFile& _cc;
-            CCFileId _id;
-            CCFileData* _data;
-        
+            CCFileData* _data;        
             uint16 _stringOffsets[256];
     };
     
     class Map
     {
-        public:
+        friend class MapManager;
+    
+        private:
             Map(CCFile& cc, uint16 mapNumber);
             ~Map();
             
+        public:
             void draw(byte* out);
             
-        private:
-            CCFile& _cc;
-        
+        private:        
             MazeSegment* _baseSegment;
             MazeText* _text;
             
@@ -109,6 +108,21 @@ namespace XEEN
             
             uint32 _width;
             uint32 _height;
+    };
+    
+    class MapManager
+    {
+        public:
+            MapManager(CCFile& parent);
+            ~MapManager();
+            
+            Map* getMap(uint16 id);
+            MazeSegment* getSegment(uint16 id);
+            
+        private:
+            CCFile& _cc;
+            Map* _maps[256]; // TODO: <Use a hash table!
+            MazeSegment* _segments[256];
     };
 }
 

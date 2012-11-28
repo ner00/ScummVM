@@ -90,7 +90,7 @@ uint32 XEEN::CCToc::readValue(Common::SeekableReadStream& data)
     return result;    
 }
 
-XEEN::CCFile::CCFile(const char* name) : _saveGame(0), _spriteManager(*this)
+XEEN::CCFile::CCFile(const char* name) : _saveGame(0), _spriteManager(*this), _mapManager(*this)
 {
     if(_file.open(name))
     {

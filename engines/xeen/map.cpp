@@ -41,19 +41,53 @@ static struct
     {0, 8, 67, 0, 0}
 };
 
-XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _cc(cc), _id((uint16)0), _north(0), _east(0)
+///
+/// MapManager
+///
+XEEN::MapManager::MapManager(CCFile& parent) : _cc(parent)
 {
-    // Get maze file ID
-    char buf[32];
-    sprintf(buf, "MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber);
-    _id = buf;
+    memset(_maps, 0, sizeof(_maps));
+    memset(_segments, 0, sizeof(_segments));
+}
 
-    //
-    CCFileData* data = _cc.getSaveFile().getFile(_id);
+XEEN::MapManager::~MapManager()
+{
+    for(int i = 0; i != 256; i ++)
+    {
+        delete _maps[i];
+        delete _segments[i];
+    }
+}
+
+XEEN::Map* XEEN::MapManager::getMap(uint16 id)
+{
+    if(!_maps[id])
+    {
+        _maps[id] = new Map(_cc, id);
+    }
     
+    return _maps[id];
+}
+
+XEEN::MazeSegment* XEEN::MapManager::getSegment(uint16 id)
+{
+    if(!_segments[id])
+    {
+        _segments[id] = new MazeSegment(_cc, id);
+    }
+    
+    return _segments[id];
+}
+
+///
+/// MazeSegment
+///
+XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(0)
+{
+    CCFileData* data = cc.getSaveFile().getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber));    
     assert(data->size() && "Failed to open maze segment chunk");
 
-
+    // Parse data
     for(int i = 0; i != 16 * 16; i ++)
     {
         _wallData[i] = data->readUint16LE();
@@ -92,34 +126,30 @@ XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _cc(cc), _id((uin
     data->read(_seenTiles, 32);
     data->read(_steppedTiles, 32);
     
-    // TODO: Close File
-    
+    // Load extensions
     if(_mazeExtensions[0])
     {
-        _north = new MazeSegment(cc, _mazeExtensions[0]);
+        assert(_mazeExtensions[0] >= 100 && "Indoor map extension index issue.");
+        _north = cc.getMapManager().getSegment(_mazeExtensions[0]);
     }
     
     if(_mazeExtensions[1])
     {
-        _east = new MazeSegment(cc, _mazeExtensions[1]);
+        assert(_mazeExtensions[1] >= 100 && "Indoor map extension index issue.");    
+        _east = cc.getMapManager().getSegment(_mazeExtensions[1]);
     }
+    
+    // Done
+    delete data;
 }
 
-XEEN::MazeSegment::~MazeSegment()
-{
-    delete _north;
-    delete _east;
-}
-
-XEEN::MazeText::MazeText(CCFile& cc, uint16 mapNumber) : _cc(cc), _id((uint16)0), _data(0)
+///
+/// MazeText
+///
+XEEN::MazeText::MazeText(CCFile& cc, uint16 mapNumber) : _data(0)
 {
     // Get ID
-    char buf[32];
-    sprintf(buf, "AAZE%04d.TXT", mapNumber);
-    _id = buf;
-    
-    //
-    _data = _cc.getFile(_id);
+    _data = cc.getFile(CCFileId("AAZE%04d.TXT", mapNumber));
     memset(_stringOffsets, 0xFF, sizeof(_stringOffsets));
 
     if(_data)
@@ -127,7 +157,7 @@ XEEN::MazeText::MazeText(CCFile& cc, uint16 mapNumber) : _cc(cc), _id((uint16)0)
         uint32 foundStrings = 1;
         _stringOffsets[0] = 0;
         
-        for(uint32 offset = 1; offset < _data->size() - 1; offset ++)
+        for(int32 offset = 1; offset < _data->size() - 1; offset ++)
         {
             if(_data->getData()[offset] == 0)
             {
@@ -139,15 +169,17 @@ XEEN::MazeText::MazeText(CCFile& cc, uint16 mapNumber) : _cc(cc), _id((uint16)0)
 
 XEEN::MazeText::~MazeText()
 {
-    // TODO: Close file
+    delete _data;
 }
 
-XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : _cc(cc), _baseSegment(0), _text(0), _width(0), _height(0)
-{    
-    // TODO: CLOSE FILE
 
+///
+/// Map
+///
+XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : _baseSegment(0), _text(0), _width(0), _height(0)
+{    
     // Load Maze Data
-    _baseSegment = new MazeSegment(cc, mapNumber);
+    _baseSegment = cc.getMapManager().getSegment(mapNumber);
     _text = new MazeText(cc, mapNumber);
     
     // Calculate size
@@ -164,7 +196,7 @@ XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : _cc(cc), _baseSegment(0), _text(0
 
 XEEN::Map::~Map()
 {
-    delete _baseSegment;
+    delete _text;
 }
 
 void XEEN::Map::draw(byte* out)
