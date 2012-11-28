@@ -240,12 +240,6 @@ const XEEN::CCFileData* XEEN::CCSaveFile::getFileRaw(CCFileId id)
         // Read bytes
         _file->seek(entry->offset);
         _file->read(file.data, file.size);
-
-        // De-obfuscate        
-        for(uint32 i = 0; i != file.size; i ++)
-        {
-            file.data[i] ^= 0x35;
-        }
     }
     else
     {
