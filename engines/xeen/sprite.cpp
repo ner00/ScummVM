@@ -108,7 +108,7 @@ uint32 XEEN::Sprite::drawLine(byte* out, Common::MemoryReadStream& reader, uint1
     // Skip a number or vertical lines
     if(bytes == 0)
     {
-        return x;
+        return x + 1;
     }
     
     // Draw
@@ -161,6 +161,7 @@ uint32 XEEN::Sprite::drawLine(byte* out, Common::MemoryReadStream& reader, uint1
                 reader.read(&out[x], length + 4);
                 reader.seek(streamPos);
 
+                x += length + 4;
                 break;
             }
             
@@ -187,7 +188,7 @@ uint32 XEEN::Sprite::drawLine(byte* out, Common::MemoryReadStream& reader, uint1
             case 6:
             case 7:
             {
-                debug("Sprite Pattern Command: Not implemented");
+//                debug("Sprite Pattern Command: Not implemented");
                 
                 const uint8 color = reader.readByte();
                 for(int i = 0; i != (controlByte & 0x7) + 3; i ++)
@@ -195,7 +196,7 @@ uint32 XEEN::Sprite::drawLine(byte* out, Common::MemoryReadStream& reader, uint1
                     out[x++] = color;
                 }
                 
-                return 1;
+                break;
             }
         }
         

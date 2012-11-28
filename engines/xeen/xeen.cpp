@@ -24,6 +24,9 @@
 #include "common/debug.h"
 #include "common/debug-channels.h"
 #include "common/memstream.h"
+#include "common/events.h"
+#include "common/system.h"
+#include "graphics/palette.h"
 
 #include "engines/util.h"
 
@@ -49,9 +52,75 @@ Common::Error XEEN::XeenEngine::run()
 	_console = new Console(this);
 
     //
-    
+
     XEEN::CCFile ccf("XEEN.CC");    
-    XEEN::Sprite spriteTest(ccf, "TOWN.TIL");
+
+    // Load palette
+    {
+        byte palette[256 * 3];
+        
+        Common::MemoryReadStream palFile = ccf.getFile("MM4.PAL");
+        for(int i = 0; i != 256 * 3; i ++)
+        {
+            palette[i] = palFile.readByte() << 2;
+        }
+        
+        _system->getPaletteManager()->setPalette(palette, 0, 256);
+    }
+    
+    int32 monId = 0;
+    int frame = 0;
+    
+    while(!shouldQuit())
+    {
+    	Common::Event event;    
+    
+        while(_eventMan->pollEvent(event))
+        {
+            switch(event.type)
+            {
+                case Common::EVENT_KEYDOWN:
+                {   
+                    if(event.kbd.keycode == Common::KEYCODE_LEFT)
+                    {
+                        monId --;
+                    }
+                    else if(event.kbd.keycode == Common::KEYCODE_RIGHT)
+                    {
+                        monId ++;
+                    }
+                    
+                    if(monId < 0)
+                    {
+                        monId = 0;
+                    }
+                    
+                    if(monId > 255)
+                    {
+                        monId = 255;
+                    }
+                }
+            }
+        }
+        
+        char buf[1024];
+        sprintf(buf, "%03d.MON", monId);
+        
+        if(ccf.getEntry(buf))
+        {
+            XEEN::Sprite spriteTest(ccf, buf);   
+            byte buffer[320 * 200];    
+            memset(buffer, 0, 320 * 200);
+            spriteTest.drawCell(buffer, frame, 10, 10);
+            _system->copyRectToScreen(buffer, 320, 0, 0, 320, 200);
+            _system->updateScreen();
+        }
+
+        _system->delayMillis(50);
+        frame += 1;
+        frame %= 8;
+    }
+
     //
 
     return Common::kNoError;
