@@ -33,6 +33,7 @@
 #include "xeen/xeen.h"
 #include "xeen/ccfile.h"
 #include "xeen/sprite.h"
+#include "xeen/map.h"
 
 XEEN::XeenEngine::XeenEngine(OSystem* syst) : Engine(syst), _console(0)
 {
@@ -59,18 +60,18 @@ Common::Error XEEN::XeenEngine::run()
     {
         byte palette[256 * 3];
         
-        Common::MemoryReadStream palFile = ccf.getFile("MM4.PAL");
+        CCFileData* pal = ccf.getFile("MM4.PAL");
         for(int i = 0; i != 256 * 3; i ++)
         {
-            palette[i] = palFile.readByte() << 2;
+            palette[i] = pal->readByte() << 2;
         }
+        delete pal;
         
         _system->getPaletteManager()->setPalette(palette, 0, 256);
     }
-    
-    int32 monId = 0;
-    int frame = 0;
-    
+        
+    Map testMap(ccf, 20);
+            
     while(!shouldQuit())
     {
     	Common::Event event;    
@@ -79,46 +80,18 @@ Common::Error XEEN::XeenEngine::run()
         {
             switch(event.type)
             {
-                case Common::EVENT_KEYDOWN:
-                {   
-                    if(event.kbd.keycode == Common::KEYCODE_LEFT)
-                    {
-                        monId --;
-                    }
-                    else if(event.kbd.keycode == Common::KEYCODE_RIGHT)
-                    {
-                        monId ++;
-                    }
-                    
-                    if(monId < 0)
-                    {
-                        monId = 0;
-                    }
-                    
-                    if(monId > 255)
-                    {
-                        monId = 255;
-                    }
+                default:
+                {
+                    break;
                 }
             }
         }
-        
-        char buf[1024];
-        sprintf(buf, "%03d.MON", monId);
-        
-        if(ccf.getEntry(buf))
-        {
-            XEEN::Sprite spriteTest(ccf, buf);   
-            byte buffer[320 * 200];    
-            memset(buffer, 0, 320 * 200);
-            spriteTest.drawCell(buffer, frame, 10, 10);
-            _system->copyRectToScreen(buffer, 320, 0, 0, 320, 200);
-            _system->updateScreen();
-        }
 
-        _system->delayMillis(50);
-        frame += 1;
-        frame %= 8;
+        byte buffer[320 * 200];
+        memset(buffer, 0, sizeof(buffer));        
+        testMap.draw(buffer);
+        _system->copyRectToScreen(buffer, 320, 0, 0, 320, 200);        
+        _system->updateScreen();
     }
 
     //

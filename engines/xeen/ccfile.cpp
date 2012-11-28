@@ -25,9 +25,14 @@
 #include "common/file.h"
 #include "common/debug.h"
 
-XEEN::CCFileData::CCFileData() : id(0), openCount(0), size(0), data(0)
+XEEN::CCFileData::CCFileData(CCFileId id, byte* data, uint32 size) : Common::MemoryReadStream(data, size), _id(id), _size(size), _data(data) 
 {
 
+}
+
+XEEN::CCFileData::~CCFileData()
+{
+    delete[] _data;
 }
 
 XEEN::CCToc::CCToc() : _entryCount(0), _entries(0), _key(0xAC)
@@ -85,7 +90,7 @@ uint32 XEEN::CCToc::readValue(Common::SeekableReadStream& data)
     return result;    
 }
 
-XEEN::CCFile::CCFile(const char* name) : _saveGame(0)
+XEEN::CCFile::CCFile(const char* name) : _saveGame(0), _spriteManager(*this)
 {
     if(_file.open(name))
     {
@@ -102,60 +107,31 @@ XEEN::CCFile::CCFile(const char* name) : _saveGame(0)
 XEEN::CCFile::~CCFile()
 {
     delete _saveGame;
-
-    // TODO: Close files
 }
 
-Common::MemoryReadStream XEEN::CCFile::getFile(CCFileId id)
+XEEN::CCFileData* XEEN::CCFile::getFile(CCFileId id)
 {
-    const XEEN::CCFileData* file = getFileRaw(id);
+    const CCFileEntry* entry = getEntry(id);
     
-    if(!file)
+    if(entry)
     {
-        static byte fakestream[8];
-        return Common::MemoryReadStream(fakestream, 0);    
-    }
-    else
-    {
-        return Common::MemoryReadStream(file->data, file->size);
-    }
-}
-
-const XEEN::CCFileData* XEEN::CCFile::getFileRaw(CCFileId id)
-{
-    XEEN::CCFileData& file = _openFiles[id];
-    
-    if(file.openCount == 0)
-    {
-        const CCFileEntry* entry = getEntry(id);
-        
-        if(entry == 0)
-        {
-            debug("File not found: %d", (short)id);
-            return 0;
-        }
-        
-        file.id = id;
-        file.openCount = 1;
-        file.size = entry->size;
-        file.data = new byte[file.size];
-        
         // Read bytes
+        byte* data = new byte[entry->size];
         _file.seek(entry->offset);
-        _file.read(file.data, file.size);
-
+        _file.read(data, entry->size);        
+        
         // De-obfuscate        
-        for(uint32 i = 0; i != file.size; i ++)
+        for(uint32 i = 0; i != entry->size; i ++)
         {
-            file.data[i] ^= 0x35;
+            data[i] ^= 0x35;
         }
+    
+        return new CCFileData(id, data, entry->size);
     }
     else
     {
-        file.openCount ++;
+        return 0;
     }
-    
-    return &file;
 }
 
 XEEN::CCSaveFile& XEEN::CCFile::getSaveFile()
@@ -183,12 +159,13 @@ XEEN::CCSaveFile::CCSaveFile(CCFile& base) : _data(0), _size(0), _file(0)
     
     for(uint32 i = 0; i != saveIDcount; i ++)
     {
-        const CCFileData* file = base.getFileRaw(saveIDs[i]);
+        CCFileData* file = base.getFile(saveIDs[i]);
         
         if(file)
         {
-            memcpy(&_data[offset], file->data, file->size);
-            offset += file->size;
+            file->read(&_data[offset], file->getSize());
+            offset += file->getSize();
+            delete file;
         }    
     }
     
@@ -203,49 +180,22 @@ XEEN::CCSaveFile::~CCSaveFile()
     delete _file;
 }
 
-Common::MemoryReadStream XEEN::CCSaveFile::getFile(CCFileId id)
+XEEN::CCFileData* XEEN::CCSaveFile::getFile(CCFileId id)
 {
-    const XEEN::CCFileData* file = getFileRaw(id);
+    const CCFileEntry* entry = getEntry(id);
     
-    if(!file)
+    if(entry)
     {
-        static byte fakestream[8];
-        return Common::MemoryReadStream(fakestream, 0);    
-    }
-    else
-    {
-        return Common::MemoryReadStream(file->data, file->size);
-    }
-}
-
-const XEEN::CCFileData* XEEN::CCSaveFile::getFileRaw(CCFileId id)
-{
-    XEEN::CCFileData& file = _openFiles[id];
-    
-    if(file.openCount == 0)
-    {
-        const CCFileEntry* entry = getEntry(id);
-        
-        if(entry == 0)
-        {
-            debug("File not found: %d", (short)id);
-            return 0;
-        }
-        
-        file.id = id;
-        file.openCount = 1;
-        file.size = entry->size;
-        file.data = new byte[file.size];
-        
         // Read bytes
+        byte* data = new byte[entry->size];
         _file->seek(entry->offset);
-        _file->read(file.data, file.size);
+        _file->read(data, entry->size);        
+    
+        return new CCFileData(id, data, entry->size);
     }
     else
     {
-        file.openCount ++;
+        return 0;
     }
-    
-    return &file;
 }
 

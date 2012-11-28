@@ -4,7 +4,8 @@ MODULE_OBJS := \
     xeen.o \
     detection.o \
     ccfile.o \
-    sprite.o
+    sprite.o \
+    map.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)

@@ -25,33 +25,13 @@
 
 #include "common/scummsys.h"
 #include "common/file.h"
-#include "common/hashmap.h"
 #include "common/memstream.h"
+
+#include "xeen/utility.h"
+#include "xeen/sprite.h"
 
 namespace XEEN
 {
-    struct CCFileId
-    {
-        public:        
-            CCFileId(uint16 id) : _id(id)
-            {
-            }
-            
-            CCFileId(const char* name) : _id(0)
-            {
-                for(; *name; name ++)
-                {
-                    _id = (_id & 0x7F) << 9 | (_id & 0xFF80) >> 7;            
-                    _id += *name;
-                }
-            }
-            
-            operator uint16() { return _id; }
-        
-        private:
-            uint16 _id;
-    };
-
     struct CCFileEntry
     {
         uint16 id;
@@ -60,15 +40,20 @@ namespace XEEN
         uint8 padding;
     };
 
-    struct CCFileData
+    struct CCFileData : public Common::MemoryReadStream
     {
-        CCFileData();
+        public:
+            CCFileData(CCFileId id, byte* data, uint32 size);
+            ~CCFileData();    
+            
+            uint32 getSize() { return _size; }
+            byte* getData() { return _data; }
     
-        uint16 id;
-        uint32 openCount;
-
-        uint32 size;
-        byte* data;
+        private:
+            uint16 _id;
+    
+            uint32 _size;
+            byte* _data;
     };
     
     class CCToc
@@ -103,17 +88,17 @@ namespace XEEN
             CCFile(const char* name);
             virtual ~CCFile();
             
-            Common::MemoryReadStream getFile(CCFileId id);
-            const CCFileData* getFileRaw(CCFileId id);
+            CCFileData* getFile(CCFileId id);
             
             CCSaveFile& getSaveFile();
             
+            SpriteManager& getSpriteManager() { return _spriteManager; }
+            
         private:
-            Common::File _file;
-            
-            Common::HashMap<uint16, CCFileData> _openFiles;
-            
+            Common::File _file;            
             CCSaveFile* _saveGame;
+            
+            SpriteManager _spriteManager;
     };
     
     class CCSaveFile : public CCToc
@@ -122,16 +107,13 @@ namespace XEEN
             CCSaveFile(CCFile& base);
             virtual ~CCSaveFile();
     
-            Common::MemoryReadStream getFile(CCFileId id);
-            const CCFileData* getFileRaw(CCFileId id);    
+            CCFileData* getFile(CCFileId id);
     
         private:
             byte* _data;
             uint32 _size;
             
             Common::MemoryReadStream* _file;
-
-            Common::HashMap<uint16, CCFileData> _openFiles;
     };
 }
 

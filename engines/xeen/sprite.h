@@ -28,26 +28,31 @@
 #include "common/hashmap.h"
 #include "common/memstream.h"
 
-#include "ccfile.h"
+#include "xeen/utility.h"
 
 namespace XEEN
 {
+    class CCFile;
+    class CCFileData;
+    class SpriteManager;
+
     class Sprite
     {
-        public:
-            Sprite(CCFile& cc, CCFileId id);
+        friend class SpriteManager;
+    
+        private:
+            Sprite(CCFileData* file);
             ~Sprite();
             
+        public:
             void drawCell(byte* out, uint16 index, uint16 xOffset, uint16 yOffset);
             
         private:
-            void drawFrame(byte* out, Common::MemoryReadStream& reader, uint16 xOffset, uint16 yOffset);
-            uint32 drawLine(byte* out, Common::MemoryReadStream& reader, uint16 xOffset);
+            void drawFrame(byte* out, uint16 xOffset, uint16 yOffset);
+            uint32 drawLine(byte* out, uint16 xOffset);
             
         private:
-            CCFile& _cc;
-            CCFileId _id;
-            const CCFileData* _file;
+            CCFileData* _file;
 
             struct Cell
             {
@@ -57,6 +62,19 @@ namespace XEEN
             
             uint32 _cellCount;
             Cell* _cells;
+    };
+    
+    class SpriteManager
+    {
+        public:
+            SpriteManager(CCFile& parent);
+            ~SpriteManager();
+            
+            Sprite* getSprite(CCFileId id);
+            
+        private:
+            CCFile& _cc;
+            Sprite* _sprites[65536]; // TODO: <Use a hash table!
     };
 }
 
