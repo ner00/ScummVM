@@ -83,8 +83,6 @@ bool XEEN::Sprite::initialize()
                 {
                     _cells[i].offset[0] = _file->readUint16LE();
                     _cells[i].offset[1] = _file->readUint16LE();
-                    
-                    success = (enforce(_cells[i].offset[0])) ? success : false;
                 }
             }
         }
@@ -120,9 +118,9 @@ void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 f
 void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen)
 {
     // Read the frame header
-    const int16 penX = _file->readUint16LE();
+    const int16 penX = _file->readSint16LE();
     /*const uint16 frameWidth =*/ _file->readUint16LE();
-    const int16 penY = _file->readUint16LE();
+    const int16 penY = _file->readSint16LE();
     const uint16 frameHeight = _file->readUint16LE();
 
     Common::Point drawPos = pen + Common::Point(penX, penY);

@@ -102,8 +102,10 @@ namespace XEEN
             {
                 if(_pen.x >= 0 && _pen.x < 320 && _pen.y >= 0 && _pen.y < 200)
                 {
-                    buffer[_pen.y * 320 + _pen.x ++] = color;
+                    buffer[_pen.y * 320 + _pen.x] = color;
                 }
+                
+                _pen.x ++;
             }
             
         public:    
