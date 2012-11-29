@@ -86,8 +86,8 @@ Common::Error XEEN::XeenEngine::run()
             {
                 case Common::EVENT_KEYDOWN:
                 {
-                    if(event.kbd.keycode == Common::KEYCODE_UP) MazeSegment::translatePoint(x, y, 0, 1, dir);
-                    if(event.kbd.keycode == Common::KEYCODE_DOWN)  MazeSegment::translatePoint(x, y, 0, -1, dir);
+                    if(event.kbd.keycode == Common::KEYCODE_UP) Map::translatePoint(x, y, 0, 1, dir);
+                    if(event.kbd.keycode == Common::KEYCODE_DOWN) Map::translatePoint(x, y, 0, -1, dir);
                     if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
                     if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
 

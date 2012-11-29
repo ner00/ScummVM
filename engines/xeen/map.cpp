@@ -132,88 +132,6 @@ XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(
     delete data;
 }
 
-uint16 XEEN::MazeSegment::getTile(int16 x, int16 y)
-{
-    MazeSegment* activeSegment = this;
-    
-    for(; activeSegment && x >= 16; x -= 16)
-    {
-        activeSegment = activeSegment->_east;
-    }
-
-    for(; activeSegment && y >= 16; y -= 16)
-    {
-        activeSegment = activeSegment->_north;
-    }
-    
-    if(x < 0 || y < 0 || !activeSegment)
-    {
-        return 0x8888;
-    }
-    else
-    {
-        return activeSegment->_wallData[y * 16 + x];
-    }
-}
-
-uint16 XEEN::MazeSegment::getSurface(int16 x, int16 y)
-{
-    MazeSegment* activeSegment = this;
-    
-    for(; activeSegment && x >= 16; x -= 16)
-    {
-        activeSegment = activeSegment->_east;
-    }
-
-    for(; activeSegment && y >= 16; y -= 16)
-    {
-        activeSegment = activeSegment->_north;
-    }
-
-    if(x < 0 || y < 0 || !activeSegment)
-    {
-        return 0;
-    }
-    else
-    {
-        return _surfaceMap[activeSegment->_cellFlags[y * 16 + x] & 0x7];
-    }
-}
-
-void XEEN::MazeSegment::translatePoint(int16& x, int16& y, int16 xOffset, int16 yOffset, uint16 direction)
-{
-    switch(direction)
-    {
-        case 0:
-        {
-            x += xOffset;
-            y += yOffset;
-            return;            
-        }
-        
-        case 1:
-        {
-            x += yOffset;
-            y -= xOffset;
-            return;
-        }
-        
-        case 2:
-        {
-            x -= xOffset;
-            y -= yOffset;
-            return;
-        }
-        
-        case 3:
-        {
-            x -= yOffset;
-            y += xOffset;
-            return;
-        }
-    }
-}
-
 ///
 /// MazeText
 ///
@@ -429,21 +347,20 @@ static struct
     {0xFFFF, 	 0,	 26,	 42,	 0,	    0x8000}	 //POW? sprite 1 steps forward
 };
 
-XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : _baseSegment(0), _text(0), _width(0), _height(0)
+XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : MazeSegment(cc, mapNumber), _text(0), _width(0), _height(0)
 {
     assert(mapNumber < 100 && "Loading map from extended maze segment.");
  
     // Load Maze Data
-    _baseSegment = cc.getMapManager().getSegment(mapNumber);
     _text = new MazeText(cc, mapNumber);
     
     // Calculate size
-    for(MazeSegment* tag = _baseSegment; tag; tag = tag->getEast())
+    for(MazeSegment* tag = this; tag; tag = tag->getEast())
     {
         _width += 16;
     }
     
-    for(MazeSegment* tag = _baseSegment; tag; tag = tag->getNorth())
+    for(MazeSegment* tag = this; tag; tag = tag->getNorth())
     {
         _height += 16;
     }
@@ -452,6 +369,34 @@ XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : _baseSegment(0), _text(0), _width
 XEEN::Map::~Map()
 {
     delete _text;
+}
+
+uint16 XEEN::Map::getTile(int16 x, int16 y)
+{
+    MazeSegment* seg = resolveSegment(x, y);
+    
+    if(x < 0 || y < 0 || !seg)
+    {
+        return 0x8888;
+    }
+    else
+    {
+        return seg->_wallData[y * 16 + x];
+    }
+}
+
+uint16 XEEN::Map::getSurface(int16 x, int16 y)
+{
+    MazeSegment* seg = resolveSegment(x, y);
+
+    if(x < 0 || y < 0 || !seg)
+    {
+        return 0;
+    }
+    else
+    {
+        return _surfaceMap[seg->_cellFlags[y * 16 + x] & 0x7];
+    }
 }
 
 void XEEN::Map::fillDrawStruct(int16 x, int16 y, uint16 direction)
@@ -481,8 +426,8 @@ void XEEN::Map::fillDrawStruct(int16 x, int16 y, uint16 direction)
         for(uint32 j = 0; j != linelength[i]; j ++)
         {
             int16 tx = x, ty = y;
-            MazeSegment::translatePoint(tx, ty, xoffsets[i][j], 4 - i, direction);
-            indoorDrawList[surfaceTile ++].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];
+            translatePoint(tx, ty, xoffsets[i][j], 4 - i, direction);
+            indoorDrawList[surfaceTile ++].sprite = surfaceMap[getSurface(tx, ty)];
         }
     }
 }
@@ -495,6 +440,57 @@ void XEEN::Map::draw(byte* out, SpriteManager& sprites)
         {
             Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
             sprite->drawCell(out, indoorDrawList[i].frame, indoorDrawList[i].x, indoorDrawList[i].y);
+        }
+    }
+}
+
+XEEN::MazeSegment* XEEN::Map::resolveSegment(int16& x, int16& y)
+{
+    MazeSegment* activeSegment = this;
+    
+    for(; activeSegment && x >= 16; x -= 16)
+    {
+        activeSegment = activeSegment->_east;
+    }
+
+    for(; activeSegment && y >= 16; y -= 16)
+    {
+        activeSegment = activeSegment->_north;
+    }
+
+    return activeSegment;
+}
+
+void XEEN::Map::translatePoint(int16& x, int16& y, int16 xOffset, int16 yOffset, uint16 direction)
+{
+    switch(direction)
+    {
+        case 0:
+        {
+            x += xOffset;
+            y += yOffset;
+            return;            
+        }
+        
+        case 1:
+        {
+            x += yOffset;
+            y -= xOffset;
+            return;
+        }
+        
+        case 2:
+        {
+            x -= xOffset;
+            y -= yOffset;
+            return;
+        }
+        
+        case 3:
+        {
+            x -= yOffset;
+            y += xOffset;
+            return;
         }
     }
 }

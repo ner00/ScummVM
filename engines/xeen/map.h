@@ -33,24 +33,22 @@
 namespace XEEN
 {
     class MapManager;
+    class Map;
 
     class MazeSegment
     {
         friend class MapManager;
+        friend class Map;
     
         private:
             MazeSegment(CCFile& cc, uint16 mapNumber);
+            virtual ~MazeSegment() { }
 
         public:
             MazeSegment* getNorth() { return _north; }
             MazeSegment* getEast() { return _east; }
-            
-            uint16 getTile(int16 x, int16 y);
-            uint16 getSurface(int16 x, int16 y);
-   
-            static void translatePoint(int16& x, int16& y, int16 xOffset, int16 yOffset, uint16 direction);
-   
-        private:        
+               
+        protected:        
             MazeSegment* _north;
             MazeSegment* _east;
         
@@ -94,23 +92,30 @@ namespace XEEN
             uint16 _stringOffsets[256];
     };
     
-    class Map
+    class Map : public MazeSegment
     {
         friend class MapManager;
+        friend class MazeSegment;
     
         private:
             Map(CCFile& cc, uint16 mapNumber);
             ~Map();
-            
+
         public:
+            uint16 getTile(int16 x, int16 y);
+            uint16 getSurface(int16 x, int16 y);
+                
             void fillDrawStruct(int16 x, int16 y, uint16 direction);
             void draw(byte* out, SpriteManager& sprite);
-            
+                        
         private:
-            MazeSegment* _baseSegment;
+            MazeSegment* resolveSegment(int16& x, int16& y);        
+
+        public:
+            static void translatePoint(int16& x, int16& y, int16 xOffset, int16 yOffset, uint16 direction);
+
+        private:
             MazeText* _text;
-            
-            char* _name;
             
             uint32 _width;
             uint32 _height;
