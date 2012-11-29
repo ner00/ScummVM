@@ -33,7 +33,7 @@ XEEN::SpriteManager::SpriteManager(CCFile& parent) : _cc(parent)
 
 XEEN::SpriteManager::~SpriteManager()
 {
-    for(int i = 0; i != 65536; i ++)
+    for(unsigned i = 0; i != MAX_SPRITES; i ++)
     {
         delete _sprites[i];
     }
@@ -49,70 +49,90 @@ XEEN::Sprite* XEEN::SpriteManager::getSprite(CCFileId id)
     return _sprites[id];
 }
 
-
 XEEN::Sprite::Sprite(CCFileData* file) : _file(file), _cellCount(0), _cells(0)
 {
-    assert(_file && "Sprite file not found");
-    
-    // Load cells
-    _cellCount = _file->readUint16LE();
-    _cells = new Cell[_cellCount];
-    
-    for(uint32 i = 0; i != _cellCount; i ++)
+    if(!initialize())
     {
-        _cells[i].first = _file->readUint16LE();
-        _cells[i].second = _file->readUint16LE();
+        assert(false);
+        cleanse();
     }
 }
 
 XEEN::Sprite::~Sprite()
 {
-    delete[] _cells;
-    delete _file;
+    cleanse();
 }
 
-void XEEN::Sprite::drawCell(byte* out, uint16 index, uint16 xOffset, uint16 yOffset)
+bool XEEN::Sprite::initialize()
 {
-    if(index <= _cellCount)
-    {
-        const Cell& cell = _cells[index];
+    bool success = false;
 
-        // The first frame MUST exist.
-        assert(cell.first);
+    if(enforce(_file))
+    {
+        _cellCount = _file->readUint16LE();
         
-        _file->seek(cell.first);
-        drawFrame(out, xOffset, yOffset);
-        
-        // Draw optional second frame
-        if(cell.second)
+        if(enforce(_cellCount))
         {
-            _file->seek(cell.second);
-            drawFrame(out, xOffset, yOffset);        
+            _cells = new Cell[_cellCount];
+            
+            if(enforce(_cells))
+            {
+                success = true;
+                
+                for(unsigned i = 0; success && i != _cellCount; i ++)
+                {
+                    _cells[i].offset[0] = _file->readUint16LE();
+                    _cells[i].offset[1] = _file->readUint16LE();
+                    
+                    success = (enforce(_cells[i].offset[0])) ? success : false;
+                }
+            }
         }
     }
-    else
+    
+    return success;
+}
+
+void XEEN::Sprite::cleanse()
+{
+    DELETE_ARRAY(_cells);
+    DELETE(_file);
+    _cellCount = 0;
+}
+
+void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame)
+{
+    if(enforce(frame < _cellCount))
     {
-        assert(false && "Sprite cell out of bounds!");
+        const Cell& cell = _cells[frame];
+
+        for(int i = 0; i != 2; i ++)
+        {
+            if(cell.offset[i])
+            {
+                _file->seek(cell.offset[i]);
+                drawFrame(out, pen);
+            }
+        }
     }
 }
 
-void XEEN::Sprite::drawFrame(byte* out, uint16 xOffset, uint16 yOffset)
+void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen)
 {
     // Read the frame header
-    const uint16 frameXOffset = _file->readUint16LE();
+    const int16 penX = _file->readUint16LE();
     /*const uint16 frameWidth =*/ _file->readUint16LE();
-    const uint16 frameYOffset = _file->readUint16LE();
+    const int16 penY = _file->readUint16LE();
     const uint16 frameHeight = _file->readUint16LE();
 
-    // Calculate output pen position
-    const uint16 xpos = (xOffset + frameXOffset);
-    const uint16 ypos = (yOffset + frameYOffset);
+    Common::Point drawPos = pen + Common::Point(penX, penY);
 
     // Draw the lines
     for(uint32 onLine = 0; onLine != frameHeight; )
     {
-        const uint32 linesDrawn = drawLine(&out[320 * (ypos + onLine)], xpos);
+        const uint32 linesDrawn = drawLine(out.setPen(drawPos));
         onLine += linesDrawn;
+        drawPos.y += linesDrawn;
 
         // Check sanity: At least one line must have been drawn, and No more than 
         // frameHeight lines may have been drawn.
@@ -120,10 +140,10 @@ void XEEN::Sprite::drawFrame(byte* out, uint16 xOffset, uint16 yOffset)
     }
 }
 
-uint32 XEEN::Sprite::drawLine(byte* out, uint16 xOffset)
+uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
 {   
     uint8 bytes = _file->readByte();
-    uint16 x = _file->readByte();
+    int16 x = _file->readByte();
     
     // Skip a number or vertical lines
     if(bytes == 0)
@@ -132,7 +152,7 @@ uint32 XEEN::Sprite::drawLine(byte* out, uint16 xOffset)
     }
     
     // Draw
-    x += xOffset;
+    out.movePen(Common::Point(x, 0));
     int32 end = (_file->pos() - 1) + bytes;
     
     while(_file->pos() != end)
@@ -142,22 +162,12 @@ uint32 XEEN::Sprite::drawLine(byte* out, uint16 xOffset)
         const uint8 opcode = controlByte >> 5;
         const uint8 length = controlByte & 0x1F;
         
-        //TODO: Clipping!!!
-        
         switch(opcode)
         {
-            case 0:
+            case 0: case 1:
             {
-                _file->read(&out[x], length + 1);
-                x += length + 1;
+                out.readPixels(*_file, (controlByte & 0x3F) + 1);
                 break;
-            }
-            
-            case 1:
-            {
-                _file->read(&out[x], length + 33);
-                x += length + 33;
-                break;            
             }
             
             case 2:
@@ -166,7 +176,7 @@ uint32 XEEN::Sprite::drawLine(byte* out, uint16 xOffset)
                 
                 for(int i = 0; i != length + 3; i ++)
                 {
-                    out[x++] = color;
+                    out.putPixel(color);
                 }
                 
                 break;
@@ -178,10 +188,8 @@ uint32 XEEN::Sprite::drawLine(byte* out, uint16 xOffset)
                 const int32 streamPos = _file->pos();
                 
                 _file->seek(_file->pos() - backTrack);
-                _file->read(&out[x], length + 4);
+                out.readPixels(*_file, length + 4);
                 _file->seek(streamPos);
-
-                x += length + 4;
                 break;
             }
             
@@ -192,8 +200,8 @@ uint32 XEEN::Sprite::drawLine(byte* out, uint16 xOffset)
                 
                 for(int i = 0; i != length + 2; i ++)
                 {
-                    out[x++] = color1;
-                    out[x++] = color2;
+                    out.putPixel(color1);
+                    out.putPixel(color2);
                 }
                 
                 break;
@@ -201,19 +209,17 @@ uint32 XEEN::Sprite::drawLine(byte* out, uint16 xOffset)
             
             case 5:
             {
-                x += length + 1;
+                out.movePen(Common::Point(length + 1, 0));
                 break;
             }
             
-            case 6:
-            case 7:
+            case 6: case 7:
             {
-//                debug("Sprite Pattern Command: Not implemented");
-                
+                // TODO: Implement properly                
                 const uint8 color = _file->readByte();
                 for(int i = 0; i != (controlByte & 0x7) + 3; i ++)
                 {
-                    out[x++] = color;
+                    out.putPixel(color);
                 }
                 
                 break;

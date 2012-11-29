@@ -135,7 +135,7 @@ namespace XEEN
             uint16 getSurface(int16 x, int16 y);
                 
             void fillDrawStruct(int16 x, int16 y, uint16 direction);
-            void draw(byte* out, SpriteManager& sprite);
+            void draw(ImageBuffer& out, SpriteManager& sprite);
                         
         private:
             MazeSegment* resolveSegment(int16& x, int16& y);        

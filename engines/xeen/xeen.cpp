@@ -102,11 +102,10 @@ Common::Error XEEN::XeenEngine::run()
             }
         }
 
-        byte buffer[320 * 200];
-        memset(buffer, 0, sizeof(buffer));        
+        ImageBuffer buffer;
         testMap->fillDrawStruct(x, y, dir);
-        testMap->draw(buffer, ccf.getSpriteManager());
-        _system->copyRectToScreen(buffer, 320, 0, 0, 320, 200);        
+        testMap->draw(buffer.clear(0), ccf.getSpriteManager());
+        _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
     }
 

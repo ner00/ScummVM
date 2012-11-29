@@ -25,6 +25,7 @@
 
 #include <stdarg.h>
 #include "common/scummsys.h"
+#include "common/rect.h"
 
 namespace XEEN
 {
@@ -67,6 +68,70 @@ namespace XEEN
         
             uint16 _id;
     };
+    
+    struct ImageBuffer
+    {
+        public:
+            ImageBuffer& setPen(const Common::Point& pen)
+            {
+                _pen = pen;
+                return *this;
+            }
+            
+            ImageBuffer& movePen(const Common::Point& pen)
+            {
+                _pen += pen;
+                return *this;
+            }
+            
+            ImageBuffer& clear(uint8 color)
+            {
+                memset(buffer, color, sizeof(buffer));
+                return *this;
+            }
+            
+            void readPixels(Common::ReadStream& input, uint32 length)
+            {
+                for(uint32 i = 0; i != length; i ++)
+                {
+                    putPixel(input.readByte());
+                }
+            }
+            
+            void putPixel(uint8 color)
+            {
+                if(_pen.x >= 0 && _pen.x < 320 && _pen.y >= 0 && _pen.y < 200)
+                {
+                    buffer[_pen.y * 320 + _pen.x ++] = color;
+                }
+            }
+            
+        public:    
+            byte buffer[320 * 200];
+            
+        private:
+            Common::Point _pen;
+    };
+
+    inline bool enforce(bool cond)
+    {
+        assert(cond);
+        return cond;
+    }
+    
+    template <typename T>
+    void DELETE(T*& v)
+    {
+        delete v;
+        v = 0;
+    }
+    
+    template <typename T>
+    void DELETE_ARRAY(T*& v)
+    {
+        delete[] v;
+        v = 0;
+    }
 }
 
 #endif // XEEN_CCFILE_H

@@ -44,20 +44,22 @@ namespace XEEN
             Sprite(CCFileData* file);
             ~Sprite();
             
+            bool initialize();
+            void cleanse();
+            
         public:
-            void drawCell(byte* out, uint16 index, uint16 xOffset, uint16 yOffset);
+            void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame);
             
         private:
-            void drawFrame(byte* out, uint16 xOffset, uint16 yOffset);
-            uint32 drawLine(byte* out, uint16 xOffset);
+            void drawFrame(ImageBuffer& out, const Common::Point& pen);
+            uint32 drawLine(ImageBuffer& out);
             
         private:
             CCFileData* _file;
 
             struct Cell
             {
-                uint16 first;
-                uint16 second;
+                uint16 offset[2];
             };
             
             uint32 _cellCount;
@@ -66,6 +68,8 @@ namespace XEEN
     
     class SpriteManager
     {
+        static const unsigned MAX_SPRITES = 65536;
+    
         public:
             SpriteManager(CCFile& parent);
             ~SpriteManager();
@@ -74,7 +78,7 @@ namespace XEEN
             
         private:
             CCFile& _cc;
-            Sprite* _sprites[65536]; // TODO: <Use a hash table!
+            Sprite* _sprites[MAX_SPRITES]; // TODO: <Use a hash table!
     };
 }
 

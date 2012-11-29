@@ -504,14 +504,14 @@ void XEEN::Map::fillDrawStruct(int16 x, int16 y, uint16 direction)
     }
 }
 
-void XEEN::Map::draw(byte* out, SpriteManager& sprites)
+void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)
 {
     for(int i = 0; i != sizeof(indoorDrawList) / sizeof(indoorDrawList[0]); i ++)
     {
         if(indoorDrawList[i].sprite != 0xFFFF)
         {
             Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
-            sprite->drawCell(out, indoorDrawList[i].frame, indoorDrawList[i].x, indoorDrawList[i].y);
+            sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame);
         }
     }
 }
