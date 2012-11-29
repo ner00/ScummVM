@@ -89,7 +89,7 @@ Common::Error XEEN::XeenEngine::run()
 
         byte buffer[320 * 200];
         memset(buffer, 0, sizeof(buffer));        
-        testMap->draw(buffer);
+        testMap->draw(buffer, ccf.getSpriteManager());
         _system->copyRectToScreen(buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
     }

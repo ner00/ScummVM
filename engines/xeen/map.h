@@ -44,6 +44,9 @@ namespace XEEN
         public:
             MazeSegment* getNorth() { return _north; }
             MazeSegment* getEast() { return _east; }
+            
+            uint16 getTile(uint16 x, uint16 y);
+            uint16 getSurface(uint16 x, uint16 y);
    
         private:
             MazeSegment* _north;
@@ -98,7 +101,7 @@ namespace XEEN
             ~Map();
             
         public:
-            void draw(byte* out);
+            void draw(byte* out, SpriteManager& sprite);
             
         private:        
             MazeSegment* _baseSegment;

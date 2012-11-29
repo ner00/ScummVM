@@ -46,19 +46,23 @@ namespace XEEN
                 
                 buf[255] = 0;
                 
-                loadFromString(buf);
+                _id = fromString(buf);
             }
             
             operator uint16() { return _id; }
         
-        private:
-            void loadFromString(const char* name)
+        public:
+            static uint16 fromString(const char* name)
             {
+                uint16 result;
+            
                 for(; *name; name ++)
                 {
-                    _id = (_id & 0x7F) << 9 | (_id & 0xFF80) >> 7;            
-                    _id += *name;
-                }            
+                    result = (result & 0x7F) << 9 | (result & 0xFF80) >> 7;            
+                    result += *name;
+                }
+                
+                return result;
             }
         
             uint16 _id;
