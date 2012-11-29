@@ -194,7 +194,7 @@ void XEEN::MazeSegment::translatePoint(int16& x, int16& y, int16 xOffset, int16 
         case 1:
         {
             x += yOffset;
-            y += xOffset;
+            y -= xOffset;
             return;
         }
         
@@ -208,7 +208,7 @@ void XEEN::MazeSegment::translatePoint(int16& x, int16& y, int16 xOffset, int16 
         case 3:
         {
             x -= yOffset;
-            y -= xOffset;
+            y += xOffset;
             return;
         }
     }
@@ -467,48 +467,23 @@ void XEEN::Map::fillDrawStruct(int16 x, int16 y, uint16 direction)
     indoorDrawList[1].sprite = CCFileId("SKY.SKY");
     indoorDrawList[2].sprite = CCFileId("TOWN.GND");
     
-    // Surface: 4 steps
-    static const int16 xoff7[7] = {-3, -2, -1, 3, 2, 1, 0};
-
-    for(int i = 0; i != 7; i ++)
-    {
-        int16 tx = x, ty = y;
-        MazeSegment::translatePoint(tx, ty, xoff7[i], 4, direction);
-        indoorDrawList[3 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];
-    }
-
-    // Surface: 3 steps
-    for(int i = 0; i != 7; i ++)
-    {
-        int16 tx = x, ty = y;
-        MazeSegment::translatePoint(tx, ty, xoff7[i], 3, direction);
-        indoorDrawList[10 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];
-    }
-
-    // Surface: 2 steps
-    static const int16 xoff5[5] = {-2, -1, 2, 1, 0};
-    for(int i = 0; i != 5; i ++)
-    {
-        int16 tx = x, ty = y;
-        MazeSegment::translatePoint(tx, ty, xoff5[i], 2, direction);
-        indoorDrawList[17 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];
-    }
-
-    // Surface: 1 step
+    // Fill surface entries
     static const int16 xoff3[3] = {-1, 1, 0};
-    for(int i = 0; i != 3; i ++)
-    {
-        int16 tx = x, ty = y;
-        MazeSegment::translatePoint(tx, ty, xoff3[i], 1, direction);
-        indoorDrawList[22 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];    
-    }
+    static const int16 xoff5[5] = {-2, -1, 2, 1, 0};
+    static const int16 xoff7[7] = {-3, -2, -1, 3, 2, 1, 0};
+    static const int16* const xoffsets[5] = {xoff7, xoff7, xoff5, xoff3, xoff3};
+    static const uint32 linelength[5] = {7, 7, 5, 3, 3};
 
-    // Surface: 0 step
-    for(int i = 0; i != 3; i ++)
+    int surfaceTile = 3;
+    
+    for(uint32 i = 0; i != 5; i ++)
     {
-        int16 tx = x, ty = y;
-        MazeSegment::translatePoint(tx, ty, xoff3[i], 0, direction);
-        indoorDrawList[25 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];    
+        for(uint32 j = 0; j != linelength[i]; j ++)
+        {
+            int16 tx = x, ty = y;
+            MazeSegment::translatePoint(tx, ty, xoffsets[i][j], 4 - i, direction);
+            indoorDrawList[surfaceTile ++].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];
+        }
     }
 }
 
