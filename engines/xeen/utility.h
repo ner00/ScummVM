@@ -72,6 +72,11 @@ namespace XEEN
     struct ImageBuffer
     {
         public:
+            ImageBuffer() : _pen(0, 0), _penOffset(1, 0)
+            {
+            
+            }
+        
             ImageBuffer& setPen(const Common::Point& pen)
             {
                 _pen = pen;
@@ -80,13 +85,20 @@ namespace XEEN
             
             ImageBuffer& movePen(const Common::Point& pen)
             {
-                _pen += pen;
+                _pen.x = _pen.x + (_penOffset.x * pen.x);
+                _pen.y = _pen.y + (_penOffset.y * pen.y);
                 return *this;
             }
             
             ImageBuffer& clear(uint8 color)
             {
                 memset(buffer, color, sizeof(buffer));
+                return *this;
+            }
+            
+            ImageBuffer& setPenOffset(const Common::Point& offset)
+            {
+                _penOffset = offset;
                 return *this;
             }
             
@@ -105,7 +117,7 @@ namespace XEEN
                     buffer[_pen.y * 320 + _pen.x] = color;
                 }
                 
-                _pen.x ++;
+                _pen += _penOffset;
             }
             
         public:    
@@ -113,6 +125,7 @@ namespace XEEN
             
         private:
             Common::Point _pen;
+            Common::Point _penOffset;
     };
 
     inline bool enforce(bool cond)

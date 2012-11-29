@@ -48,10 +48,10 @@ namespace XEEN
             void cleanse();
             
         public:
-            void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame);
+            void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false);
             
         private:
-            void drawFrame(ImageBuffer& out, const Common::Point& pen);
+            void drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip);
             uint32 drawLine(ImageBuffer& out);
             
         private:

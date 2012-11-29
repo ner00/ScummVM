@@ -98,7 +98,7 @@ void XEEN::Sprite::cleanse()
     _cellCount = 0;
 }
 
-void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame)
+void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip)
 {
     if(enforce(frame < _cellCount))
     {
@@ -109,21 +109,22 @@ void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 f
             if(cell.offset[i])
             {
                 _file->seek(cell.offset[i]);
-                drawFrame(out, pen);
+                drawFrame(out, pen, flip);
             }
         }
     }
 }
 
-void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen)
+void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip)
 {
     // Read the frame header
     const int16 penX = _file->readSint16LE();
-    /*const uint16 frameWidth =*/ _file->readUint16LE();
+    const uint16 frameWidth = _file->readUint16LE();
     const int16 penY = _file->readSint16LE();
     const uint16 frameHeight = _file->readUint16LE();
 
-    Common::Point drawPos = pen + Common::Point(penX, penY);
+    Common::Point drawPos = pen + Common::Point(penX + (flip ? frameWidth : 0), penY);
+    out.setPenOffset(Common::Point(flip ? -1 : 1, 0));
 
     // Draw the lines
     for(uint32 onLine = 0; onLine != frameHeight; )
