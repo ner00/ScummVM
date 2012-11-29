@@ -92,7 +92,7 @@ void XEEN::Sprite::drawCell(byte* out, uint16 index, uint16 xOffset, uint16 yOff
     }
     else
     {
-        debug("Sprite cell out of bounds!");
+        assert(false && "Sprite cell out of bounds!");
     }
 }
 

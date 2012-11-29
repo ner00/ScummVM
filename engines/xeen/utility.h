@@ -49,12 +49,12 @@ namespace XEEN
                 _id = fromString(buf);
             }
             
-            operator uint16() { return _id; }
+            operator uint16() const { return _id; }
         
         public:
             static uint16 fromString(const char* name)
             {
-                uint16 result;
+                uint16 result = 0;
             
                 for(; *name; name ++)
                 {

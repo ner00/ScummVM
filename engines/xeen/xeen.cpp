@@ -72,6 +72,10 @@ Common::Error XEEN::XeenEngine::run()
         
     Map* testMap = ccf.getMapManager().getMap(28);
             
+    int16 x = 8;
+    int16 y = 8;
+    int16 dir = 0;
+            
     while(!shouldQuit())
     {
     	Common::Event event;    
@@ -80,6 +84,17 @@ Common::Error XEEN::XeenEngine::run()
         {
             switch(event.type)
             {
+                case Common::EVENT_KEYDOWN:
+                {
+                    if(event.kbd.keycode == Common::KEYCODE_UP) MazeSegment::translatePoint(x, y, 0, 1, dir);
+                    if(event.kbd.keycode == Common::KEYCODE_DOWN)  MazeSegment::translatePoint(x, y, 0, -1, dir);
+                    if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
+                    if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
+
+                    if(dir < 0) dir = 3;
+                    if(dir > 3) dir = 0;
+                }
+            
                 default:
                 {
                     break;
@@ -89,6 +104,7 @@ Common::Error XEEN::XeenEngine::run()
 
         byte buffer[320 * 200];
         memset(buffer, 0, sizeof(buffer));        
+        testMap->fillDrawStruct(x, y, dir);
         testMap->draw(buffer, ccf.getSpriteManager());
         _system->copyRectToScreen(buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();

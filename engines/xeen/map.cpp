@@ -30,26 +30,6 @@
 
 #include "xeen/utility.h"
 
-/*static const uint16 s_surfaceMap[16] = 
-{
-    0,
-    XEEN::CCFileId::fromString("DIRT.SRF"),
-    XEEN::CCFileId::fromString("GRASS.SRF"),
-    XEEN::CCFileId::fromString("SNOW.SRF"),
-    XEEN::CCFileId::fromString("SWAMP.SRF"),
-    XEEN::CCFileId::fromString("LAVA.SRF"),
-    XEEN::CCFileId::fromString("DESERT.SRF"),
-    XEEN::CCFileId::fromString("ROAD.SRF"),
-    XEEN::CCFileId::fromString("WATER.SRF"),
-    XEEN::CCFileId::fromString("TFLR.SRF"),
-    XEEN::CCFileId::fromString("SKY.SRF"),
-    XEEN::CCFileId::fromString("CROAD.SRF"),
-    XEEN::CCFileId::fromString("SEWER.SRF"),
-    XEEN::CCFileId::fromString("CLOUD.SRF"),
-    XEEN::CCFileId::fromString("SCOORTCH.SRF"), //?
-    XEEN::CCFileId::fromString("SPACE.SRF")
-};*/
-
 ///
 /// MapManager
 ///
@@ -152,14 +132,86 @@ XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(
     delete data;
 }
 
-uint16 XEEN::MazeSegment::getTile(uint16 x, uint16 y)
+uint16 XEEN::MazeSegment::getTile(int16 x, int16 y)
 {
-    return _wallData[y * 16 + x];
+    MazeSegment* activeSegment = this;
+    
+    for(; activeSegment && x >= 16; x -= 16)
+    {
+        activeSegment = activeSegment->_east;
+    }
+
+    for(; activeSegment && y >= 16; y -= 16)
+    {
+        activeSegment = activeSegment->_north;
+    }
+    
+    if(x < 0 || y < 0 || !activeSegment)
+    {
+        return 0x8888;
+    }
+    else
+    {
+        return activeSegment->_wallData[y * 16 + x];
+    }
 }
 
-uint16 XEEN::MazeSegment::getSurface(uint16 x, uint16 y)
+uint16 XEEN::MazeSegment::getSurface(int16 x, int16 y)
 {
-    return _surfaceMap[_cellFlags[y * 16 + x] & 0x7];
+    MazeSegment* activeSegment = this;
+    
+    for(; activeSegment && x >= 16; x -= 16)
+    {
+        activeSegment = activeSegment->_east;
+    }
+
+    for(; activeSegment && y >= 16; y -= 16)
+    {
+        activeSegment = activeSegment->_north;
+    }
+
+    if(x < 0 || y < 0 || !activeSegment)
+    {
+        return 0;
+    }
+    else
+    {
+        return _surfaceMap[activeSegment->_cellFlags[y * 16 + x] & 0x7];
+    }
+}
+
+void XEEN::MazeSegment::translatePoint(int16& x, int16& y, int16 xOffset, int16 yOffset, uint16 direction)
+{
+    switch(direction)
+    {
+        case 0:
+        {
+            x += xOffset;
+            y += yOffset;
+            return;            
+        }
+        
+        case 1:
+        {
+            x += yOffset;
+            y += xOffset;
+            return;
+        }
+        
+        case 2:
+        {
+            x -= xOffset;
+            y -= yOffset;
+            return;
+        }
+        
+        case 3:
+        {
+            x -= yOffset;
+            y -= xOffset;
+            return;
+        }
+    }
 }
 
 ///
@@ -378,7 +430,9 @@ static struct
 };
 
 XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : _baseSegment(0), _text(0), _width(0), _height(0)
-{    
+{
+    assert(mapNumber < 100 && "Loading map from extended maze segment.");
+ 
     // Load Maze Data
     _baseSegment = cc.getMapManager().getSegment(mapNumber);
     _text = new MazeText(cc, mapNumber);
@@ -398,6 +452,64 @@ XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : _baseSegment(0), _text(0), _width
 XEEN::Map::~Map()
 {
     delete _text;
+}
+
+void XEEN::Map::fillDrawStruct(int16 x, int16 y, uint16 direction)
+{
+    static const CCFileId surfaceMap[16] = 
+    {
+        0xFFFF, "DIRT.SRF", "GRASS.SRF", "SNOW.SRF", "SWAMP.SRF", "LAVA.SRF", "DESERT.SRF", "ROAD.SRF",
+        "WATER.SRF", "TFLR.SRF", "SKY.SRF", "CROAD.SRF", "SEWER.SRF", "CLOUD.SRF", "SCOORTCH.SRF", "SPACE.SRF"
+    };
+
+
+    indoorDrawList[0].sprite = CCFileId("SKY.SKY");
+    indoorDrawList[1].sprite = CCFileId("SKY.SKY");
+    indoorDrawList[2].sprite = CCFileId("TOWN.GND");
+    
+    // Surface: 4 steps
+    static const int16 xoff7[7] = {-3, -2, -1, 3, 2, 1, 0};
+
+    for(int i = 0; i != 7; i ++)
+    {
+        int16 tx = x, ty = y;
+        MazeSegment::translatePoint(tx, ty, xoff7[i], 4, direction);
+        indoorDrawList[3 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];
+    }
+
+    // Surface: 3 steps
+    for(int i = 0; i != 7; i ++)
+    {
+        int16 tx = x, ty = y;
+        MazeSegment::translatePoint(tx, ty, xoff7[i], 3, direction);
+        indoorDrawList[10 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];
+    }
+
+    // Surface: 2 steps
+    static const int16 xoff5[5] = {-2, -1, 2, 1, 0};
+    for(int i = 0; i != 5; i ++)
+    {
+        int16 tx = x, ty = y;
+        MazeSegment::translatePoint(tx, ty, xoff5[i], 2, direction);
+        indoorDrawList[17 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];
+    }
+
+    // Surface: 1 step
+    static const int16 xoff3[3] = {-1, 1, 0};
+    for(int i = 0; i != 3; i ++)
+    {
+        int16 tx = x, ty = y;
+        MazeSegment::translatePoint(tx, ty, xoff3[i], 1, direction);
+        indoorDrawList[22 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];    
+    }
+
+    // Surface: 0 step
+    for(int i = 0; i != 3; i ++)
+    {
+        int16 tx = x, ty = y;
+        MazeSegment::translatePoint(tx, ty, xoff3[i], 0, direction);
+        indoorDrawList[25 + i].sprite = surfaceMap[_baseSegment->getSurface(tx, ty)];    
+    }
 }
 
 void XEEN::Map::draw(byte* out, SpriteManager& sprites)
