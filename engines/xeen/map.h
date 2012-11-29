@@ -25,7 +25,7 @@
 
 #include "common/scummsys.h"
 #include "common/file.h"
-#include "common/hashmap.h"
+#include "common/list.h"
 #include "common/memstream.h"
 
 #include "xeen/sprite.h"
@@ -34,6 +34,44 @@ namespace XEEN
 {
     class MapManager;
     class Map;
+
+    class MazeText
+    {
+        public:
+            MazeText(CCFile& cc, uint16 mapNumber);
+            ~MazeText();
+            
+        private:
+            CCFileData* _data;        
+            uint16 _stringOffsets[256];
+    };
+    
+    class MazeObjects
+    {
+        public:
+            struct Entry
+            {
+                int8 x;
+                int8 y;
+                uint8 id;
+                uint8 facing;
+            };    
+    
+        public:
+            MazeObjects(CCFile& cc, uint16 mapNumber);
+            ~MazeObjects();
+            
+            bool getObjectAt(int8 x, int8 y, Entry& facing);
+                        
+        private:
+            uint8 _objectTypes[16];
+            uint8 _monsterTypes[16];
+            uint8 _wallObjectTypes[16];
+
+            Common::List<Entry> _objects;
+            Common::List<Entry> _monsters;
+            Common::List<Entry> _wallObjects;            
+    };
 
     class MazeSegment
     {
@@ -51,6 +89,8 @@ namespace XEEN
         protected:        
             MazeSegment* _north;
             MazeSegment* _east;
+            
+            MazeObjects* _objects;
         
             uint16 _wallData[16 * 16];
             uint8 _cellFlags[16 * 16];
@@ -79,17 +119,6 @@ namespace XEEN
             
             uint8 _seenTiles[32];
             uint8 _steppedTiles[32];
-    };
-    
-    class MazeText
-    {
-        public:
-            MazeText(CCFile& cc, uint16 mapNumber);
-            ~MazeText();
-            
-        private:
-            CCFileData* _data;        
-            uint16 _stringOffsets[256];
     };
     
     class Map : public MazeSegment

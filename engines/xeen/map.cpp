@@ -69,9 +69,96 @@ XEEN::MazeSegment* XEEN::MapManager::getSegment(uint16 id)
 }
 
 ///
+/// MazeText
+///
+XEEN::MazeText::MazeText(CCFile& cc, uint16 mapNumber) : _data(0)
+{
+    // Get ID
+    _data = cc.getFile(CCFileId("AAZE%04d.TXT", mapNumber));
+    memset(_stringOffsets, 0xFF, sizeof(_stringOffsets));
+
+    if(_data)
+    {    
+        uint32 foundStrings = 1;
+        _stringOffsets[0] = 0;
+        
+        for(int32 offset = 1; offset < _data->size() - 1; offset ++)
+        {
+            if(_data->getData()[offset] == 0)
+            {
+                _stringOffsets[foundStrings ++] = offset + 1;
+            }
+        }
+    }
+}
+
+XEEN::MazeText::~MazeText()
+{
+    delete _data;
+}
+
+///
+/// MazeObjects
+///
+XEEN::MazeObjects::MazeObjects(CCFile& cc, uint16 mapNumber)
+{
+    memset(_objectTypes, 0xFF, sizeof(_objectTypes));
+    memset(_monsterTypes, 0xFF, sizeof(_monsterTypes));
+    memset(_wallObjectTypes, 0xFF, sizeof(_wallObjectTypes));
+
+    CCFileData* reader = cc.getSaveFile().getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber));
+    
+    if(reader)
+    {
+        reader->read(_objectTypes, 16);
+        reader->read(_monsterTypes, 16);
+        reader->read(_wallObjectTypes, 16);
+
+        // Read object list
+        while(!reader->eos())
+        {
+            Entry e;
+            e.x = reader->readSByte();
+            e.y = reader->readSByte();
+            e.id = reader->readByte();
+            e.facing = reader->readByte();
+            
+            if(e.id == 0xFF)
+            {
+                break;
+            }
+            
+            _objects.push_back(e);
+        }
+
+        delete reader;
+    }
+}
+
+XEEN::MazeObjects::~MazeObjects()
+{
+    // TODO: Store the values back into the save game
+}
+
+bool XEEN::MazeObjects::getObjectAt(int8 x, int8 y, Entry& data)
+{
+    for(Common::List<Entry>::iterator i = _objects.begin(); i != _objects.end(); i ++)
+    {
+        if(i->x == x && i->y == y)
+        {
+            data = *i;
+            data.id = _objectTypes[data.id];
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+///
 /// MazeSegment
 ///
-XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(0)
+XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(0), _objects(0)
 {
     CCFileData* data = cc.getSaveFile().getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber));    
     assert(data->size() && "Failed to open maze segment chunk");
@@ -128,37 +215,11 @@ XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(
         _east = cc.getMapManager().getSegment(_mazeExtensions[1]);
     }
     
+    // Load objects
+    _objects = new MazeObjects(cc, mapNumber);
+    
     // Done
     delete data;
-}
-
-///
-/// MazeText
-///
-XEEN::MazeText::MazeText(CCFile& cc, uint16 mapNumber) : _data(0)
-{
-    // Get ID
-    _data = cc.getFile(CCFileId("AAZE%04d.TXT", mapNumber));
-    memset(_stringOffsets, 0xFF, sizeof(_stringOffsets));
-
-    if(_data)
-    {    
-        uint32 foundStrings = 1;
-        _stringOffsets[0] = 0;
-        
-        for(int32 offset = 1; offset < _data->size() - 1; offset ++)
-        {
-            if(_data->getData()[offset] == 0)
-            {
-                _stringOffsets[foundStrings ++] = offset + 1;
-            }
-        }
-    }
-}
-
-XEEN::MazeText::~MazeText()
-{
-    delete _data;
 }
 
 
@@ -324,7 +385,7 @@ static struct
     {0xFFFF, 	 0,	 200,	 12,	 0,	    0x8000}, //Side wall for tile directly 1 step right
     {0xFFFF, 	 0,	 200,	 24,	 0,	    0x2000}, //Facing wall for tile directly 1 step forward
     {0xFFFF, 	 0,	 32,	 24,	 0,	    0x0000},	
-    {0xFFFF, 	 0,	 -5,	 2, 	 0,	    0x6000},	
+    {0xFFFF, 	 0,	 -5,	 2, 	 0,	    0x6000}, // Object in same tile as player
     {0xFFFF, 	 0,	 -67,	 10,	 0,	    0x6000},	
     {0xFFFF, 	 0,	 44,	 73,	 0,	    0x0000},	
     {0xFFFF, 	 0,	 44,	 73,	 0,	    0x0000},	
@@ -429,6 +490,17 @@ void XEEN::Map::fillDrawStruct(int16 x, int16 y, uint16 direction)
             translatePoint(tx, ty, xoffsets[i][j], 4 - i, direction);
             indoorDrawList[surfaceTile ++].sprite = surfaceMap[getSurface(tx, ty)];
         }
+    }
+
+    // HACK
+    MazeObjects::Entry t;
+    if(_objects->getObjectAt(x, y, t))
+    {
+        indoorDrawList[149].sprite = CCFileId("%03d.OBJ", t.id);
+    }
+    else
+    {
+        indoorDrawList[149].sprite = 0xFFFF;
     }
 }
 
