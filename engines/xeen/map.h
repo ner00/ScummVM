@@ -32,42 +32,8 @@ namespace XEEN
     class ImageBuffer;
     class SpriteManager;
 
-    class MazeText
-    {
-        public:
-            MazeText(CCFile& cc, uint16 mapNumber);
-            ~MazeText();
-            
-        private:
-            CCFileData* _data;        
-            uint16 _stringOffsets[256];
-    };
-    
-    class MazeObjects
-    {
-        public:
-            struct Entry
-            {
-                Common::Point position;
-                uint8 id;
-                uint8 facing;
-            };    
-    
-        public:
-            MazeObjects(CCFile& cc, uint16 mapNumber);
-            ~MazeObjects();
-            
-            bool getObjectAt(const Common::Point& position, Entry& facing);
-                        
-        private:
-            uint8 _objectTypes[16];
-            uint8 _monsterTypes[16];
-            uint8 _wallObjectTypes[16];
-
-            Common::List<Entry> _objects;
-            Common::List<Entry> _monsters;
-            Common::List<Entry> _wallObjects;            
-    };
+    class MazeText;
+    class MazeObjects;
 
     class MazeSegment
     {

@@ -29,6 +29,9 @@
 #include "xeen/drawlist.h"
 #include "xeen/imagebuffer.h"
 
+#include "xeen/mazetext.h"
+#include "xeen/mazeobjects.h"
+
 ///
 /// MapManager
 ///
@@ -65,93 +68,6 @@ XEEN::MazeSegment* XEEN::MapManager::getSegment(uint16 id)
     }
     
     return _segments[id];
-}
-
-///
-/// MazeText
-///
-XEEN::MazeText::MazeText(CCFile& cc, uint16 mapNumber) : _data(0)
-{
-    // Get ID
-    _data = cc.getFile(CCFileId("AAZE%04d.TXT", mapNumber));
-    memset(_stringOffsets, 0xFF, sizeof(_stringOffsets));
-
-    if(_data)
-    {    
-        uint32 foundStrings = 1;
-        _stringOffsets[0] = 0;
-        
-        for(int32 offset = 1; offset < _data->size() - 1; offset ++)
-        {
-            if(_data->getData()[offset] == 0)
-            {
-                _stringOffsets[foundStrings ++] = offset + 1;
-            }
-        }
-    }
-}
-
-XEEN::MazeText::~MazeText()
-{
-    delete _data;
-}
-
-///
-/// MazeObjects
-///
-XEEN::MazeObjects::MazeObjects(CCFile& cc, uint16 mapNumber)
-{
-    memset(_objectTypes, 0xFF, sizeof(_objectTypes));
-    memset(_monsterTypes, 0xFF, sizeof(_monsterTypes));
-    memset(_wallObjectTypes, 0xFF, sizeof(_wallObjectTypes));
-
-    CCFileData* reader = cc.getSaveFile().getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber));
-    
-    if(reader)
-    {
-        reader->read(_objectTypes, 16);
-        reader->read(_monsterTypes, 16);
-        reader->read(_wallObjectTypes, 16);
-
-        // Read object list
-        while(!reader->eos())
-        {
-            Entry e;
-            e.position.x = reader->readSByte();
-            e.position.y = reader->readSByte();
-            e.id = reader->readByte();
-            e.facing = reader->readByte();
-            
-            if(e.id == 0xFF)
-            {
-                break;
-            }
-            
-            _objects.push_back(e);
-        }
-
-        delete reader;
-    }
-}
-
-XEEN::MazeObjects::~MazeObjects()
-{
-    // TODO: Store the values back into the save game
-}
-
-bool XEEN::MazeObjects::getObjectAt(const Common::Point& position, Entry& data)
-{
-    for(Common::List<Entry>::iterator i = _objects.begin(); i != _objects.end(); i ++)
-    {
-        if(i->position == position)
-        {
-            data = *i;
-            data.id = _objectTypes[data.id];
-            return true;
-        }
-    }
-    
-    return false;
 }
 
 ///

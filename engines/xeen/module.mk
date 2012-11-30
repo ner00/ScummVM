@@ -7,7 +7,9 @@ MODULE_OBJS := \
     sprite.o \
     map.o \
     characters.o \
-    party.o
+    party.o \
+    mazetext.o \
+    mazeobjects.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)
