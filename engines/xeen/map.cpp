@@ -266,9 +266,9 @@ uint16 XEEN::Map::getTile(Common::Point position, uint32 direction)
         switch(direction)
         {
             case 0: return result;
-            case 1: return (result >> 4) | (result << 12);
+            case 1: return (result >> 12) | (result << 4);
             case 2: return (result >> 8) | (result << 8);
-            case 3: return (result >> 12) | (result << 4);
+            case 3: return (result >> 4) | (result << 12);
         }
 
         return result;
@@ -320,14 +320,23 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
         }
     }
 
-    // Fill walls
+    // Facing walls
     static const unsigned wallmap[16] = {32, 9, 17, 11, 8, 0, 15, 16, 0, 10, 14, 6, 1, 8, 12, 13};
     static const unsigned wall1[3] = {143, 145, 147};
     static const unsigned wall2[3] = {119, 120, 121};
+    static const unsigned wall3[5] = {87, 88, 89, 90, 91};
+    static const unsigned wall4[9] = {37, 38, 39, 40, 41, 42, 43, 44, 45};
+
+    static const int baseframe[4] = {0, 0, 17, 0};
+    static const int wallcount[4] = {3, 3, 5, 9};
+    static const int walloffset[4] = {1, 1, 2, 4};
+    static const unsigned* const wallbase[] = {wall1, wall2, wall3, wall4};
+    static const uint16 fwlids[4] = {0, CCFileId::fromString("FTOWN3.FWL"), CCFileId::fromString("FTOWN3.FWL"), CCFileId::fromString("FTOWN4.FWL")};
     
+    // Nearest walls done separately to support being split between two sprites!
     for(int i = 0; i != 3; i ++)
     {
-        Common::Point cell = translatePoint(position, i - 1, 1, direction);
+        Common::Point cell = translatePoint(position, i - 1, 0, direction);
         uint16 wallData = wallmap[getTile(cell, direction) >> 12];
         
         if(wallData != 32)
@@ -341,31 +350,29 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
         }
     }
     
-    for(int i = 0; i != 3; i ++)
+    for(int i = 1; i != 4; i ++)
     {
-        Common::Point cell = translatePoint(position, i - 1, 2, direction);
-        uint16 wallData = wallmap[getTile(cell, direction) >> 12];
-        
-        if(wallData != 32)
+        for(int j = 0; j != wallcount[i]; j ++)
         {
-            indoorDrawList[wall2[i]].sprite = CCFileId("FTOWN3.FWL");
-            indoorDrawList[wall2[i]].frame = (wallData > 6) ? wallData - 1 : wallData;
+            Common::Point cell = translatePoint(position, j - walloffset[i], i, direction);
+            uint16 wallData = wallmap[getTile(cell, direction) >> 12];
+            
+            indoorDrawList[wallbase[i][j]].sprite = (wallData != 32) ? fwlids[i] : 0xFFFF;
+            indoorDrawList[wallbase[i][j]].frame = baseframe[i] + ((wallData > 6) ? wallData - 1 : wallData);
         }
-        else
-        {
-            indoorDrawList[wall2[i]].sprite = 0xFFFF;
-        }
-    
     }
+    
+    // TODO: Distant wall?
+
 
     // Side walls
-    static const unsigned leftpos[3] = {144, 133, 108};
-    static const unsigned rightpos[3] = {146, 134, 109};
+    static const unsigned leftpos[3] = {144, 133};
+    static const unsigned rightpos[3] = {146, 134};
     
-    for(int i = 0; i != 3; i ++)
+    for(int i = 0; i != 2; i ++)
     {
-        Common::Point cell = translatePoint(position, i - 1, 1, direction);
-        uint16 wallData = (getTile(cell, direction) >> 8) & 0xF;        
+        Common::Point cell = translatePoint(position, 0, i, direction);
+        uint16 wallData = (getTile(cell, direction) >> 0) & 0xF;        
         
         if(wallData)
         {
@@ -377,10 +384,10 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
         }
     }
 
-    for(int i = 0; i != 3; i ++)
+    for(int i = 0; i != 2; i ++)
     {
-        Common::Point cell = translatePoint(position, i - 1, 1, direction);
-        uint16 wallData = (getTile(cell, direction) >> 0) & 0xF;        
+        Common::Point cell = translatePoint(position, 0, i, direction);
+        uint16 wallData = (getTile(cell, direction) >> 8) & 0xF;        
         
         if(wallData)
         {
@@ -390,6 +397,27 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
         {
             indoorDrawList[rightpos[i]].sprite = 0xFFFF;
         }
+    }
+
+
+    // SIDE WALLS: 2 Steps forward
+    static const int swl2_xoffset[4] = {-1, 0, 0, 1};
+    static const int swl2_shift[4] = {0, 0, 8, 8};
+    for(int i = 0; i != 4; i ++)
+    {
+        Common::Point cell = translatePoint(position, swl2_xoffset[i], 2, direction);
+        uint16 wallData = (getTile(cell, direction) >> swl2_shift[i]) & 0xF;
+        indoorDrawList[107 + i].sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
+    }
+
+    // SIDE WALLS: 3 Steps forward
+    static const int swl3_xoffset[8] = {-3, 3, -2, 2, -1, 1, 0, 0};
+    static const int swl3_shift[8] = {0, 8, 0, 8, 0, 8, 0, 8};
+    for(int i = 0; i != 8; i ++)
+    {
+        Common::Point cell = translatePoint(position, swl3_xoffset[i], 3, direction);
+        uint16 wallData = (getTile(cell, direction) >> swl3_shift[i]) & 0xF;
+        indoorDrawList[71 + i].sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);    
     }
 
     // HACK

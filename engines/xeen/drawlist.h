@@ -80,13 +80,13 @@ static struct
     {0xFFFF, 	 0,	 -1,	 58,	 14,	0x0000},	
     {0xFFFF, 	 0,	 -9,	 58,	 14,	0x0000},	
     {0xFFFF, 	 14, 8,	     58,	 0,	    0x0000}, //Side wall for tile 3 steps forward, 4 steps left
+    {0xFFFF, 	 14, 200,	 58,	 0,	    0x8000}, //Side wall for tile 3 steps forward, 4 steps right    
     {0xFFFF, 	 12, 8,	     55,	 0,	    0x0000}, //Side wall for tile 3 steps forward, 3 steps left
+    {0xFFFF, 	 12, 176,	 55,	 0,	    0x8000}, //Side wall for tile 3 steps forward, 3 steps right    
     {0xFFFF, 	 10, 32,	 52,	 0,	    0x0000}, //Side wall for tile 3 steps forward, 2 steps left
-    {0xFFFF, 	 14, 88,	 52,	 0,	    0x0000}, //Side wall for tile 3 steps forward, 1 steps left
-    {0xFFFF, 	 14, 128,	 52,	 0,	    0x8000}, //Side wall for tile 3 steps forward, 1 steps right
-    {0xFFFF, 	 14, 152,	 52,	 0,	    0x8000}, //Side wall for tile 3 steps forward, 2 steps right
-    {0xFFFF, 	 0,	 176,	 55,	 0,	    0x8000}, //Side wall for tile 3 steps forward, 3 steps right
-    {0xFFFF, 	 0,	 200,	 58,	 0,	    0x8000}, //Side wall for tile 3 steps forward, 4 steps right
+    {0xFFFF, 	 10, 152,	 52,	 0,	    0x8000}, //Side wall for tile 3 steps forward, 2 steps right    
+    {0xFFFF, 	 8,  88,	 52,	 0,	    0x0000}, //Side wall for tile 3 steps forward, 1 steps left
+    {0xFFFF, 	 8,  128,	 52,	 0,	    0x8000}, //Side wall for tile 3 steps forward, 1 steps right
     {0xFFFF, 	 0,	 72,	 58,	 12,	0x0000}, //POW? sprite 4 steps forward
     {0xFFFF, 	 0,	 72,	 58,	 12,	0x8000}, //POW? sprite 4 steps forward
     {0xFFFF, 	 0,	 69,	 63,	 12,	0x0000}, //POW? sprite 4 steps forward
@@ -115,7 +115,7 @@ static struct
     {0xFFFF, 	 0,	 -24,	 50,	 12,	0x0000},	
     {0xFFFF, 	 0,	 9,	     50,     12,	0x0000},	
     {0xFFFF, 	 0,	 -8,	 50,	 12,	0x0000},	
-    {0xFFFF, 	 7,	 8,      48,	 0,	    0x0000}, //Side wall for tile 2 steps forward, 2 steps left
+    {0xFFFF, 	 6,	 8,      48,	 0,	    0x0000}, //Side wall for tile 2 steps forward, 2 steps left
     {0xFFFF, 	 4,	 64,	 40,	 0,	    0x0000}, //Side wall for tile 2 steps forward, 1 steps left
     {0xFFFF, 	 4,	 144,	 40,	 0,	    0x8000}, //Side wall for tile 2 steps forward, 1 steps right
     {0xFFFF, 	 6,	 200,	 48,	 0,	    0x8000}, //Side wall for tile 2 steps forward, 2 steps right
