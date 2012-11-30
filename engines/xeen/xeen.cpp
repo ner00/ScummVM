@@ -75,6 +75,8 @@ Common::Error XEEN::XeenEngine::run()
     Common::Point loc(8,8);
     int16 dir = 0;
             
+    CCFileData* file = ccf.getFile("BACK.RAW");
+            
     while(!shouldQuit())
     {
     	Common::Event event;    
@@ -103,7 +105,11 @@ Common::Error XEEN::XeenEngine::run()
 
         ImageBuffer buffer;
         testMap->fillDrawStruct(loc, dir);
-        testMap->draw(buffer.clear(0), ccf.getSpriteManager());
+        
+        memcpy(buffer.buffer, file->getData(), 320 * 200);
+        
+        testMap->draw(buffer.setClipArea(Common::Rect(8, 8, 224, 140)), ccf.getSpriteManager());
+        
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
     }

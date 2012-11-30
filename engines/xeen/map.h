@@ -51,8 +51,7 @@ namespace XEEN
         public:
             struct Entry
             {
-                int8 x;
-                int8 y;
+                Common::Point position;
                 uint8 id;
                 uint8 facing;
             };    
@@ -61,7 +60,7 @@ namespace XEEN
             MazeObjects(CCFile& cc, uint16 mapNumber);
             ~MazeObjects();
             
-            bool getObjectAt(int8 x, int8 y, Entry& facing);
+            bool getObjectAt(const Common::Point& position, Entry& facing);
                         
         private:
             uint8 _objectTypes[16];

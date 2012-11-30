@@ -72,7 +72,7 @@ namespace XEEN
     struct ImageBuffer
     {
         public:
-            ImageBuffer() : _pen(0, 0), _penOffset(1, 0)
+            ImageBuffer() : _pen(0, 0), _penOffset(1, 0), _clip(0, 0, 320, 200)
             {
             
             }
@@ -102,6 +102,18 @@ namespace XEEN
                 return *this;
             }
             
+            ImageBuffer& setClipArea(const Common::Rect& clip)
+            {
+                _clip = clip;
+                return *this;
+            }
+            
+            ImageBuffer& resetClipArea()
+            {
+                _clip = Common::Rect(0, 0, 320, 200);
+                return *this;
+            }
+            
             void readPixels(Common::ReadStream& input, uint32 length)
             {
                 for(uint32 i = 0; i != length; i ++)
@@ -112,7 +124,7 @@ namespace XEEN
             
             void putPixel(uint8 color)
             {
-                if(_pen.x >= 0 && _pen.x < 320 && _pen.y >= 0 && _pen.y < 200)
+                if(_clip.contains(_pen))
                 {
                     buffer[_pen.y * 320 + _pen.x] = color;
                 }
@@ -126,6 +138,8 @@ namespace XEEN
         private:
             Common::Point _pen;
             Common::Point _penOffset;
+            
+            Common::Rect _clip;
     };
 
     inline bool enforce(bool cond)
