@@ -90,7 +90,4 @@ namespace XEEN
     };
 }
 
-// HACK
-#include "xeen/imagebuffer.h"
-
 #endif // XEEN_CCFILE_H

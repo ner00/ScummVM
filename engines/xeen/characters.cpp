@@ -87,7 +87,15 @@ XEEN::Character::Character(CCFileData* data, Sprite* faceSprite)
     saveSide = (Side)data->readByte();
     profession = (Class)data->readByte();
     
-    data->read(stats, 14);
+    might = Statistic(*data);
+    intellect = Statistic(*data);
+    personality = Statistic(*data);
+    endurance = Statistic(*data);
+    speed = Statistic(*data);
+    accuracy = Statistic(*data);
+    luck = Statistic(*data);
+
+
     actemp = data->readByte();
     data->read(level, 2);
     dbday = data->readByte();

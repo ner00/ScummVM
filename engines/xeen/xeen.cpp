@@ -37,6 +37,8 @@
 #include "xeen/characters.h"
 #include "xeen/party.h"
 
+#include "xeen/imagebuffer.h"
+
 XEEN::XeenEngine::XeenEngine(OSystem* syst) : Engine(syst), _console(0)
 {
 	DebugMan.addDebugChannel(kXeenDebugVerbose, "verbose", "verbose");

@@ -22,9 +22,7 @@
 
 #include "xeen/ccfile.h"
 #include "xeen/sprite.h"
-
-#include "common/file.h"
-#include "common/debug.h"
+#include "xeen/imagebuffer.h"
 
 XEEN::SpriteManager::SpriteManager(CCFile& parent) : _cc(parent)
 {

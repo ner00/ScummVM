@@ -25,11 +25,9 @@
 #include "xeen/map.h"
 #include "xeen/sprite.h"
 
-#include "common/file.h"
-#include "common/debug.h"
-
 #include "xeen/utility.h"
 #include "xeen/drawlist.h"
+#include "xeen/imagebuffer.h"
 
 ///
 /// MapManager

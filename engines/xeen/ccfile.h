@@ -24,15 +24,15 @@
 #define XEEN_CCFILE_H
 
 #include "common/scummsys.h"
-#include "common/file.h"
 #include "common/memstream.h"
+#include "common/file.h"
 
 #include "xeen/utility.h"
-#include "xeen/sprite.h"
-#include "xeen/map.h"
 
 namespace XEEN
 {
+    class SpriteManager;
+    class MapManager;
     class CharacterManager;
     class Party;
 
@@ -96,8 +96,8 @@ namespace XEEN
             
             CCSaveFile& getSaveFile();
             
-            SpriteManager& getSpriteManager() { return _spriteManager; }
-            MapManager& getMapManager() {return _mapManager; }
+            SpriteManager& getSpriteManager() { enforce(_spriteManager); return *_spriteManager; }
+            MapManager& getMapManager() {enforce(_mapManager); return *_mapManager; }
             CharacterManager& getCharacterManager() { enforce(_characterManager); return *_characterManager; }
             Party& getParty() { enforce(_party); return *_party; }
             
@@ -105,8 +105,8 @@ namespace XEEN
             Common::File _file;            
             CCSaveFile* _saveGame;
             
-            SpriteManager _spriteManager;
-            MapManager _mapManager;
+            SpriteManager* _spriteManager;
+            MapManager* _mapManager;
             CharacterManager* _characterManager;
             Party* _party;
     };

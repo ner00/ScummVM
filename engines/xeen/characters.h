@@ -24,6 +24,7 @@
 #define XEEN_CHARACTERS_H
 
 #include "common/scummsys.h"
+#include "common/stream.h"
 
 namespace XEEN
 {
@@ -36,6 +37,21 @@ namespace XEEN
     enum Race {HUMAN, ELF, DWARF, GNOME, HALFORC};
     enum Side {CLOUDS, DARKSIDE};
     enum Class {KNIGHT, PALADIN, ARCHER, CLERIC, SORCERER, ROBBER, NINJA, BARBARIAN, DRUID, RANGER};
+
+    struct Statistic
+    {
+        int8 real;
+        int8 temp;
+        
+        Statistic() : real(0), temp(0) {}
+        Statistic(int8 realv, int8 tempv) : real(realv), temp(tempv) {}
+        Statistic(Common::ReadStream& stream) : real(stream.readByte()), temp(stream.readByte()) {}
+        
+        int16 getValue() const { return real + temp; }
+        void modifyReal(int8 value) { real += value; }
+        void modifyTemp(int8 value) { temp += value; }
+        void resetTemp() { temp = 0; }
+    };
 
     // Stats for a single playable character
     class Character
@@ -54,7 +70,13 @@ namespace XEEN
             Side saveSide;
             Class profession;
             
-            int8 stats[14];
+            Statistic might;
+            Statistic intellect;
+            Statistic personality;
+            Statistic endurance;
+            Statistic speed;
+            Statistic accuracy;
+            Statistic luck;
             
             int8 actemp;
             
@@ -67,13 +89,12 @@ namespace XEEN
             int8 awards[64];
             int8 spells[39];
 
-            // Beacon            
+            // Beacon
             uint8 beaconMap;
             uint8 beaconX;
             uint8 beaconY;
             Side beaconSide;
 
-            
             uint8 hasSpells;
             uint8 currentSpell;
             uint8 quickOption;

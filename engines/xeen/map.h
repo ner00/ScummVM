@@ -24,16 +24,13 @@
 #define XEEN_MAP_H
 
 #include "common/scummsys.h"
-#include "common/file.h"
-#include "common/list.h"
-#include "common/memstream.h"
-
-#include "xeen/sprite.h"
 
 namespace XEEN
 {
     class MapManager;
     class Map;
+    class ImageBuffer;
+    class SpriteManager;
 
     class MazeText
     {

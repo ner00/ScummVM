@@ -24,10 +24,6 @@
 #define XEEN_SPRITE_H
 
 #include "common/scummsys.h"
-#include "common/file.h"
-#include "common/hashmap.h"
-#include "common/memstream.h"
-
 #include "xeen/utility.h"
 
 namespace XEEN
@@ -35,6 +31,7 @@ namespace XEEN
     class CCFile;
     class CCFileData;
     class SpriteManager;
+    class ImageBuffer;
 
     class Sprite
     {
