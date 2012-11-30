@@ -34,6 +34,7 @@
 namespace XEEN
 {
     class CharacterManager;
+    class Party;
 
     struct CCFileEntry
     {
@@ -98,6 +99,7 @@ namespace XEEN
             SpriteManager& getSpriteManager() { return _spriteManager; }
             MapManager& getMapManager() {return _mapManager; }
             CharacterManager& getCharacterManager() { enforce(_characterManager); return *_characterManager; }
+            Party& getParty() { enforce(_party); return *_party; }
             
         private:
             Common::File _file;            
@@ -106,6 +108,7 @@ namespace XEEN
             SpriteManager _spriteManager;
             MapManager _mapManager;
             CharacterManager* _characterManager;
+            Party* _party;
     };
     
     class CCSaveFile : public CCToc

@@ -48,6 +48,8 @@ XEEN::CharacterManager::CharacterManager(CCFile& parent) : _cc(parent)
             charFile->seek(354);
         }
     }
+    
+    delete charFile;
 }
 
 XEEN::CharacterManager::~CharacterManager()
@@ -70,6 +72,9 @@ XEEN::Character* XEEN::CharacterManager::getCharacter(uint16 id)
     }
 }
 
+///
+/// Character
+///
 XEEN::Character::Character(CCFileData* data, Sprite* faceSprite)
 {
     face = faceSprite;

@@ -24,7 +24,6 @@
 #define XEEN_CHARACTERS_H
 
 #include "common/scummsys.h"
-#include "xeen/utility.h"
 
 namespace XEEN
 {

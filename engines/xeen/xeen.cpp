@@ -35,6 +35,7 @@
 #include "xeen/sprite.h"
 #include "xeen/map.h"
 #include "xeen/characters.h"
+#include "xeen/party.h"
 
 XEEN::XeenEngine::XeenEngine(OSystem* syst) : Engine(syst), _console(0)
 {
@@ -71,10 +72,11 @@ Common::Error XEEN::XeenEngine::run()
         _system->getPaletteManager()->setPalette(palette, 0, 256);
     }
 
-    Map* testMap = ccf.getMapManager().getMap(28);
+    Party& party = ccf.getParty();
+    Map* testMap = ccf.getMapManager().getMap(party.mazeID);
             
-    Common::Point loc(8,8);
-    int16 dir = 0;
+    Common::Point loc(party.xPosition, party.yPosition);
+    int16 dir = party.facing;
             
     CCFileData* file = ccf.getFile("BACK.RAW");
             
@@ -113,7 +115,6 @@ Common::Error XEEN::XeenEngine::run()
         
         
         // PORTRAITS
-        static const uint16 chars[6] = {0, 1, 6, 11, 14, 18};
         static const Common::Point portraitLocations[6] = 
         {
             Common::Point(10, 150),
@@ -123,12 +124,11 @@ Common::Error XEEN::XeenEngine::run()
             Common::Point(153, 150),
             Common::Point(189, 150),                                
         };
-
         
         buffer.resetClipArea();
-        for(int i = 0; i != 6; i ++)
+        for(int i = 0; i != party.memberCount; i ++)
         {
-            Character* chara = ccf.getCharacterManager().getCharacter(chars[i]);
+            Character* chara = ccf.getCharacterManager().getCharacter(party.members[i]);
             
             if(enforce(chara))
             {
