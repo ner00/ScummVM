@@ -168,7 +168,7 @@ XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(
     {
         _wallData[i] = data->readUint16LE();
     }
-    
+        
     data->read(_cellFlags, 16 * 16);
     
     _mazeNumber = data->readUint16LE();
@@ -344,8 +344,8 @@ static struct
     {0xFFFF, 	 0,	 9,	     50,     12,	0x0000},	
     {0xFFFF, 	 0,	 -8,	 50,	 12,	0x0000},	
     {0xFFFF, 	 7,	 8,      48,	 0,	    0x0000}, //Side wall for tile 2 steps forward, 2 steps left
-    {0xFFFF, 	 7,	 64,	 40,	 0,	    0x0000}, //Side wall for tile 2 steps forward, 1 steps left
-    {0xFFFF, 	 6,	 144,	 40,	 0,	    0x8000}, //Side wall for tile 2 steps forward, 1 steps right
+    {0xFFFF, 	 4,	 64,	 40,	 0,	    0x0000}, //Side wall for tile 2 steps forward, 1 steps left
+    {0xFFFF, 	 4,	 144,	 40,	 0,	    0x8000}, //Side wall for tile 2 steps forward, 1 steps right
     {0xFFFF, 	 6,	 200,	 48,	 0,	    0x8000}, //Side wall for tile 2 steps forward, 2 steps right
     {0xFFFF, 	 0,	 72,	 53,	 8,	    0x0000}, //POW? sprite 3 steps forward
     {0xFFFF, 	 0,	 72,	 53,	 8,	    0x8000}, //POW? sprite 3 steps forward
@@ -369,8 +369,8 @@ static struct
     {0xFFFF, 	 0,	 -38,	 29,	 8,	    0x0000},	
     {0xFFFF, 	 0,	 25,	 29,	 8,	    0x0000},	
     {0xFFFF, 	 0,	 -7,	 29,	 8,	    0x0000},	
-    {0xFFFF, 	 6,	 32,	 24,	 0,	    0x0000}, //Side wall for tile 1 step forward, 1 steps left
-    {0xFFFF, 	 0,	 168,	 24,	 0,	    0x8000}, //Side wall for tile 1 step forward, 1 steps right
+    {0xFFFF, 	 2,	 32,	 24,	 0,	    0x0000}, //Side wall for tile 1 step forward, 1 steps left
+    {0xFFFF, 	 2,	 168,	 24,	 0,	    0x8000}, //Side wall for tile 1 step forward, 1 steps right
     {0xFFFF, 	 0,	 72,	 48,	 4,	    0x0000}, //POW? sprite 2 steps forward
     {0xFFFF, 	 0,	 72,	 48,	 4,	    0x8000}, //POW? sprite 2 steps forward
     {0xFFFF, 	 0,	 85,	 53,	 4,	    0x0000}, //POW? sprite 2 steps forward
@@ -381,9 +381,9 @@ static struct
     {0xFFFF, 	 0,	 38,	 47,	 4,	    0x8000}, //POW? sprite 2 steps forward
     {0xFFFF, 	 0,	 -136,	 24,	 0,	    0x2000}, //Facing wall for tile 1 step forward, 1 step left
     {0xFFFF, 	 0,	 8,	     12,	 0,	    0x0000}, //Side wall for tile directly 1 step left
-    {0xFFFF, 	 0,	 32,	 24,	 0,	    0x0000}, //Facing wall for tile 1 step forward, 1 step right
+    {0xFFFF, 	 0,	 32,	 24,	 0,	    0x0000}, //Facing wall for tile directly 1 step forward
     {0xFFFF, 	 0,	 200,	 12,	 0,	    0x8000}, //Side wall for tile directly 1 step right
-    {0xFFFF, 	 0,	 200,	 24,	 0,	    0x2000}, //Facing wall for tile directly 1 step forward
+    {0xFFFF, 	 0,	 200,	 24,	 0,	    0x2000}, //Facing wall for tile 1 step forward, 1 step right
     {0xFFFF, 	 0,	 32,	 24,	 0,	    0x0000},	
     {0xFFFF, 	 0,	 -5,	 2, 	 0,	    0x6000}, // Object in same tile as player
     {0xFFFF, 	 0,	 -67,	 10,	 0,	    0x6000},	
@@ -432,35 +432,45 @@ XEEN::Map::~Map()
     delete _text;
 }
 
-uint16 XEEN::Map::getTile(int16 x, int16 y)
+uint16 XEEN::Map::getTile(Common::Point position, uint32 direction)
 {
-    MazeSegment* seg = resolveSegment(x, y);
+    MazeSegment* seg = resolveSegment(position);
     
-    if(x < 0 || y < 0 || !seg)
+    if(position.x < 0 || position.y < 0 || !seg)
     {
         return 0x8888;
     }
     else
     {
-        return seg->_wallData[y * 16 + x];
+        uint16 result = seg->_wallData[position.y * 16 + position.x];
+    
+        switch(direction)
+        {
+            case 0: return result;
+            case 1: return (result >> 4) | (result << 12);
+            case 2: return (result >> 8) | (result << 8);
+            case 3: return (result >> 12) | (result << 4);
+        }
+
+        return result;
     }
 }
 
-uint16 XEEN::Map::getSurface(int16 x, int16 y)
+uint16 XEEN::Map::getSurface(Common::Point position)
 {
-    MazeSegment* seg = resolveSegment(x, y);
+    MazeSegment* seg = resolveSegment(position);
 
-    if(x < 0 || y < 0 || !seg)
+    if(position.x < 0 || position.y < 0 || !seg)
     {
         return 0;
     }
     else
     {
-        return _surfaceMap[seg->_cellFlags[y * 16 + x] & 0x7];
+        return _surfaceMap[seg->_cellFlags[position.y * 16 + position.x] & 0x7];
     }
 }
 
-void XEEN::Map::fillDrawStruct(int16 x, int16 y, uint16 direction)
+void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
 {
     static const CCFileId surfaceMap[16] = 
     {
@@ -486,15 +496,86 @@ void XEEN::Map::fillDrawStruct(int16 x, int16 y, uint16 direction)
     {
         for(uint32 j = 0; j != linelength[i]; j ++)
         {
-            int16 tx = x, ty = y;
-            translatePoint(tx, ty, xoffsets[i][j], 4 - i, direction);
-            indoorDrawList[surfaceTile ++].sprite = surfaceMap[getSurface(tx, ty)];
+            Common::Point cell = translatePoint(position, xoffsets[i][j], 4 - i, direction);
+            indoorDrawList[surfaceTile ++].sprite = surfaceMap[getSurface(cell)];
+        }
+    }
+
+    // Fill walls
+    static const unsigned wallmap[16] = {32, 9, 17, 11, 8, 0, 15, 16, 0, 10, 14, 6, 1, 8, 12, 13};
+    static const unsigned wall1[3] = {143, 145, 147};
+    static const unsigned wall2[3] = {119, 120, 121};
+    
+    for(int i = 0; i != 3; i ++)
+    {
+        Common::Point cell = translatePoint(position, i - 1, 1, direction);
+        uint16 wallData = wallmap[getTile(cell, direction) >> 12];
+        
+        if(wallData != 32)
+        {
+            indoorDrawList[wall1[i]].sprite = (wallData < 8) ? CCFileId("FTOWN1.FWL") : CCFileId("FTOWN2.FWL");
+            indoorDrawList[wall1[i]].frame = (wallData < 8) ? wallData : wallData - 8;            
+        }
+        else
+        {
+            indoorDrawList[wall1[i]].sprite = 0xFFFF;
+        }
+    }
+    
+    for(int i = 0; i != 3; i ++)
+    {
+        Common::Point cell = translatePoint(position, i - 1, 2, direction);
+        uint16 wallData = wallmap[getTile(cell, direction) >> 12];
+        
+        if(wallData != 32)
+        {
+            indoorDrawList[wall2[i]].sprite = CCFileId("FTOWN3.FWL");
+            indoorDrawList[wall2[i]].frame = (wallData > 6) ? wallData - 1 : wallData;
+        }
+        else
+        {
+            indoorDrawList[wall2[i]].sprite = 0xFFFF;
+        }
+    
+    }
+
+    // Side walls
+    static const unsigned leftpos[3] = {144, 133, 108};
+    static const unsigned rightpos[3] = {146, 134, 109};
+    
+    for(int i = 0; i != 3; i ++)
+    {
+        Common::Point cell = translatePoint(position, i - 1, 1, direction);
+        uint16 wallData = (getTile(cell, direction) >> 8) & 0xF;        
+        
+        if(wallData)
+        {
+            indoorDrawList[leftpos[i]].sprite = CCFileId("STOWN.SWL");
+        }
+        else
+        {
+            indoorDrawList[leftpos[i]].sprite = 0xFFFF;
+        }
+    }
+
+    for(int i = 0; i != 3; i ++)
+    {
+        Common::Point cell = translatePoint(position, i - 1, 1, direction);
+        uint16 wallData = (getTile(cell, direction) >> 0) & 0xF;        
+        
+        if(wallData)
+        {
+            indoorDrawList[rightpos[i]].sprite = CCFileId("STOWN.SWL");
+        }
+        else
+        {
+            indoorDrawList[rightpos[i]].sprite = 0xFFFF;
         }
     }
 
     // HACK
     MazeObjects::Entry t;
-    if(_objects->getObjectAt(x, y, t))
+    if(_objects->getObjectAt(position.x, position.y, t))
     {
         indoorDrawList[149].sprite = CCFileId("%03d.OBJ", t.id);
     }
@@ -511,21 +592,21 @@ void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)
         if(indoorDrawList[i].sprite != 0xFFFF)
         {
             Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
-            sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame);
+            sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000);
         }
     }
 }
 
-XEEN::MazeSegment* XEEN::Map::resolveSegment(int16& x, int16& y)
+XEEN::MazeSegment* XEEN::Map::resolveSegment(Common::Point& position)
 {
     MazeSegment* activeSegment = this;
     
-    for(; activeSegment && x >= 16; x -= 16)
+    for(; activeSegment && position.x >= 16; position.x -= 16)
     {
         activeSegment = activeSegment->_east;
     }
 
-    for(; activeSegment && y >= 16; y -= 16)
+    for(; activeSegment && position.y >= 16; position.y -= 16)
     {
         activeSegment = activeSegment->_north;
     }
@@ -533,36 +614,36 @@ XEEN::MazeSegment* XEEN::Map::resolveSegment(int16& x, int16& y)
     return activeSegment;
 }
 
-void XEEN::Map::translatePoint(int16& x, int16& y, int16 xOffset, int16 yOffset, uint16 direction)
+Common::Point XEEN::Map::translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction)
 {
     switch(direction)
     {
         case 0:
         {
-            x += xOffset;
-            y += yOffset;
-            return;            
+            position.x += xOffset;
+            position.y += yOffset;
+            return position;
         }
         
         case 1:
         {
-            x += yOffset;
-            y -= xOffset;
-            return;
+            position.x += yOffset;
+            position.y -= xOffset;
+            return position;
         }
         
         case 2:
         {
-            x -= xOffset;
-            y -= yOffset;
-            return;
+            position.x -= xOffset;
+            position.y -= yOffset;
+            return position;
         }
         
         case 3:
         {
-            x -= yOffset;
-            y += xOffset;
-            return;
+            position.x -= yOffset;
+            position.y += xOffset;
+            return position;
         }
     }
 }

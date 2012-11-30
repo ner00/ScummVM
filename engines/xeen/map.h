@@ -131,17 +131,17 @@ namespace XEEN
             ~Map();
 
         public:
-            uint16 getTile(int16 x, int16 y);
-            uint16 getSurface(int16 x, int16 y);
+            uint16 getTile(Common::Point position, uint32 direction = 0);
+            uint16 getSurface(Common::Point position);
                 
-            void fillDrawStruct(int16 x, int16 y, uint16 direction);
+            void fillDrawStruct(Common::Point position, uint16 direction);
             void draw(ImageBuffer& out, SpriteManager& sprite);
                         
         private:
-            MazeSegment* resolveSegment(int16& x, int16& y);        
+            MazeSegment* resolveSegment(Common::Point& position);
 
         public:
-            static void translatePoint(int16& x, int16& y, int16 xOffset, int16 yOffset, uint16 direction);
+            static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);
 
         private:
             MazeText* _text;

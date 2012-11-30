@@ -72,8 +72,7 @@ Common::Error XEEN::XeenEngine::run()
         
     Map* testMap = ccf.getMapManager().getMap(28);
             
-    int16 x = 8;
-    int16 y = 8;
+    Common::Point loc(8,8);
     int16 dir = 0;
             
     while(!shouldQuit())
@@ -86,8 +85,8 @@ Common::Error XEEN::XeenEngine::run()
             {
                 case Common::EVENT_KEYDOWN:
                 {
-                    if(event.kbd.keycode == Common::KEYCODE_UP) Map::translatePoint(x, y, 0, 1, dir);
-                    if(event.kbd.keycode == Common::KEYCODE_DOWN) Map::translatePoint(x, y, 0, -1, dir);
+                    if(event.kbd.keycode == Common::KEYCODE_UP) loc = Map::translatePoint(loc, 0, 1, dir);
+                    if(event.kbd.keycode == Common::KEYCODE_DOWN) loc = Map::translatePoint(loc, 0, -1, dir);
                     if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
                     if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
 
@@ -103,7 +102,7 @@ Common::Error XEEN::XeenEngine::run()
         }
 
         ImageBuffer buffer;
-        testMap->fillDrawStruct(x, y, dir);
+        testMap->fillDrawStruct(loc, dir);
         testMap->draw(buffer.clear(0), ccf.getSpriteManager());
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
