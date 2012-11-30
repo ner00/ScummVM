@@ -194,13 +194,13 @@ DrawListItem indoorDrawList[] =
     {XXX,        0xFFFF,     0,  106,    47,     4,     0x0000}, //POW? sprite 2 steps forward
     {XXX,        0xFFFF,     0,  38,     47,     4,     0x8000}, //POW? sprite 2 steps forward
     {FWALL_1_1L, 0xFFFF,     0,  -136,   24,     0,     0x2000}, //Facing wall for tile 1 step forward, 1 step left
-    {SWALL_0_1L, 0xFFFF,     0,  8,      12,     0,     0x0000}, //Side wall for tile directly 1 step left
     {FWALL_1_CEN,0xFFFF,     0,  32,     24,     0,     0x0000}, //Facing wall for tile directly 1 step forward
-    {SWALL_0_1R, 0xFFFF,     0,  200,    12,     0,     0x8000}, //Side wall for tile directly 1 step right
     {FWALL_1_1R, 0xFFFF,     0,  200,    24,     0,     0x2000}, //Facing wall for tile 1 step forward, 1 step right
     {XXX,        0xFFFF,     0,  32,     24,     0,     0x0000},    
     
     // DISTANCE: 0
+    {SWALL_0_1L, 0xFFFF,     0,  8,      12,     0,     0x0000}, //Side wall for tile directly 1 step left    
+    {SWALL_0_1R, 0xFFFF,     0,  200,    12,     0,     0x8000}, //Side wall for tile directly 1 step right    
     {XXX,        0xFFFF,     0,  -5,     2,      0,     0x6000}, // Object in same tile as player
     {XXX,        0xFFFF,     0,  -67,    10,     0,     0x6000},    
     {XXX,        0xFFFF,     0,  44,     73,     0,     0x0000},    
