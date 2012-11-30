@@ -123,15 +123,14 @@ void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool fl
     const int16 penY = _file->readSint16LE();
     const uint16 frameHeight = _file->readUint16LE();
 
-    Common::Point drawPos = pen + Common::Point(penX + (flip ? frameWidth : 0), penY);
+    out.setOrigin(pen + Common::Point(penX + (flip ? frameWidth - 1 : 0), penY));
     out.setPenOffset(Common::Point(flip ? -1 : 1, 0));
 
     // Draw the lines
     for(uint32 onLine = 0; onLine != frameHeight; )
     {
-        const uint32 linesDrawn = drawLine(out.setPen(drawPos));
+        const uint32 linesDrawn = drawLine(out.setPen(Common::Point(0, onLine)));
         onLine += linesDrawn;
-        drawPos.y += linesDrawn;
 
         // Check sanity: At least one line must have been drawn, and No more than 
         // frameHeight lines may have been drawn.

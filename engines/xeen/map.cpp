@@ -412,18 +412,40 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
         uint16 wallData = (getTile(cell, direction) >> swl3_shift[i]) & 0xF;
         indoorDrawIndex[swl3_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);    
     }
+    
+    // OBJECTS
+    MazeObjects::Entry t;
+    indoorDrawIndex[OBJ_HERE]->sprite = _objects->getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+//    indoorDrawIndex[OBJ_1_1L]->sprite = _objects->getObjectAt(translatePoint(position, -1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_1_CEN]->sprite = _objects->getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+//    indoorDrawIndex[OBJ_1_1R]->sprite = _objects->getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);        
 }
 
 void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)
 {
+    bool drewLastSprite = false;
+
     for(int i = 0; i != sizeof(indoorDrawList) / sizeof(indoorDrawList[0]); i ++)
     {
         if(indoorDrawList[i].sprite != 0xFFFF)
         {
-            Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
-            sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000);
+            if(!indoorDrawList[i].obscureable() || !drewLastSprite)
+            {
+                Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
+            
+                out.setScale(indoorDrawList[i].scale);
+                sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000);
+            }
+                                
+            drewLastSprite = true;
+        }
+        else
+        {
+            drewLastSprite = false;
         }
     }
+    
+    out.setScale(0);
 }
 
 XEEN::MazeSegment* XEEN::Map::resolveSegment(Common::Point& position)

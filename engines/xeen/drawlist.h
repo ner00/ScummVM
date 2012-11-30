@@ -20,6 +20,10 @@ enum DRAWID
     SWALL_1_1L, SWALL_1_1R,
     SWALL_0_1L, SWALL_0_1R,
     
+    // OBJECTS
+    OBJ_1_1L, OBJ_1_CEN, OBJ_1_1R,
+    OBJ_HERE,
+    
     XXX
 };
 
@@ -32,6 +36,27 @@ struct DrawListItem
     const int16 y;      //< Y position to draw at
     uint8 scale;        //< ?
     const uint16 flags; //< ?
+    
+    // TODO: Check Assumption
+    // It seems this flag is used by the engine to minimize overdraw.
+    // If an object will always be obscured if a second one is drawn, the front object
+    // is drawn first then the back object. If the front object has a sprite attached
+    // the second object is never drawn.
+    //
+    // For example the two objects:
+    // {SWALL_0_1R, 0xFFFF,     0,  200,    12,     0,     0x8000}, //Side wall for tile directly 1 step right    
+    // {FWALL_1_1R, 0xFFFF,     0,  200,    24,     0,     0x2000}, //Facing wall for tile 1 step forward, 1 step right    
+    // While SWALL_0_1R is always drawn on top of FWALL_1_1R, they are reversed and the
+    // flag is set so that time won't be spent drawing FWALL_1_1R if SWALL_0_1R is present.
+    // If this flag isn't respected FWALL_1_1R would end up displaying over SWALL_0_1R even
+    // though it shouldn't.
+    bool obscureable() const { return flags & 0x2000; }
+    
+    // The purpose of this flag is unknown. It only seems to be set along with obscureable.
+    bool unknown_flag() const {return flags & 0x4000; }
+    
+    // The draw sprite is flipped horizontally.
+    bool flipped() const { return flags & 0x8000; }
 };
 
 DrawListItem indoorDrawList[] =
@@ -118,13 +143,13 @@ DrawListItem indoorDrawList[] =
     
     // DISTANCE: 3
     {SWALL_3_4L, 0xFFFF,     14, 8,      58,     0,     0x0000}, //Side wall for tile 3 steps forward, 4 steps left
-    {SWALL_3_4R, 0xFFFF,     14, 200,    58,     0,     0x8000}, //Side wall for tile 3 steps forward, 4 steps right    
     {SWALL_3_3L, 0xFFFF,     12, 8,      55,     0,     0x0000}, //Side wall for tile 3 steps forward, 3 steps left
-    {SWALL_3_3R, 0xFFFF,     12, 176,    55,     0,     0x8000}, //Side wall for tile 3 steps forward, 3 steps right    
     {SWALL_3_2L, 0xFFFF,     10, 32,     52,     0,     0x0000}, //Side wall for tile 3 steps forward, 2 steps left
-    {SWALL_3_2R, 0xFFFF,     10, 152,    52,     0,     0x8000}, //Side wall for tile 3 steps forward, 2 steps right    
     {SWALL_3_1L, 0xFFFF,     8,  88,     52,     0,     0x0000}, //Side wall for tile 3 steps forward, 1 steps left
     {SWALL_3_1R, 0xFFFF,     8,  128,    52,     0,     0x8000}, //Side wall for tile 3 steps forward, 1 steps right
+    {SWALL_3_2R, 0xFFFF,     10, 152,    52,     0,     0x8000}, //Side wall for tile 3 steps forward, 2 steps right        
+    {SWALL_3_3R, 0xFFFF,     12, 176,    55,     0,     0x8000}, //Side wall for tile 3 steps forward, 3 steps right        
+    {SWALL_3_4R, 0xFFFF,     14, 200,    58,     0,     0x8000}, //Side wall for tile 3 steps forward, 4 steps right        
     {XXX,        0xFFFF,     0,  72,     58,     12,    0x0000}, //POW? sprite 4 steps forward
     {XXX,        0xFFFF,     0,  72,     58,     12,    0x8000}, //POW? sprite 4 steps forward
     {XXX,        0xFFFF,     0,  69,     63,     12,    0x0000}, //POW? sprite 4 steps forward
@@ -173,9 +198,9 @@ DrawListItem indoorDrawList[] =
     {XXX,        0xFFFF,     0,  -72,    40,     6,     0x2000},    
     {XXX,        0xFFFF,     0,  32,     40,     6,     0x0000},    
     {XXX,        0xFFFF,     0,  137,    40,     6,     0x2000},    
-    {XXX,        0xFFFF,     0,  -7,     25,     7,     0x0000},    
-    {XXX,        0xFFFF,     0,  -112,   25,     7,     0x2000},    
-    {XXX,        0xFFFF,     0,  98,     25,     7,     0x2000},    
+    {OBJ_1_CEN,  0xFFFF,     0,  -7,     25,     7,     0x0000},    
+    {OBJ_1_1L,   0xFFFF,     0,  -112,   25,     7,     0x2000},    
+    {OBJ_1_1R,   0xFFFF,     0,  98,     25,     7,     0x2000},    
     {XXX,        0xFFFF,     0,  -112,   29,     8,     0x2000},    
     {XXX,        0xFFFF,     0,  98,     29,     8,     0x2000},    
     {XXX,        0xFFFF,     0,  -38,    29,     8,     0x0000},    
@@ -194,14 +219,16 @@ DrawListItem indoorDrawList[] =
     {XXX,        0xFFFF,     0,  106,    47,     4,     0x0000}, //POW? sprite 2 steps forward
     {XXX,        0xFFFF,     0,  38,     47,     4,     0x8000}, //POW? sprite 2 steps forward
     {FWALL_1_1L, 0xFFFF,     0,  -136,   24,     0,     0x2000}, //Facing wall for tile 1 step forward, 1 step left
-    {FWALL_1_CEN,0xFFFF,     0,  32,     24,     0,     0x0000}, //Facing wall for tile directly 1 step forward
-    {FWALL_1_1R, 0xFFFF,     0,  200,    24,     0,     0x2000}, //Facing wall for tile 1 step forward, 1 step right
-    {XXX,        0xFFFF,     0,  32,     24,     0,     0x0000},    
+
+
     
     // DISTANCE: 0
     {SWALL_0_1L, 0xFFFF,     0,  8,      12,     0,     0x0000}, //Side wall for tile directly 1 step left    
+    {FWALL_1_CEN,0xFFFF,     0,  32,     24,     0,     0x0000}, //Facing wall for tile directly 1 step forward    
     {SWALL_0_1R, 0xFFFF,     0,  200,    12,     0,     0x8000}, //Side wall for tile directly 1 step right    
-    {XXX,        0xFFFF,     0,  -5,     2,      0,     0x6000}, // Object in same tile as player
+    {FWALL_1_1R, 0xFFFF,     0,  200,    24,     0,     0x2000}, //Facing wall for tile 1 step forward, 1 step right    
+    {XXX,        0xFFFF,     0,  32,     24,     0,     0x0000},    
+    {OBJ_HERE,   0xFFFF,     0,  -5,     2,      0,     0x6000}, // Object in same tile as player
     {XXX,        0xFFFF,     0,  -67,    10,     0,     0x6000},    
     {XXX,        0xFFFF,     0,  44,     73,     0,     0x0000},    
     {XXX,        0xFFFF,     0,  44,     73,     0,     0x0000},    

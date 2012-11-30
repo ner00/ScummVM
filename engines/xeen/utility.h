@@ -29,6 +29,26 @@
 
 namespace XEEN
 {
+    inline bool enforce(bool cond)
+    {
+        assert(cond);
+        return cond;
+    }
+    
+    template <typename T>
+    void DELETE(T*& v)
+    {
+        delete v;
+        v = 0;
+    }
+    
+    template <typename T>
+    void DELETE_ARRAY(T*& v)
+    {
+        delete[] v;
+        v = 0;
+    }
+
     struct CCFileId
     {
         public:        
@@ -68,99 +88,9 @@ namespace XEEN
         
             uint16 _id;
     };
-    
-    struct ImageBuffer
-    {
-        public:
-            ImageBuffer() : _pen(0, 0), _penOffset(1, 0), _clip(0, 0, 320, 200)
-            {
-            
-            }
-        
-            ImageBuffer& setPen(const Common::Point& pen)
-            {
-                _pen = pen;
-                return *this;
-            }
-            
-            ImageBuffer& movePen(const Common::Point& pen)
-            {
-                _pen.x = _pen.x + (_penOffset.x * pen.x);
-                _pen.y = _pen.y + (_penOffset.y * pen.y);
-                return *this;
-            }
-            
-            ImageBuffer& clear(uint8 color)
-            {
-                memset(buffer, color, sizeof(buffer));
-                return *this;
-            }
-            
-            ImageBuffer& setPenOffset(const Common::Point& offset)
-            {
-                _penOffset = offset;
-                return *this;
-            }
-            
-            ImageBuffer& setClipArea(const Common::Rect& clip)
-            {
-                _clip = clip;
-                return *this;
-            }
-            
-            ImageBuffer& resetClipArea()
-            {
-                _clip = Common::Rect(0, 0, 320, 200);
-                return *this;
-            }
-            
-            void readPixels(Common::ReadStream& input, uint32 length)
-            {
-                for(uint32 i = 0; i != length; i ++)
-                {
-                    putPixel(input.readByte());
-                }
-            }
-            
-            void putPixel(uint8 color)
-            {
-                if(_clip.contains(_pen))
-                {
-                    buffer[_pen.y * 320 + _pen.x] = color;
-                }
-                
-                _pen += _penOffset;
-            }
-            
-        public:    
-            byte buffer[320 * 200];
-            
-        private:
-            Common::Point _pen;
-            Common::Point _penOffset;
-            
-            Common::Rect _clip;
-    };
-
-    inline bool enforce(bool cond)
-    {
-        assert(cond);
-        return cond;
-    }
-    
-    template <typename T>
-    void DELETE(T*& v)
-    {
-        delete v;
-        v = 0;
-    }
-    
-    template <typename T>
-    void DELETE_ARRAY(T*& v)
-    {
-        delete[] v;
-        v = 0;
-    }
 }
+
+// HACK
+#include "xeen/imagebuffer.h"
 
 #endif // XEEN_CCFILE_H
