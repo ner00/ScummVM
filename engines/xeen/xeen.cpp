@@ -36,6 +36,7 @@
 #include "xeen/map.h"
 #include "xeen/characters.h"
 #include "xeen/party.h"
+#include "xeen/font.h"
 
 #include "xeen/imagebuffer.h"
 
@@ -158,7 +159,7 @@ Common::Error XEEN::XeenEngine::run()
         {
             mainicn->drawCell(buffer, actionLocations[i], i * 2);
         }
-        
+                
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
     }

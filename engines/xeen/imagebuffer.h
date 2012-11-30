@@ -93,6 +93,23 @@ namespace XEEN
                 return *this;
             }
             
+            // Draw Pixels KEYED UNSCALED NOFLIP
+            template <byte KEY>
+            void drawPixels_K_U_NF(const byte* pixels, unsigned length)
+            {            
+                for(unsigned i = 0; i != length; i ++, pixels++)
+                {
+                    const Common::Point pos = _origin + _pen;
+                
+                    if(*pixels != KEY && _clip.contains(pos))
+                    {
+                        buffer[pos.y * 320 + pos.x] = *pixels;
+                    }
+                    
+                    _pen.x ++;
+                }
+            }
+            
             void readPixels(Common::ReadStream& input, uint32 length)
             {
                 for(uint32 i = 0; i != length; i ++)

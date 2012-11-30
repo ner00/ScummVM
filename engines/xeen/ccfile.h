@@ -35,6 +35,7 @@ namespace XEEN
     class MapManager;
     class CharacterManager;
     class Party;
+    class Font;
 
     struct CCFileEntry
     {
@@ -100,6 +101,7 @@ namespace XEEN
             MapManager& getMapManager() {enforce(_mapManager); return *_mapManager; }
             CharacterManager& getCharacterManager() { enforce(_characterManager); return *_characterManager; }
             Party& getParty() { enforce(_party); return *_party; }
+            Font& getFont() { enforce(_font); return *_font; }
             
         private:
             Common::File _file;            
@@ -109,6 +111,7 @@ namespace XEEN
             MapManager* _mapManager;
             CharacterManager* _characterManager;
             Party* _party;
+            Font* _font;
     };
     
     class CCSaveFile : public CCToc
