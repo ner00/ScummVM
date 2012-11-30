@@ -33,6 +33,8 @@
 
 namespace XEEN
 {
+    class CharacterManager;
+
     struct CCFileEntry
     {
         uint16 id;
@@ -95,6 +97,7 @@ namespace XEEN
             
             SpriteManager& getSpriteManager() { return _spriteManager; }
             MapManager& getMapManager() {return _mapManager; }
+            CharacterManager& getCharacterManager() { enforce(_characterManager); return *_characterManager; }
             
         private:
             Common::File _file;            
@@ -102,6 +105,7 @@ namespace XEEN
             
             SpriteManager _spriteManager;
             MapManager _mapManager;
+            CharacterManager* _characterManager;
     };
     
     class CCSaveFile : public CCToc

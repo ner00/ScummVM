@@ -21,6 +21,7 @@
  */
 
 #include "xeen/ccfile.h"
+#include "xeen/characters.h"
 
 #include "common/file.h"
 #include "common/debug.h"
@@ -90,13 +91,15 @@ uint32 XEEN::CCToc::readValue(Common::SeekableReadStream& data)
     return result;    
 }
 
-XEEN::CCFile::CCFile(const char* name) : _saveGame(0), _spriteManager(*this), _mapManager(*this)
+XEEN::CCFile::CCFile(const char* name) : _saveGame(0), _spriteManager(*this), _mapManager(*this), _characterManager(0)
 {
     if(_file.open(name))
     {
         readToc(_file);
         
         _saveGame = new CCSaveFile(*this);
+        
+        _characterManager = new CharacterManager(*this);
     }
     else
     {

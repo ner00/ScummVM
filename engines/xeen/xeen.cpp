@@ -34,6 +34,7 @@
 #include "xeen/ccfile.h"
 #include "xeen/sprite.h"
 #include "xeen/map.h"
+#include "xeen/characters.h"
 
 XEEN::XeenEngine::XeenEngine(OSystem* syst) : Engine(syst), _console(0)
 {
@@ -69,7 +70,7 @@ Common::Error XEEN::XeenEngine::run()
         
         _system->getPaletteManager()->setPalette(palette, 0, 256);
     }
-        
+
     Map* testMap = ccf.getMapManager().getMap(28);
             
     Common::Point loc(8,8);
@@ -109,6 +110,32 @@ Common::Error XEEN::XeenEngine::run()
         memcpy(buffer.buffer, file->getData(), 320 * 200);
         
         testMap->draw(buffer.setClipArea(Common::Rect(8, 8, 224, 140)), ccf.getSpriteManager());
+        
+        
+        // PORTRAITS
+        static const uint16 chars[6] = {0, 1, 6, 11, 14, 18};
+        static const Common::Point portraitLocations[6] = 
+        {
+            Common::Point(10, 150),
+            Common::Point(45, 150),
+            Common::Point(81, 150),
+            Common::Point(117, 150),
+            Common::Point(153, 150),
+            Common::Point(189, 150),                                
+        };
+
+        
+        buffer.resetClipArea();
+        for(int i = 0; i != 6; i ++)
+        {
+            Character* chara = ccf.getCharacterManager().getCharacter(chars[i]);
+            
+            if(enforce(chara))
+            {
+                chara->face->drawCell(buffer, portraitLocations[i], 0);
+            }
+        }
+        
         
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
