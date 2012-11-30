@@ -81,7 +81,10 @@ Common::Error XEEN::XeenEngine::run()
     int16 dir = party.facing;
             
     CCFileData* file = ccf.getFile("BACK.RAW");
-            
+    
+    Sprite* hpbars = ccf.getSpriteManager().getSprite("HPBARS.ICN");
+    Sprite* mainicn = ccf.getSpriteManager().getSprite("MAIN.ICN");
+                
     while(!shouldQuit())
     {
     	Common::Event event;    
@@ -92,13 +95,13 @@ Common::Error XEEN::XeenEngine::run()
             {
                 case Common::EVENT_KEYDOWN:
                 {
-                    if(event.kbd.keycode == Common::KEYCODE_UP) loc = Map::translatePoint(loc, 0, 1, dir);
-                    if(event.kbd.keycode == Common::KEYCODE_DOWN) loc = Map::translatePoint(loc, 0, -1, dir);
+                    if(event.kbd.keycode == Common::KEYCODE_UP) loc = Map::translatePoint(loc, 0, 1, dir&3);
+                    if(event.kbd.keycode == Common::KEYCODE_DOWN) loc = Map::translatePoint(loc, 0, -1, dir&3);
                     if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
                     if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
 
                     if(dir < 0) dir = 3;
-                    if(dir > 3) dir = 0;
+//                    if(dir > 3) dir = 0;
                 }
             
                 default:
@@ -109,24 +112,25 @@ Common::Error XEEN::XeenEngine::run()
         }
 
         ImageBuffer buffer;
-        testMap->fillDrawStruct(loc, dir);
+        testMap->fillDrawStruct(loc, dir&3);
         
         memcpy(buffer.buffer, file->getData(), 320 * 200);
         
         testMap->draw(buffer.setClipArea(Common::Rect(8, 8, 224, 140)), ccf.getSpriteManager());
         
-        
-        // PORTRAITS
+        // PORTRAITS: TODO: Proper face and hpbar frames!
         static const Common::Point portraitLocations[6] = 
         {
-            Common::Point(10, 150),
-            Common::Point(45, 150),
-            Common::Point(81, 150),
-            Common::Point(117, 150),
-            Common::Point(153, 150),
-            Common::Point(189, 150),                                
+            Common::Point(10, 150), Common::Point(45, 150), Common::Point(81, 150),
+            Common::Point(117, 150),Common::Point(153, 150),Common::Point(189, 150),                                
         };
-        
+
+        static const Common::Point hpbarLocations[6] = 
+        {
+            Common::Point(14, 182), Common::Point(50, 182), Common::Point(87, 182),
+            Common::Point(122, 182),Common::Point(159, 182),Common::Point(195, 182)
+        };
+
         buffer.resetClipArea();
         for(int i = 0; i != party.memberCount; i ++)
         {
@@ -135,9 +139,25 @@ Common::Error XEEN::XeenEngine::run()
             if(enforce(chara))
             {
                 chara->face->drawCell(buffer, portraitLocations[i], 0);
+                hpbars->drawCell(buffer, hpbarLocations[i], 0);
             }
         }
         
+        // MAIN ICONS: TODO: Support press release; context
+        static const Common::Point actionLocations[16] =
+        {
+            Common::Point(235,  75), Common::Point(260,  75), Common::Point(286,  75),
+            Common::Point(235,  96), Common::Point(260,  96), Common::Point(286,  96),
+            Common::Point(235, 117), Common::Point(260, 117), Common::Point(286, 117),
+            Common::Point(109, 137), //
+            Common::Point(235, 148), Common::Point(260, 148), Common::Point(286, 148),
+            Common::Point(235, 169), Common::Point(260, 169), Common::Point(286, 169),            
+        };
+        
+        for(int i = 0; i != 16; i ++)
+        {
+            mainicn->drawCell(buffer, actionLocations[i], i * 2);
+        }
         
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
