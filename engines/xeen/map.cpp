@@ -291,63 +291,61 @@ uint16 XEEN::Map::getSurface(Common::Point position)
 
 void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
 {
+    buildDrawIndex();
+
+    // ENVIRONMENT
+    indoorDrawIndex[SKY_TOP]->sprite = CCFileId("SKY.SKY");
+    indoorDrawIndex[SKY_BOTTOM]->sprite = CCFileId("SKY.SKY");
+    indoorDrawIndex[GROUND]->sprite = CCFileId("TOWN.GND");
+    
+    // SURFACE
     static const CCFileId surfaceMap[16] = 
     {
         0xFFFF, "DIRT.SRF", "GRASS.SRF", "SNOW.SRF", "SWAMP.SRF", "LAVA.SRF", "DESERT.SRF", "ROAD.SRF",
         "WATER.SRF", "TFLR.SRF", "SKY.SRF", "CROAD.SRF", "SEWER.SRF", "CLOUD.SRF", "SCOORTCH.SRF", "SPACE.SRF"
-    };
-
-
-    indoorDrawList[0].sprite = CCFileId("SKY.SKY");
-    indoorDrawList[1].sprite = CCFileId("SKY.SKY");
-    indoorDrawList[2].sprite = CCFileId("TOWN.GND");
+    };    
     
-    // Fill surface entries
     static const int16 xoff3[3] = {-1, 1, 0};
     static const int16 xoff5[5] = {-2, -1, 2, 1, 0};
     static const int16 xoff7[7] = {-3, -2, -1, 3, 2, 1, 0};
     static const int16* const xoffsets[5] = {xoff7, xoff7, xoff5, xoff3, xoff3};
     static const uint32 linelength[5] = {7, 7, 5, 3, 3};
 
-    int surfaceTile = 3;
+    int surfaceTile = SURF00;
     
     for(uint32 i = 0; i != 5; i ++)
     {
         for(uint32 j = 0; j != linelength[i]; j ++)
         {
             Common::Point cell = translatePoint(position, xoffsets[i][j], 4 - i, direction);
-            indoorDrawList[surfaceTile ++].sprite = surfaceMap[getSurface(cell)];
+            indoorDrawIndex[surfaceTile ++]->sprite = surfaceMap[getSurface(cell)];
         }
     }
 
-    // Facing walls
+    // FACING WALLS
     static const unsigned wallmap[16] = {32, 9, 17, 11, 8, 0, 15, 16, 0, 10, 14, 6, 1, 8, 12, 13};
-    static const unsigned wall1[3] = {143, 145, 147};
-    static const unsigned wall2[3] = {119, 120, 121};
-    static const unsigned wall3[5] = {87, 88, 89, 90, 91};
-    static const unsigned wall4[9] = {37, 38, 39, 40, 41, 42, 43, 44, 45};
+    static const int wall1[3] = {FWALL_1_1L, FWALL_1_CEN, FWALL_1_1R};
+    static const int wall2[3] = {FWALL_2_1L, FWALL_2_CEN, FWALL_2_1R};
+    static const int wall3[5] = {FWALL_3_2L, FWALL_3_1L, FWALL_3_CEN, FWALL_3_1R, FWALL_3_2R};
+    static const int wall4[9] = {FWALL_4_4L, FWALL_4_3L, FWALL_4_2L, FWALL_4_1L, FWALL_4_CEN,
+                                 FWALL_4_1R, FWALL_4_2R, FWALL_4_3R, FWALL_4_4R};
 
     static const int baseframe[4] = {0, 0, 17, 0};
     static const int wallcount[4] = {3, 3, 5, 9};
     static const int walloffset[4] = {1, 1, 2, 4};
-    static const unsigned* const wallbase[] = {wall1, wall2, wall3, wall4};
+    static const int* const wallbase[] = {wall1, wall2, wall3, wall4};
     static const uint16 fwlids[4] = {0, CCFileId::fromString("FTOWN3.FWL"), CCFileId::fromString("FTOWN3.FWL"), CCFileId::fromString("FTOWN4.FWL")};
     
     // Nearest walls done separately to support being split between two sprites!
-    for(int i = 0; i != 3; i ++)
+    for(int j = 0; j != wallcount[0]; j ++)
     {
-        Common::Point cell = translatePoint(position, i - 1, 0, direction);
+        const int i = 0;
+    
+        Common::Point cell = translatePoint(position, j - walloffset[i], i, direction);
         uint16 wallData = wallmap[getTile(cell, direction) >> 12];
         
-        if(wallData != 32)
-        {
-            indoorDrawList[wall1[i]].sprite = (wallData < 8) ? CCFileId("FTOWN1.FWL") : CCFileId("FTOWN2.FWL");
-            indoorDrawList[wall1[i]].frame = (wallData < 8) ? wallData : wallData - 8;            
-        }
-        else
-        {
-            indoorDrawList[wall1[i]].sprite = 0xFFFF;
-        }
+        indoorDrawIndex[wallbase[i][j]]->sprite = (wallData != 32) ? (wallData < 8) ? CCFileId("FTOWN1.FWL") : CCFileId("FTOWN2.FWL") : CCFileId(0xFFFF);
+        indoorDrawIndex[wallbase[i][j]]->frame = (wallData < 8) ? wallData : wallData - 8;
     }
     
     for(int i = 1; i != 4; i ++)
@@ -357,78 +355,62 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
             Common::Point cell = translatePoint(position, j - walloffset[i], i, direction);
             uint16 wallData = wallmap[getTile(cell, direction) >> 12];
             
-            indoorDrawList[wallbase[i][j]].sprite = (wallData != 32) ? fwlids[i] : 0xFFFF;
-            indoorDrawList[wallbase[i][j]].frame = baseframe[i] + ((wallData > 6) ? wallData - 1 : wallData);
+            indoorDrawIndex[wallbase[i][j]]->sprite = (wallData != 32) ? fwlids[i] : 0xFFFF;
+            indoorDrawIndex[wallbase[i][j]]->frame = baseframe[i] + ((wallData > 6) ? wallData - 1 : wallData);
         }
     }
     
     // TODO: Distant wall?
 
 
-    // Side walls
-    static const unsigned leftpos[3] = {144, 133};
-    static const unsigned rightpos[3] = {146, 134};
+    // SIDE WALLS: 0 Steps forward
+    static const int swl0_xoffset[2] = {0, 0};
+    static const int swl0_shift[2] = {0, 8};
+    static const int swl0_id[2] = {SWALL_0_1L, SWALL_0_1R};
     
     for(int i = 0; i != 2; i ++)
     {
-        Common::Point cell = translatePoint(position, 0, i, direction);
-        uint16 wallData = (getTile(cell, direction) >> 0) & 0xF;        
-        
-        if(wallData)
-        {
-            indoorDrawList[leftpos[i]].sprite = CCFileId("STOWN.SWL");
-        }
-        else
-        {
-            indoorDrawList[leftpos[i]].sprite = 0xFFFF;
-        }
+        Common::Point cell = translatePoint(position, swl0_xoffset[i], 0, direction);
+        uint16 wallData = (getTile(cell, direction) >> swl0_shift[i]) & 0xF;
+        indoorDrawIndex[swl0_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
     }
 
+
+    // SIDE WALLS: 1 Steps forward
+    static const int swl1_xoffset[2] = {0, 0};
+    static const int swl1_shift[2] = {0, 8};
+    static const int swl1_id[2] = {SWALL_1_1L, SWALL_1_1R};
+    
     for(int i = 0; i != 2; i ++)
     {
-        Common::Point cell = translatePoint(position, 0, i, direction);
-        uint16 wallData = (getTile(cell, direction) >> 8) & 0xF;        
-        
-        if(wallData)
-        {
-            indoorDrawList[rightpos[i]].sprite = CCFileId("STOWN.SWL");
-        }
-        else
-        {
-            indoorDrawList[rightpos[i]].sprite = 0xFFFF;
-        }
+        Common::Point cell = translatePoint(position, swl1_xoffset[i], 1, direction);
+        uint16 wallData = (getTile(cell, direction) >> swl1_shift[i]) & 0xF;
+        indoorDrawIndex[swl1_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
     }
 
 
     // SIDE WALLS: 2 Steps forward
     static const int swl2_xoffset[4] = {-1, 0, 0, 1};
     static const int swl2_shift[4] = {0, 0, 8, 8};
+    static const int swl2_id[4] = {SWALL_2_2L, SWALL_2_1L, SWALL_2_1R, SWALL_2_2R};
+    
     for(int i = 0; i != 4; i ++)
     {
         Common::Point cell = translatePoint(position, swl2_xoffset[i], 2, direction);
         uint16 wallData = (getTile(cell, direction) >> swl2_shift[i]) & 0xF;
-        indoorDrawList[107 + i].sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
+        indoorDrawIndex[swl2_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
     }
 
     // SIDE WALLS: 3 Steps forward
-    static const int swl3_xoffset[8] = {-3, 3, -2, 2, -1, 1, 0, 0};
-    static const int swl3_shift[8] = {0, 8, 0, 8, 0, 8, 0, 8};
+    static const int swl3_xoffset[8] = {-3, -2, -1, 0, 0, 1, 2, 3};
+    static const int swl3_shift[8] = {0, 0, 0, 0, 8, 8, 8, 8};
+    static const int swl3_id[8] = {SWALL_3_4L, SWALL_3_3L, SWALL_3_2L, SWALL_3_1L, 
+                                   SWALL_3_1R, SWALL_3_2R, SWALL_3_3R, SWALL_3_4R};
     for(int i = 0; i != 8; i ++)
     {
         Common::Point cell = translatePoint(position, swl3_xoffset[i], 3, direction);
         uint16 wallData = (getTile(cell, direction) >> swl3_shift[i]) & 0xF;
-        indoorDrawList[71 + i].sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);    
-    }
-
-    // HACK
-    MazeObjects::Entry t;
-    if(_objects->getObjectAt(position, t))
-    {
-        indoorDrawList[149].sprite = CCFileId("%03d.OBJ", t.id);
-    }
-    else
-    {
-        indoorDrawList[149].sprite = 0xFFFF;
+        indoorDrawIndex[swl3_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);    
     }
 }
 
