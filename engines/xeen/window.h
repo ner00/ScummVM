@@ -94,6 +94,24 @@ namespace XEEN
         private:
             char stringBuffer[128];
     };
+    
+    class CharacterPortraitWindow : public Window
+    {
+        public:
+            CharacterPortraitWindow();
+            
+        protected:
+            const Button* getButtons() const;                    
+    };
+    
+    class MainIconWindow : public Window
+    {
+        public:
+            MainIconWindow();
+            
+        protected:
+            const Button* getButtons() const;
+    };
 }
 
 #endif // XEEN_WINDOW_H

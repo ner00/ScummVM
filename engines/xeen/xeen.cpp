@@ -100,13 +100,12 @@ Common::Error XEEN::XeenEngine::run()
     int16 dir = party.facing;
             
     CCFileData* file = ccf.getFile("BACK.RAW");
-    
-    Sprite* hpbars = ccf.getSpriteManager().getSprite("HPBARS.ICN");
-    Sprite* mainicn = ccf.getSpriteManager().getSprite("MAIN.ICN");
-     
+         
     bool showMenu = false;
     
     CharacterStatusWindow window;
+    CharacterPortraitWindow ports;
+    MainIconWindow commands;
                 
     while(!shouldQuit())
     {
@@ -154,65 +153,26 @@ Common::Error XEEN::XeenEngine::run()
         
         memcpy(buffer.buffer, file->getData(), 320 * 200);
         
-        // MAIN ICONS: TODO: Support press release; context
-        static const Common::Point actionLocations[16] =
-        {
-            Common::Point(235,  75), Common::Point(260,  75), Common::Point(286,  75),
-            Common::Point(235,  96), Common::Point(260,  96), Common::Point(286,  96),
-            Common::Point(235, 117), Common::Point(260, 117), Common::Point(286, 117),
-            Common::Point(109, 137), //
-            Common::Point(235, 148), Common::Point(260, 148), Common::Point(286, 148),
-            Common::Point(235, 169), Common::Point(260, 169), Common::Point(286, 169),            
-        };
-        
         
         if(!showMenu)
         {
             buffer.setClipArea(Common::Rect(8, 8, 224, 140));
             testMap->draw(buffer, ccf.getSpriteManager());
             buffer.resetClipArea();
-                        
-            for(int i = 0; i != 16; i ++)
-            {
-                mainicn->drawCell(buffer, actionLocations[i], i * 2);
-            }
+
+            commands.draw(buffer, ccf);
         }
         else
         {
             window.heartbeat();
         
-            for(int i = 0; i != 16; i ++)
-            {
-                mainicn->drawCell(buffer, actionLocations[i], i * 2);
-            }        
+            commands.draw(buffer, ccf);
         
             window.draw(buffer, ccf);
         }
         
-        // PORTRAITS: TODO: Proper face and hpbar frames!
-        static const Common::Point portraitLocations[6] = 
-        {
-            Common::Point(10, 150), Common::Point(45, 150), Common::Point(81, 150),
-            Common::Point(117, 150),Common::Point(153, 150),Common::Point(189, 150),                                
-        };
-
-        static const Common::Point hpbarLocations[6] = 
-        {
-            Common::Point(14, 182), Common::Point(50, 182), Common::Point(87, 182),
-            Common::Point(122, 182),Common::Point(159, 182),Common::Point(195, 182)
-        };
-
         buffer.resetClipArea();
-        for(int i = 0; i != party.memberCount; i ++)
-        {
-            Character* chara = ccf.getCharacterManager().getCharacter(party.members[i]);
-            
-            if(enforce(chara))
-            {
-                chara->face->drawCell(buffer, portraitLocations[i], 0);
-                hpbars->drawCell(buffer, hpbarLocations[i], 0);
-            }
-        }                
+        ports.draw(buffer, ccf);
                 
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
