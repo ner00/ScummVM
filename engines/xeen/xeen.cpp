@@ -76,6 +76,23 @@ Common::Error XEEN::XeenEngine::run()
         _system->getPaletteManager()->setPalette(palette, 0, 256);
     }
 
+    // Load cursor
+    {
+        ImageBuffer mouseBuffer;
+        byte mouseImage[16*16];
+
+        Sprite* cursor = ccf.getSpriteManager().getSprite("MOUSE.ICN");        
+        cursor->drawCell(mouseBuffer.clear(0), Common::Point(0, 0), 0);
+        
+        for(int i = 0; i != 16; i ++)
+        {
+            memcpy(&mouseImage[i * 16], &mouseBuffer.buffer[i * 320], 16);
+        }
+        
+        _system->setMouseCursor(mouseImage, 16, 16, 0, 0, 0);
+        _system->showMouse(true);
+    }
+
     Party& party = ccf.getParty();
     Map* testMap = ccf.getMapManager().getMap(party.mazeID);
             
