@@ -38,7 +38,7 @@ namespace XEEN
             };    
     
         public:
-            MazeObjects(CCFile& cc, uint16 mapNumber);
+            MazeObjects(uint16 mapNumber);
             ~MazeObjects();
             
             bool getObjectAt(const Common::Point& position, Entry& facing);

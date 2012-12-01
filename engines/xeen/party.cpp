@@ -20,13 +20,14 @@
  *
  */
 
+#include "xeen/game.h"
 #include "xeen/party.h"
 #include "xeen/utility.h"
 #include "xeen/ccfile.h"
 
-XEEN::Party::Party(CCFile& cc)
+XEEN::Party::Party()
 {
-    CCFileData* reader = cc.getSaveFile().getFile("MAZE.PTY");
+    CCFileData* reader = XEENgame.getAssets().getSaveFile().getFile("MAZE.PTY");
 
     memberCount = reader->readByte();
     realMemberCount = reader->readByte();

@@ -20,7 +20,7 @@
  *
  */
 
-
+#include "xeen/game.h"
 #include "xeen/ccfile.h"
 #include "xeen/font.h"
 #include "xeen/imagebuffer.h"
@@ -29,12 +29,12 @@
 ///
 /// Font
 ///
-XEEN::Font::Font(CCFile& cc)
+XEEN::Font::Font()
 {
     memset(_glyphs, 0, sizeof(_glyphs));
     
     //
-    CCFileData* reader = cc.getFile("FNT");
+    CCFileData* reader = XEENgame.getAssets().getFile("FNT");
     
     if(enforce(reader))
     {

@@ -22,12 +22,6 @@
 
 #include "xeen/ccfile.h"
 
-#include "xeen/sprite.h"
-#include "xeen/map.h"
-#include "xeen/characters.h"
-#include "xeen/party.h"
-#include "xeen/font.h"
-
 XEEN::CCFileData::CCFileData(CCFileId id, byte* data, uint32 size) : Common::MemoryReadStream(data, size), _id(id), _size(size), _data(data) 
 {
 
@@ -93,21 +87,13 @@ uint32 XEEN::CCToc::readValue(Common::SeekableReadStream& data)
     return result;    
 }
 
-XEEN::CCFile::CCFile(const char* name) : _saveGame(0), _spriteManager(0),
-                                         _mapManager(0), _characterManager(0),
-                                         _party(0), _font(0)
+XEEN::CCFile::CCFile(const char* name) : _saveGame(0)
 {
     if(_file.open(name))
     {
         readToc(_file);
         
         _saveGame = new CCSaveFile(*this);
-        
-        _spriteManager = new SpriteManager(*this);
-        _mapManager = new MapManager(*this);
-        _characterManager = new CharacterManager(*this);
-        _party = new Party(*this);
-        _font = new Font(*this);
     }
     else
     {
@@ -117,11 +103,6 @@ XEEN::CCFile::CCFile(const char* name) : _saveGame(0), _spriteManager(0),
 
 XEEN::CCFile::~CCFile()
 {
-    delete _font;
-    delete _party;
-    delete _characterManager;
-    delete _mapManager;
-    delete _spriteManager;
     delete _saveGame;
 }
 

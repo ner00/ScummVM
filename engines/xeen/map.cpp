@@ -20,6 +20,7 @@
  *
  */
 
+#include "xeen/game.h"
 
 #include "xeen/ccfile.h"
 #include "xeen/map.h"
@@ -35,7 +36,7 @@
 ///
 /// MapManager
 ///
-XEEN::MapManager::MapManager(CCFile& parent) : _cc(parent)
+XEEN::MapManager::MapManager()
 {
     memset(_maps, 0, sizeof(_maps));
     memset(_segments, 0, sizeof(_segments));
@@ -54,7 +55,7 @@ XEEN::Map* XEEN::MapManager::getMap(uint16 id)
 {
     if(!_maps[id])
     {
-        _maps[id] = new Map(_cc, id);
+        _maps[id] = new Map(id);
     }
     
     return _maps[id];
@@ -64,7 +65,7 @@ XEEN::MazeSegment* XEEN::MapManager::getSegment(uint16 id)
 {
     if(!_segments[id])
     {
-        _segments[id] = new MazeSegment(_cc, id);
+        _segments[id] = new MazeSegment(id);
     }
     
     return _segments[id];
@@ -73,9 +74,9 @@ XEEN::MazeSegment* XEEN::MapManager::getSegment(uint16 id)
 ///
 /// MazeSegment
 ///
-XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(0), _objects(0)
+XEEN::MazeSegment::MazeSegment(uint16 mapNumber) : _north(0), _east(0), _objects(0)
 {
-    CCFileData* data = cc.getSaveFile().getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber));    
+    CCFileData* data = XEENgame.getAssets().getSaveFile().getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber));    
     assert(data->size() && "Failed to open maze segment chunk");
 
     // Parse data
@@ -121,17 +122,17 @@ XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(
     if(_mazeExtensions[0])
     {
         assert(_mazeExtensions[0] >= 100 && "Indoor map extension index issue.");
-        _north = cc.getMapManager().getSegment(_mazeExtensions[0]);
+        _north = XEENgame.getMapManager().getSegment(_mazeExtensions[0]);
     }
     
     if(_mazeExtensions[1])
     {
         assert(_mazeExtensions[1] >= 100 && "Indoor map extension index issue.");    
-        _east = cc.getMapManager().getSegment(_mazeExtensions[1]);
+        _east = XEENgame.getMapManager().getSegment(_mazeExtensions[1]);
     }
     
     // Load objects
-    _objects = new MazeObjects(cc, mapNumber);
+    _objects = new MazeObjects(mapNumber);
     
     // Done
     delete data;
@@ -141,12 +142,12 @@ XEEN::MazeSegment::MazeSegment(CCFile& cc, uint16 mapNumber) : _north(0), _east(
 ///
 /// Map
 ///
-XEEN::Map::Map(CCFile& cc, uint16 mapNumber) : MazeSegment(cc, mapNumber), _text(0), _width(0), _height(0)
+XEEN::Map::Map(uint16 mapNumber) : MazeSegment(mapNumber), _text(0), _width(0), _height(0)
 {
     assert(mapNumber < 100 && "Loading map from extended maze segment.");
  
     // Load Maze Data
-    _text = new MazeText(cc, mapNumber);
+    _text = new MazeText(mapNumber);
     
     // Calculate size
     for(MazeSegment* tag = this; tag; tag = tag->getEast())

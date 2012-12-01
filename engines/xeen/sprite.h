@@ -28,7 +28,7 @@
 
 namespace XEEN
 {
-    class CCFile;
+    class Game;
     class CCFileData;
     class SpriteManager;
     class ImageBuffer;
@@ -66,15 +66,16 @@ namespace XEEN
     class SpriteManager
     {
         static const unsigned MAX_SPRITES = 65536;
+        friend class Game;
     
-        public:
-            SpriteManager(CCFile& parent);
+        private:
+            SpriteManager();
             ~SpriteManager();
             
+        public:
             Sprite* getSprite(CCFileId id);
             
         private:
-            CCFile& _cc;
             Sprite* _sprites[MAX_SPRITES]; // TODO: <Use a hash table!
     };
 }

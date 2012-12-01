@@ -27,6 +27,7 @@
 
 namespace XEEN
 {
+    class Game;
     class MapManager;
     class Map;
     class ImageBuffer;
@@ -41,7 +42,7 @@ namespace XEEN
         friend class Map;
     
         private:
-            MazeSegment(CCFile& cc, uint16 mapNumber);
+            MazeSegment(uint16 mapNumber);
             virtual ~MazeSegment() { }
 
         public:
@@ -89,7 +90,7 @@ namespace XEEN
         friend class MazeSegment;
     
         private:
-            Map(CCFile& cc, uint16 mapNumber);
+            Map(uint16 mapNumber);
             ~Map();
 
         public:
@@ -114,18 +115,20 @@ namespace XEEN
     
     class MapManager
     {
-        public:
-            MapManager(CCFile& parent);
+        friend class Game;
+    
+        private:
+            MapManager();
             ~MapManager();
             
+        public:
             Map* getMap(uint16 id);
             MazeSegment* getSegment(uint16 id);
             
         private:
-            CCFile& _cc;
             Map* _maps[256]; // TODO: <Use a hash table!
             MazeSegment* _segments[256];
     };
 }
 
-#endif // XEEN_CCFILE_H
+#endif // XEEN_MAP_H

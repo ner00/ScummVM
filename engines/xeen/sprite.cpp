@@ -23,8 +23,9 @@
 #include "xeen/ccfile.h"
 #include "xeen/sprite.h"
 #include "xeen/imagebuffer.h"
+#include "xeen/game.h"
 
-XEEN::SpriteManager::SpriteManager(CCFile& parent) : _cc(parent)
+XEEN::SpriteManager::SpriteManager()
 {
     memset(_sprites, 0, sizeof(_sprites));
 }
@@ -39,9 +40,9 @@ XEEN::SpriteManager::~SpriteManager()
 
 XEEN::Sprite* XEEN::SpriteManager::getSprite(CCFileId id)
 {
-    if(!_sprites[id] && _cc.getEntry(id))
+    if(!_sprites[id] && XEENgame.getAssets().getEntry(id))
     {
-        _sprites[id] = new Sprite(_cc.getFile(id));
+        _sprites[id] = new Sprite(XEENgame.getAssets().getFile(id));
     }
     
     return _sprites[id];

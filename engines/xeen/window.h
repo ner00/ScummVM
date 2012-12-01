@@ -31,7 +31,6 @@
 namespace XEEN
 {
     class ImageBuffer;
-    class CCFile;
     
     struct Button
     {
@@ -69,7 +68,7 @@ namespace XEEN
 
         public:
             void heartbeat();
-            void draw(ImageBuffer& out, CCFile& assets);
+            void draw(ImageBuffer& out);
             void click(const Common::Point& point);
         
         private:

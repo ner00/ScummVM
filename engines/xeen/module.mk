@@ -11,7 +11,8 @@ MODULE_OBJS := \
     mazetext.o \
     mazeobjects.o \
     font.o \
-    window.o
+    window.o \
+    game.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)

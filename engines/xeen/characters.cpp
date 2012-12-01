@@ -21,22 +21,24 @@
  */
 
 #include "xeen/characters.h"
-#include "xeen/utility.h"
 #include "xeen/ccfile.h"
+#include "xeen/game.h"
+#include "xeen/utility.h"
 #include "xeen/sprite.h"
 
 ///
 /// CharacterManager
 ///
-XEEN::CharacterManager::CharacterManager(CCFile& parent) : _cc(parent)
+XEEN::CharacterManager::CharacterManager()
 {
     memset(_characters, 0, sizeof(_characters));
     
-    CCFileData* charFile = _cc.getSaveFile().getFile("MAZE.CHR");
+    CCFile& assets = XEENgame.getAssets();
+    CCFileData* charFile = assets.getSaveFile().getFile("MAZE.CHR");
     
     for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
     {
-        Sprite* faceSprite = _cc.getSpriteManager().getSprite(CCFileId("CHAR%02d.FAC", i + 1));
+        Sprite* faceSprite = XEENgame.getSpriteManager().getSprite(CCFileId("CHAR%02d.FAC", i + 1));
     
         if(faceSprite)
         {

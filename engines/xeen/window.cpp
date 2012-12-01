@@ -20,8 +20,9 @@
  *
  */
 
+#include "xeen/game.h"
 #include "xeen/window.h"
-#include "xeen/ccfile.h"
+
 #include "xeen/sprite.h"
 #include "xeen/font.h"
 #include "xeen/imagebuffer.h"
@@ -32,7 +33,7 @@ XEEN::Window::Window(const Common::Rect& area) : _area(area), _pressedButton(0),
 {
 }
 
-void XEEN::Window::draw(ImageBuffer& out, CCFile& assets)
+void XEEN::Window::draw(ImageBuffer& out)
 {
     const Common::Point location(_area.left, _area.top);
 
@@ -40,7 +41,7 @@ void XEEN::Window::draw(ImageBuffer& out, CCFile& assets)
     out.fillRect(_area, 21);
     
     // Draw buttons
-    SpriteManager& sprites = assets.getSpriteManager();
+    SpriteManager& sprites = XEENgame.getSpriteManager();
     
     for(const Button* button = getButtons(); button && button->sprite; button ++)
     {
@@ -54,7 +55,7 @@ void XEEN::Window::draw(ImageBuffer& out, CCFile& assets)
     }
     
     // Draw strings
-    Font& font = assets.getFont();
+    Font& font = XEENgame.getFont();
     
     for(const String* string = getStrings(); string && (string->text || string->stringID); string ++)
     {

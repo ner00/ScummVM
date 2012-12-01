@@ -27,12 +27,15 @@
 
 namespace XEEN
 {
+    class Game;
     class CCFile;
 
     class Party
     {
-        public:
-            Party(CCFile& cc);
+        friend class Game;
+
+        private:
+            Party();
     
         public:
             uint8 memberCount;

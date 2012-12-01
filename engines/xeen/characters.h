@@ -28,7 +28,7 @@
 
 namespace XEEN
 {
-    class CCFile;
+    class Game;
     class CCFileData;
     class CharacterManager;
     class Sprite;
@@ -123,18 +123,19 @@ namespace XEEN
     
     class CharacterManager
     {
+        friend class Game;
+    
         private:
             static const uint32 MAX_CHARACTERS = 30;
     
-        public:
-            CharacterManager(CCFile& parent);
+        private:
+            CharacterManager();
             ~CharacterManager();
             
+        public:
             Character* getCharacter(uint16 id);
             
-        private:
-            CCFile& _cc;
-            
+        private:            
             Character* _characters[MAX_CHARACTERS];
     };
 }

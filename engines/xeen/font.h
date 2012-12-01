@@ -27,16 +27,18 @@
 
 namespace XEEN
 {
+    class Game;
     class ImageBuffer;
-    class CCFile;
 
     class Font
     {
         static const unsigned CHARACTER_COUNT = 256;
+        friend class Game;
     
-        public:
-            Font(CCFile& cc);
-            
+        private:
+            Font();
+
+        public:            
             void drawString(ImageBuffer& out, Common::Point pen, const char* text) const;
             
         private:

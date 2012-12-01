@@ -32,7 +32,7 @@ namespace XEEN
         static const unsigned MAX_STRINGS = 256;
     
         public:
-            MazeText(CCFile& cc, uint32 mapNumber);
+            MazeText(uint32 mapNumber);
             ~MazeText();
             
             const char* getString(uint32 id) const;

@@ -31,12 +31,6 @@
 
 namespace XEEN
 {
-    class SpriteManager;
-    class MapManager;
-    class CharacterManager;
-    class Party;
-    class Font;
-
     struct CCFileEntry
     {
         uint16 id;
@@ -97,21 +91,19 @@ namespace XEEN
             
             CCSaveFile& getSaveFile();
             
-            SpriteManager& getSpriteManager() { enforce(_spriteManager); return *_spriteManager; }
-            MapManager& getMapManager() {enforce(_mapManager); return *_mapManager; }
-            CharacterManager& getCharacterManager() { enforce(_characterManager); return *_characterManager; }
-            Party& getParty() { enforce(_party); return *_party; }
-            Font& getFont() { enforce(_font); return *_font; }
+//            SpriteManager& getSpriteManager() { enforce(_spriteManager); return *_spriteManager; }
+//            MapManager& getMapManager() {enforce(_mapManager); return *_mapManager; }
+//            CharacterManager& getCharacterManager() { enforce(_characterManager); return *_characterManager; }
+//            Font& getFont() { enforce(_font); return *_font; }
             
         private:
             Common::File _file;            
             CCSaveFile* _saveGame;
             
-            SpriteManager* _spriteManager;
-            MapManager* _mapManager;
-            CharacterManager* _characterManager;
-            Party* _party;
-            Font* _font;
+//            SpriteManager* _spriteManager;
+//            MapManager* _mapManager;
+//            CharacterManager* _characterManager;
+//            Font* _font;
     };
     
     class CCSaveFile : public CCToc

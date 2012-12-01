@@ -26,7 +26,6 @@
 #include "common/memstream.h"
 #include "common/events.h"
 #include "common/system.h"
-#include "graphics/palette.h"
 
 #include "engines/util.h"
 
@@ -38,6 +37,7 @@
 #include "xeen/party.h"
 #include "xeen/font.h"
 #include "xeen/window.h"
+#include "xeen/game.h"
 
 #include "xeen/imagebuffer.h"
 
@@ -60,53 +60,9 @@ Common::Error XEEN::XeenEngine::run()
 
     //
 
-    XEEN::CCFile ccf("XEEN.CC");    
-
-    // Load palette
-    {
-        byte palette[256 * 3];
-        
-        CCFileData* pal = ccf.getFile("MM4.PAL");
-        for(int i = 0; i != 256 * 3; i ++)
-        {
-            palette[i] = pal->readByte() << 2;
-        }
-        delete pal;
-        
-        _system->getPaletteManager()->setPalette(palette, 0, 256);
-    }
-
-    // Load cursor
-    {
-        ImageBuffer mouseBuffer;
-        byte mouseImage[16*16];
-
-        Sprite* cursor = ccf.getSpriteManager().getSprite("MOUSE.ICN");        
-        cursor->drawCell(mouseBuffer.clear(0), Common::Point(0, 0), 0);
-        
-        for(int i = 0; i != 16; i ++)
-        {
-            memcpy(&mouseImage[i * 16], &mouseBuffer.buffer[i * 320], 16);
-        }
-        
-        _system->setMouseCursor(mouseImage, 16, 16, 0, 0, 0);
-        _system->showMouse(true);
-    }
-
-    Party& party = ccf.getParty();
-    Map* testMap = ccf.getMapManager().getMap(party.mazeID);
-            
-    Common::Point loc(party.xPosition, party.yPosition);
-    int16 dir = party.facing;
-            
-    CCFileData* file = ccf.getFile("BACK.RAW");
-         
+    XEENgame.load();
     bool showMenu = false;
-    
-    CharacterStatusWindow window;
-    CharacterPortraitWindow ports;
-    MainIconWindow commands;
-                
+                    
     while(!shouldQuit())
     {
     	Common::Event event;    
@@ -119,7 +75,7 @@ Common::Error XEEN::XeenEngine::run()
                 {
                     if(showMenu)
                     {
-                        window.click(event.mouse);
+//                        window.click(event.mouse);
                     }
                     
                     break;
@@ -131,13 +87,13 @@ Common::Error XEEN::XeenEngine::run()
                 
                     if(!showMenu)
                     {
-                        if(event.kbd.keycode == Common::KEYCODE_UP) loc = Map::translatePoint(loc, 0, 1, dir&3);
-                        if(event.kbd.keycode == Common::KEYCODE_DOWN) loc = Map::translatePoint(loc, 0, -1, dir&3);
-                        if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
-                        if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
+//                        if(event.kbd.keycode == Common::KEYCODE_UP) loc = Map::translatePoint(loc, 0, 1, dir&3);
+//                        if(event.kbd.keycode == Common::KEYCODE_DOWN) loc = Map::translatePoint(loc, 0, -1, dir&3);
+//                        if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
+//                        if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
     
-                        if(dir < 0) dir = 3;
-                        if(dir > 3) dir = 0;
+//                        if(dir < 0) dir = 3;
+//                        if(dir > 3) dir = 0;
                     }
                 }
             
@@ -148,31 +104,8 @@ Common::Error XEEN::XeenEngine::run()
             }
         }
 
-        ImageBuffer buffer;
-        testMap->fillDrawStruct(loc, dir&3);
-        
-        memcpy(buffer.buffer, file->getData(), 320 * 200);
-        
-        
-        if(!showMenu)
-        {
-            buffer.setClipArea(Common::Rect(8, 8, 224, 140));
-            testMap->draw(buffer, ccf.getSpriteManager());
-            buffer.resetClipArea();
-
-            commands.draw(buffer, ccf);
-        }
-        else
-        {
-            window.heartbeat();
-        
-            commands.draw(buffer, ccf);
-        
-            window.draw(buffer, ccf);
-        }
-        
-        buffer.resetClipArea();
-        ports.draw(buffer, ccf);
+        ImageBuffer buffer;        
+        XEENgame.draw(buffer);
                 
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
