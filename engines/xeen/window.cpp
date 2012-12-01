@@ -66,24 +66,14 @@ const XEEN::Button* XEEN::CharacterStatusWindow::getButtons() const
 {
     static const Button buttons[] = 
     {
-        {"VIEW.ICN",  0,  1,  10,  24, 0},
-        {"VIEW.ICN",  2,  3,  10,  47, 0},
-        {"VIEW.ICN",  4,  5,  10,  70, 0},
-        {"VIEW.ICN",  6,  7,  10,  93, 0},
-        {"VIEW.ICN",  8,  9,  10, 116, 0},
+        {"VIEW.ICN",  0,  1,  10,  24, 0}, {"VIEW.ICN", 10, 11,  61,  24, 0}, {"VIEW.ICN", 20, 21, 112,  24, 0}, {"VIEW.ICN", 30, 31, 177,  24, 0},
+        {"VIEW.ICN",  2,  3,  10,  47, 0}, {"VIEW.ICN", 12, 13,  61,  47, 0}, {"VIEW.ICN", 22, 23, 112,  47, 0}, {"VIEW.ICN", 32, 33, 177,  47, 0},
+        {"VIEW.ICN",  4,  5,  10,  70, 0}, {"VIEW.ICN", 14, 15,  61,  70, 0}, {"VIEW.ICN", 24, 25, 112,  70, 0}, {"VIEW.ICN", 34, 35, 177,  70, 0},
+        {"VIEW.ICN",  6,  7,  10,  93, 0}, {"VIEW.ICN", 16, 17,  61,  93, 0}, {"VIEW.ICN", 26, 27, 112,  93, 0}, {"VIEW.ICN", 36, 37, 177,  93, 0},
+        {"VIEW.ICN",  8,  9,  10, 116, 0}, {"VIEW.ICN", 18, 19,  61, 116, 0}, {"VIEW.ICN", 28, 29, 112, 116, 0}, {"VIEW.ICN", 38, 39, 177, 116, 0},
 
-        {"VIEW.ICN", 10, 11,  61,  24, 0},
-        {"VIEW.ICN", 12, 13,  61,  47, 0},
-        {"VIEW.ICN", 14, 15,  61,  70, 0},
-        {"VIEW.ICN", 16, 17,  61,  93, 0},
-        {"VIEW.ICN", 18, 19,  61, 116, 0},
+        {"VIEW.ICN", 40, 41, 285, 11, 0},  {"VIEW.ICN", 42, 43, 285, 43, 0},  {"VIEW.ICN", 44, 45, 285, 75, 0},  {"VIEW.ICN", 46, 47, 285, 107, 0}, 
 
-        {"VIEW.ICN", 20, 21, 112,  24, 0},
-        {"VIEW.ICN", 22, 23, 112,  47, 0},
-        {"VIEW.ICN", 24, 25, 112,  70, 0},
-        {"VIEW.ICN", 26, 27, 112,  93, 0},
-        {"VIEW.ICN", 28, 29, 112, 116, 0},
-        
         {0, 0, 0, 0, 0, 0}
     };
     
@@ -94,7 +84,12 @@ const XEEN::String* XEEN::CharacterStatusWindow::getStrings() const
 {
     static const String strings[] = 
     {
-        {"Mgt", 37, 26},
+        {"Mgt", 37,  26}, {"Acy", 88,  26}, {"H.P.",   139,  26}, {"Experience", 204,  26},
+        {"Int", 37,  49}, {"Lck", 88,  49}, {"S.P.",   139,  49}, {"Party Gold", 204,  49},
+        {"Per", 37,  70}, {"Age", 88,  70}, {"Resis",  139,  70}, {"Party Gems", 204,  70},
+        {"End", 37,  93}, {"Lvl", 88,  93}, {"Skills", 139,  93}, {"Party Food", 204,  93},
+        {"Spd", 37, 116}, {"AC",  88, 116}, {"Awrds",  139, 116}, {"Condition",  204, 116},
+
         {0, 0, 0}
     };
     
