@@ -27,7 +27,7 @@
 
 namespace XEEN
 {
-    class MazeText
+    class MazeText : public Validateable
     {
         static const unsigned MAX_STRINGS = 256;
     

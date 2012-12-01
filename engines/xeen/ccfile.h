@@ -90,20 +90,10 @@ namespace XEEN
             CCFileData* getFile(CCFileId id);
             
             CCSaveFile& getSaveFile();
-            
-//            SpriteManager& getSpriteManager() { enforce(_spriteManager); return *_spriteManager; }
-//            MapManager& getMapManager() {enforce(_mapManager); return *_mapManager; }
-//            CharacterManager& getCharacterManager() { enforce(_characterManager); return *_characterManager; }
-//            Font& getFont() { enforce(_font); return *_font; }
-            
+                        
         private:
             Common::File _file;            
             CCSaveFile* _saveGame;
-            
-//            SpriteManager* _spriteManager;
-//            MapManager* _mapManager;
-//            CharacterManager* _characterManager;
-//            Font* _font;
     };
     
     class CCSaveFile : public CCToc

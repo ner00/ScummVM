@@ -23,11 +23,13 @@
 #ifndef XEEN_MAZEOBJECTS_H
 #define XEEN_MAZEOBJECTS_H
 
+#include "xeen/utility.h"
+
 #include "common/scummsys.h"
 
 namespace XEEN
 {
-    class MazeObjects
+    class MazeObjects : public Validateable
     {
         public:
             struct Entry

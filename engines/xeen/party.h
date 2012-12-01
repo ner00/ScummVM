@@ -30,7 +30,7 @@ namespace XEEN
     class Game;
     class CCFile;
 
-    class Party
+    class Party : public Validateable
     {
         friend class Game;
 

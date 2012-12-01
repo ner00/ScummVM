@@ -33,7 +33,7 @@ namespace XEEN
     class SpriteManager;
     class ImageBuffer;
 
-    class Sprite
+    class Sprite : public Validateable_Cleanable
     {
         friend class SpriteManager;
     
@@ -41,11 +41,11 @@ namespace XEEN
             Sprite(CCFileData* file);
             ~Sprite();
             
-            bool initialize();
-            void cleanse();
-            
         public:
             void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false);
+
+        protected:
+            void cleanse();
             
         private:
             void drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip);

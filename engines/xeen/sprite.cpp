@@ -50,44 +50,33 @@ XEEN::Sprite* XEEN::SpriteManager::getSprite(CCFileId id)
 
 XEEN::Sprite::Sprite(CCFileData* file) : _file(file), _cellCount(0), _cells(0)
 {
-    if(!initialize())
+    if(_file)
     {
-        assert(false);
-        cleanse();
+        _cellCount = _file->readUint16LE();
+        
+        if(_cellCount)
+        {
+            _cells = new Cell[_cellCount];
+            
+            if(enforce(_cells))
+            {  
+                for(unsigned i = 0; i != _cellCount; i ++)
+                {
+                    _cells[i].offset[0] = _file->readUint16LE();
+                    _cells[i].offset[1] = _file->readUint16LE();
+                }
+                
+                return;
+            }
+        }
     }
+
+    markInvalidAndClean();
 }
 
 XEEN::Sprite::~Sprite()
 {
     cleanse();
-}
-
-bool XEEN::Sprite::initialize()
-{
-    bool success = false;
-
-    if(enforce(_file))
-    {
-        _cellCount = _file->readUint16LE();
-        
-        if(enforce(_cellCount))
-        {
-            _cells = new Cell[_cellCount];
-            
-            if(enforce(_cells))
-            {
-                success = true;
-                
-                for(unsigned i = 0; success && i != _cellCount; i ++)
-                {
-                    _cells[i].offset[0] = _file->readUint16LE();
-                    _cells[i].offset[1] = _file->readUint16LE();
-                }
-            }
-        }
-    }
-    
-    return success;
 }
 
 void XEEN::Sprite::cleanse()
@@ -99,6 +88,8 @@ void XEEN::Sprite::cleanse()
 
 void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip)
 {
+    XEEN_VALID();
+
     if(enforce(frame < _cellCount))
     {
         const Cell& cell = _cells[frame];
@@ -116,6 +107,8 @@ void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 f
 
 void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip)
 {
+    XEEN_VALID();
+
     // Read the frame header
     const int16 penX = _file->readSint16LE();
     const uint16 frameWidth = _file->readUint16LE();
@@ -138,7 +131,9 @@ void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool fl
 }
 
 uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
-{   
+{
+    XEEN_VALID_RET(1);
+
     uint8 bytes = _file->readByte();
     int16 x = _file->readByte();
     

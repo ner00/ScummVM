@@ -27,16 +27,21 @@
 
 XEEN::Party::Party()
 {
-    CCFileData* reader = XEENgame.getAssets().getSaveFile().getFile("MAZE.PTY");
+    Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getSaveFile().getFile("MAZE.PTY"));
 
-    memberCount = reader->readByte();
-    realMemberCount = reader->readByte();
-    reader->read(members, 8);
-    
-    facing = reader->readByte();
-    xPosition = reader->readByte();
-    yPosition = reader->readByte();
-    mazeID = reader->readByte();
-    
-    delete reader;
+    if(reader)
+    {
+        memberCount = reader->readByte();
+        realMemberCount = reader->readByte();
+        reader->read(members, 8);
+        
+        facing = reader->readByte();
+        xPosition = reader->readByte();
+        yPosition = reader->readByte();
+        mazeID = reader->readByte();
+    }
+    else
+    {
+        markInvalid();
+    }
 }

@@ -20,6 +20,8 @@
  *
  */
 
+#include "common/ptr.h"
+
 #include "xeen/game.h"
 #include "xeen/ccfile.h"
 #include "xeen/font.h"
@@ -34,9 +36,9 @@ XEEN::Font::Font()
     memset(_glyphs, 0, sizeof(_glyphs));
     
     //
-    CCFileData* reader = XEENgame.getAssets().getFile("FNT");
-    
-    if(enforce(reader))
+    Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getFile("FNT"));
+
+    if(reader)
     {
         for(unsigned i = 0; i != CHARACTER_COUNT; i ++)
         {
@@ -50,18 +52,22 @@ XEEN::Font::Font()
                 }
             }
         }
-        
+            
         for(unsigned i = 0; i != CHARACTER_COUNT; i ++)
         {
             _glyphs[i].spacing = reader->readByte();
         }
-        
-        delete reader;
+    }
+    else
+    {
+        markInvalid();
     }
 }
 
 void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* text) const
 {
+    XEEN_VALID();
+
     const byte* btext = (const byte*)text;
 
     for(; *btext; btext ++)

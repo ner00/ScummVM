@@ -33,25 +33,29 @@ XEEN::CharacterManager::CharacterManager()
 {
     memset(_characters, 0, sizeof(_characters));
     
-    CCFile& assets = XEENgame.getAssets();
-    CCFileData* charFile = assets.getSaveFile().getFile("MAZE.CHR");
+    Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getSaveFile().getFile("MAZE.CHR"));
     
-    for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
+    if(reader)
     {
-        Sprite* faceSprite = XEENgame.getSpriteManager().getSprite(CCFileId("CHAR%02d.FAC", i + 1));
-    
-        if(faceSprite)
+        for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
         {
-            _characters[i] = new Character(charFile, faceSprite);
-        }
-        else
-        {
-            _characters[i] = 0;
-            charFile->seek(354);
+            Sprite* faceSprite = XEENgame.getSpriteManager().getSprite(CCFileId("CHAR%02d.FAC", i + 1));
+        
+            if(valid(faceSprite))
+            {
+                _characters[i] = new Character(reader, faceSprite);
+            }
+            else
+            {
+                _characters[i] = 0;
+                reader->seek(354);
+            }
         }
     }
-    
-    delete charFile;
+    else
+    {
+        markInvalid();
+    }
 }
 
 XEEN::CharacterManager::~CharacterManager()
@@ -64,74 +68,76 @@ XEEN::CharacterManager::~CharacterManager()
 
 XEEN::Character* XEEN::CharacterManager::getCharacter(uint16 id)
 {
-    if(enforce(id < MAX_CHARACTERS))
-    {
-        return _characters[id];
-    }
-    else
-    {
-        return 0;
-    }
+    XEEN_VALID_RET(0);
+
+    return (enforce(id < MAX_CHARACTERS)) ? _characters[id] : 0;
 }
 
 ///
 /// Character
 ///
-XEEN::Character::Character(CCFileData* data, Sprite* faceSprite)
+XEEN::Character::Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSprite) : face(0)
 {
-    face = faceSprite;
-    enforce(face);
-
-    data->read(name, 16);
-
-    sex = (Sex)data->readByte();
-    race = (Race)data->readByte();
-    saveSide = (Side)data->readByte();
-    profession = (Class)data->readByte();
+    if(data && valid(faceSprite))
+    {
+        face = faceSprite;
+        enforce(face);
     
-    might = Statistic(*data);
-    intellect = Statistic(*data);
-    personality = Statistic(*data);
-    endurance = Statistic(*data);
-    speed = Statistic(*data);
-    accuracy = Statistic(*data);
-    luck = Statistic(*data);
-
-
-    actemp = data->readByte();
-    data->read(level, 2);
-    dbday = data->readByte();
+        data->read(name, 16);
     
-    agetemp = data->readByte();
+        sex = (Sex)data->readByte();
+        race = (Race)data->readByte();
+        saveSide = (Side)data->readByte();
+        profession = (Class)data->readByte();
+        
+        might = Statistic(*data);
+        intellect = Statistic(*data);
+        personality = Statistic(*data);
+        endurance = Statistic(*data);
+        speed = Statistic(*data);
+        accuracy = Statistic(*data);
+        luck = Statistic(*data);
     
-    data->read(skills, 18);
-    data->read(awards, 64);
-    data->read(spells, 39);
-
-    beaconMap = data->readByte();
-    beaconX = data->readByte();
-    beaconY = data->readByte();
     
-    hasSpells = data->readByte();
-    currentSpell = data->readByte();
-    quickOption = data->readByte();
+        actemp = data->readByte();
+        data->read(level, 2);
+        dbday = data->readByte();
+        
+        agetemp = data->readByte();
+        
+        data->read(skills, 18);
+        data->read(awards, 64);
+        data->read(spells, 39);
     
-    data->read(weapons, 36);
-    data->read(armor, 36);
-    data->read(accessories, 36);
-    data->read(misc, 36);
-    
-    beaconSide = (Side)data->readByte();
-    
-    data->read(resistences, 12);
-    data->read(conditions, 16);
-    data->read(unknown, 3);
-    
-    hp = data->readSint16LE();
-    sp = data->readSint16LE();
-    bday2 = data->readUint16LE();
-    experience = data->readUint32LE();
-    
-    adventureSpell = data->readByte();
-    combatSpell = data->readByte();
+        beaconMap = data->readByte();
+        beaconX = data->readByte();
+        beaconY = data->readByte();
+        
+        hasSpells = data->readByte();
+        currentSpell = data->readByte();
+        quickOption = data->readByte();
+        
+        data->read(weapons, 36);
+        data->read(armor, 36);
+        data->read(accessories, 36);
+        data->read(misc, 36);
+        
+        beaconSide = (Side)data->readByte();
+        
+        data->read(resistences, 12);
+        data->read(conditions, 16);
+        data->read(unknown, 3);
+        
+        hp = data->readSint16LE();
+        sp = data->readSint16LE();
+        bday2 = data->readUint16LE();
+        experience = data->readUint32LE();
+        
+        adventureSpell = data->readByte();
+        combatSpell = data->readByte();
+    }
+    else
+    {
+        markInvalid();
+    }
 }

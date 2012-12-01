@@ -30,7 +30,7 @@ namespace XEEN
     class Game;
     class ImageBuffer;
 
-    class Font
+    class Font : public Validateable
     {
         static const unsigned CHARACTER_COUNT = 256;
         friend class Game;

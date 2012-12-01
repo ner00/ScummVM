@@ -47,6 +47,10 @@ XEEN::MazeText::MazeText(uint32 mapNumber) : _data(0)
             }
         }
     }
+    else
+    {
+        markInvalid();
+    }
 }
 
 XEEN::MazeText::~MazeText()
@@ -56,7 +60,9 @@ XEEN::MazeText::~MazeText()
 
 const char* XEEN::MazeText::getString(uint32 id) const
 {
-    if(enforce(id < MAX_STRINGS) && _data)
+    XEEN_VALID_RET("");
+
+    if(enforce(id < MAX_STRINGS))
     {
         return (_stringOffsets[id] != 0xFFFF) ? (const char*)(&_data->getData()[_stringOffsets[id]]) : "";
     }

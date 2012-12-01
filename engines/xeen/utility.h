@@ -26,6 +26,7 @@
 #include <stdarg.h>
 #include "common/scummsys.h"
 #include "common/rect.h"
+#include "common/ptr.h"
 
 namespace XEEN
 {
@@ -34,6 +35,55 @@ namespace XEEN
         assert(cond);
         return cond;
     }
+    
+    // notNull: Abort if argument is null, return argument.
+    template <typename T>
+    inline T notNull(T t)
+    {
+        assert(t);
+        return t;
+    }
+    
+    class Validateable
+    {
+        public:
+            Validateable() : _valid(true) { }
+        
+            bool isValid() const { return _valid; }
+            operator const void*() const { return _valid ? this : 0; }
+    
+        protected:
+            void markValid() { _valid = true; }
+            void markInvalid() { _valid = false; }
+
+        private:
+            bool _valid;
+    };
+    
+    class Validateable_Cleanable : public Validateable
+    {
+        public:
+            virtual ~Validateable_Cleanable() { };
+    
+        public:
+            void markInvalidAndClean() { markInvalid(); cleanse(); }
+    
+        protected:
+            virtual void cleanse() = 0;
+    };
+        
+    inline bool valid(const Validateable& a)
+    {
+        return a.isValid();
+    }
+    
+    inline bool valid(const Validateable* a)
+    {
+        return a && a->isValid();
+    }
+    
+    #define XEEN_VALID() if(!isValid()) return;
+    #define XEEN_VALID_RET(X) if(!isValid()) return X;
     
     template <typename T>
     void DELETE(T*& v)

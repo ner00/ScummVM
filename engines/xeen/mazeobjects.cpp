@@ -24,6 +24,7 @@
 #include "xeen/game.h"
 #include "xeen/ccfile.h"
 #include "xeen/mazeobjects.h"
+#include "xeen/utility.h"
 
 ///
 /// MazeObjects
@@ -34,14 +35,14 @@ XEEN::MazeObjects::MazeObjects(uint16 mapNumber)
     memset(_monsterTypes, 0xFF, sizeof(_monsterTypes));
     memset(_wallObjectTypes, 0xFF, sizeof(_wallObjectTypes));
 
-    CCFileData* reader = XEENgame.getAssets().getSaveFile().getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber));
+    Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getSaveFile().getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber)));
     
     if(reader)
     {
         reader->read(_objectTypes, 16);
         reader->read(_monsterTypes, 16);
         reader->read(_wallObjectTypes, 16);
-
+    
         // Read object list
         while(!reader->eos())
         {
@@ -58,8 +59,10 @@ XEEN::MazeObjects::MazeObjects(uint16 mapNumber)
             
             _objects.push_back(e);
         }
-
-        delete reader;
+    }
+    else
+    {
+        markInvalid();
     }
 }
 
@@ -70,6 +73,8 @@ XEEN::MazeObjects::~MazeObjects()
 
 bool XEEN::MazeObjects::getObjectAt(const Common::Point& position, Entry& data)
 {
+    XEEN_VALID_RET(false);
+
     for(Common::List<Entry>::iterator i = _objects.begin(); i != _objects.end(); i ++)
     {
         if(i->position == position)

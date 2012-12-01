@@ -23,8 +23,11 @@
 #ifndef XEEN_CHARACTERS_H
 #define XEEN_CHARACTERS_H
 
+#include "xeen/utility.h"
+
 #include "common/scummsys.h"
 #include "common/stream.h"
+#include "common/ptr.h"
 
 namespace XEEN
 {
@@ -54,12 +57,12 @@ namespace XEEN
     };
 
     // Stats for a single playable character
-    class Character
+    class Character : public Validateable
     {
         friend class CharacterManager;
     
         private:
-            Character(CCFileData* data, Sprite* faceSprite);
+            Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSprite);
     
         public:
             Sprite* face;
@@ -121,7 +124,7 @@ namespace XEEN
             uint8 combatSpell;
     };
     
-    class CharacterManager
+    class CharacterManager : public Validateable
     {
         friend class Game;
     
