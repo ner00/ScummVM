@@ -347,7 +347,6 @@ void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)
             {
                 Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
             
-                out.setScale(indoorDrawList[i].scale);
                 sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000);
             }
                                 
@@ -358,8 +357,6 @@ void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)
             drewLastSprite = false;
         }
     }
-    
-    out.setScale(0);
 }
 
 XEEN::MazeSegment* XEEN::Map::resolveSegment(Common::Point& position)

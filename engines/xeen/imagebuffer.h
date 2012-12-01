@@ -34,22 +34,11 @@ namespace XEEN
     struct ImageBuffer
     {
         public:
-            ImageBuffer() : _origin(0, 0), _pen(0, 0), _penOffset(1, 0), _clip(0, 0, 320, 200), _scale(0)
+            ImageBuffer() : _pen(0, 0), _penOffset(1, 0), _clip(0, 0, 320, 200)
             {
             
             }
-        
-            ImageBuffer& setOrigin(const Common::Point& origin)
-            {
-                _origin = origin;
-                return *this;
-            }
-        
-            Common::Point getOrigin() const
-            {
-                return _origin;
-            }
-        
+                
             ImageBuffer& setPen(const Common::Point& pen)
             {
                 _pen = pen;
@@ -86,24 +75,16 @@ namespace XEEN
                 _clip = Common::Rect(0, 0, 320, 200);
                 return *this;
             }
-            
-            ImageBuffer& setScale(uint32 amount)
-            {
-                _scale = ((float)(amount >> 2)) + (.25f * (amount & 3));
-                return *this;
-            }
-            
+                        
             // Draw Pixels KEYED UNSCALED NOFLIP
             template <byte KEY>
             void drawPixels_K_U_NF(const byte* pixels, unsigned length)
             {            
                 for(unsigned i = 0; i != length; i ++, pixels++)
                 {
-                    const Common::Point pos = _origin + _pen;
-                
-                    if(*pixels != KEY && _clip.contains(pos))
+                    if(*pixels != KEY && _clip.contains(_pen))
                     {
-                        buffer[pos.y * 320 + pos.x] = *pixels;
+                        buffer[_pen.y * 320 + _pen.x] = *pixels;
                     }
                     
                     _pen.x ++;
@@ -120,12 +101,9 @@ namespace XEEN
             
             void putPixel(uint8 color)
             {
-                const int ppenX = (_scale > 0.1f) ? (int)(((float)_pen.x) / _scale) : _pen.x;
-                const int ppenY = (_scale > 0.1f) ? (int)(((float)_pen.y) / _scale) : _pen.y;
-
-                if(_clip.contains(_origin + Common::Point(ppenX, ppenY)))
+                if(_clip.contains(_pen))
                 {
-                    buffer[(_origin.y + ppenY) * 320 + (_origin.x + ppenX)] = color;
+                    buffer[_pen.y * 320 + _pen.x] = color;
                 }
                 
                 _pen += _penOffset;
@@ -135,12 +113,10 @@ namespace XEEN
             byte buffer[320 * 200];
             
         private:
-            Common::Point _origin;
             Common::Point _pen;
             Common::Point _penOffset;
             
             Common::Rect _clip;
-            float _scale;
     };
 }
 
