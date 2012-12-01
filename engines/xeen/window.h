@@ -47,6 +47,7 @@ namespace XEEN
     struct String
     {
         const char* const text;
+        const uint32 stringID;
 
         const int32 x;
         const int32 y;        
@@ -64,6 +65,7 @@ namespace XEEN
             virtual const String* getStrings() const { return 0; }
             
             virtual void handleAction(unsigned id) { }
+            virtual const char* produceString(unsigned id) { return 0; }
 
         public:
             void heartbeat();
@@ -86,7 +88,11 @@ namespace XEEN
             const Button* getButtons() const;
             const String* getStrings() const;
             
-            void handleAction(unsigned id);     
+            void handleAction(unsigned id);
+            const char* produceString(unsigned id);
+            
+        private:
+            char stringBuffer[128];
     };
 }
 

@@ -56,9 +56,14 @@ void XEEN::Window::draw(ImageBuffer& out, CCFile& assets)
     // Draw strings
     Font& font = assets.getFont();
     
-    for(const String* string = getStrings(); string && string->text; string ++)
+    for(const String* string = getStrings(); string && (string->text || string->stringID); string ++)
     {
-        font.drawString(out, location + Common::Point(string->x, string->y), string->text);
+        const char* text = string->text ? string->text : produceString(string->stringID);
+        
+        if(text)
+        {
+            font.drawString(out, location + Common::Point(string->x, string->y), text);
+        }
     }
 }
 
@@ -119,13 +124,13 @@ const XEEN::String* XEEN::CharacterStatusWindow::getStrings() const
 {
     static const String strings[] = 
     {
-        {"Mgt", 37,  26}, {"Acy", 88,  26}, {"H.P.",   139,  26}, {"Experience", 204,  26},
-        {"Int", 37,  49}, {"Lck", 88,  49}, {"S.P.",   139,  49}, {"Party Gold", 204,  49},
-        {"Per", 37,  70}, {"Age", 88,  70}, {"Resis",  139,  70}, {"Party Gems", 204,  70},
-        {"End", 37,  93}, {"Lvl", 88,  93}, {"Skills", 139,  93}, {"Party Food", 204,  93},
-        {"Spd", 37, 116}, {"AC",  88, 116}, {"Awrds",  139, 116}, {"Condition",  204, 116},
+        {"Mgt", 0, 37,  26}, {"Acy", 0, 88,  26}, {"H.P.",   0, 139,  26}, {"Experience", 0, 204,  26},
+        {"Int", 0, 37,  49}, {"Lck", 0, 88,  49}, {"S.P.",   0, 139,  49}, {"Party Gold", 0, 204,  49},
+        {"Per", 0, 37,  70}, {"Age", 0, 88,  70}, {"Resis",  0, 139,  70}, {"Party Gems", 0, 204,  70},
+        {"End", 0, 37,  93}, {"Lvl", 0, 88,  93}, {"Skills", 0, 139,  93}, {"Party Food", 0, 204,  93},
+        {"Spd", 0, 37, 116}, {"AC",  0, 88, 116}, {"Awrds",  0, 139, 116}, {"Condition",  0, 204, 116},
 
-        {0, 0, 0}
+        {0, 0, 0, 0}
     };
     
     return strings;
@@ -134,4 +139,10 @@ const XEEN::String* XEEN::CharacterStatusWindow::getStrings() const
 void XEEN::CharacterStatusWindow::handleAction(unsigned id)
 {
     debug("%d", id);
+}
+
+const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
+{
+    snprintf(stringBuffer, sizeof(stringBuffer), "%d", id);
+    return stringBuffer;
 }
