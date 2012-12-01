@@ -26,6 +26,8 @@
 #include "common/scummsys.h"
 #include "common/rect.h"
 
+#include "xeen/utility.h"
+
 namespace XEEN
 {
     class ImageBuffer;
@@ -37,8 +39,7 @@ namespace XEEN
         const uint32 normalFrame;
         const uint32 pressedFrame;
 
-        const int32 x;
-        const int32 y;
+        const XRect area;
         
         const uint32 actionID;
     };
@@ -59,9 +60,12 @@ namespace XEEN
 
             virtual const Button* getButtons() const { return 0; }
             virtual const String* getStrings() const { return 0; }
+            
+            virtual void handleAction(unsigned id) { }
 
         public:
             void draw(ImageBuffer& out, CCFile& assets);
+            void click(const Common::Point& point);
         
         private:
             Common::Rect _area;
@@ -75,6 +79,8 @@ namespace XEEN
         protected:
             const Button* getButtons() const;
             const String* getStrings() const;
+            
+            void handleAction(unsigned id);     
     };
 }
 

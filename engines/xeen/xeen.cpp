@@ -114,6 +114,16 @@ Common::Error XEEN::XeenEngine::run()
         {
             switch(event.type)
             {
+                case Common::EVENT_LBUTTONDOWN:
+                {
+                    if(showMenu)
+                    {
+                        CharacterStatusWindow().click(event.mouse);
+                    }
+                    
+                    break;
+                }
+            
                 case Common::EVENT_KEYDOWN:
                 {
                     if(event.kbd.keycode == Common::KEYCODE_TAB) showMenu = !showMenu;                

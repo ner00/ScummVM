@@ -48,6 +48,20 @@ namespace XEEN
         delete[] v;
         v = 0;
     }
+    
+    // POD rect wrapper
+    struct XRect
+    {
+        int16 x;
+        int16 y;
+        uint16 w;
+        uint16 h;
+        
+        operator Common::Rect() const
+        {
+            return Common::Rect(x, y, x + w, y + h);
+        }
+    };
 
     struct CCFileId
     {
