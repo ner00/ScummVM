@@ -10,7 +10,8 @@ MODULE_OBJS := \
     party.o \
     mazetext.o \
     mazeobjects.o \
-    font.o
+    font.o \
+    window.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)

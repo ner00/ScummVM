@@ -37,6 +37,7 @@
 #include "xeen/characters.h"
 #include "xeen/party.h"
 #include "xeen/font.h"
+#include "xeen/window.h"
 
 #include "xeen/imagebuffer.h"
 
@@ -159,6 +160,8 @@ Common::Error XEEN::XeenEngine::run()
         {
             mainicn->drawCell(buffer, actionLocations[i], i * 2);
         }
+                
+        CharacterStatusWindow().draw(buffer, ccf);
                 
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
