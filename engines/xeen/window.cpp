@@ -24,6 +24,7 @@
 #include "xeen/ccfile.h"
 #include "xeen/sprite.h"
 #include "xeen/font.h"
+#include "xeen/imagebuffer.h"
 
 XEEN::Window::Window(const Common::Rect& area) : _area(area)
 {
@@ -32,8 +33,9 @@ XEEN::Window::Window(const Common::Rect& area) : _area(area)
 void XEEN::Window::draw(ImageBuffer& out, CCFile& assets)
 {
     const Common::Point location(_area.left, _area.top);
-    
-    // FILL RECT !!!
+
+    // Background: TODO: Get correct color; draw border.    
+    out.fillRect(_area, 21);
     
     // Draw buttons
     SpriteManager& sprites = assets.getSpriteManager();

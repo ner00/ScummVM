@@ -75,7 +75,26 @@ namespace XEEN
                 _clip = Common::Rect(0, 0, 320, 200);
                 return *this;
             }
-                        
+
+            // TODO: CLIP
+            ImageBuffer& fillRect(const Common::Rect& rect, byte color)
+            {
+                enforce(rect.isValidRect());
+            
+                for(int i = rect.top; i != rect.bottom && i < 200; i ++)
+                {
+                    for(int j = rect.left; j != rect.right && j < 320; j ++)
+                    {
+                        if(j >= 0 && i >= 0)
+                        {
+                            buffer[i * 320 + j] = color;
+                        }
+                    }
+                }
+                
+                return *this;
+            }
+    
             // Draw Pixels KEYED UNSCALED NOFLIP
             template <byte KEY>
             void drawPixels_K_U_NF(const byte* pixels, unsigned length)

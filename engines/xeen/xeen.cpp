@@ -103,6 +103,8 @@ Common::Error XEEN::XeenEngine::run()
     
     Sprite* hpbars = ccf.getSpriteManager().getSprite("HPBARS.ICN");
     Sprite* mainicn = ccf.getSpriteManager().getSprite("MAIN.ICN");
+     
+    bool showMenu = false;
                 
     while(!shouldQuit())
     {
@@ -114,13 +116,18 @@ Common::Error XEEN::XeenEngine::run()
             {
                 case Common::EVENT_KEYDOWN:
                 {
-                    if(event.kbd.keycode == Common::KEYCODE_UP) loc = Map::translatePoint(loc, 0, 1, dir&3);
-                    if(event.kbd.keycode == Common::KEYCODE_DOWN) loc = Map::translatePoint(loc, 0, -1, dir&3);
-                    if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
-                    if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
-
-                    if(dir < 0) dir = 3;
-//                    if(dir > 3) dir = 0;
+                    if(event.kbd.keycode == Common::KEYCODE_TAB) showMenu = !showMenu;                
+                
+                    if(!showMenu)
+                    {
+                        if(event.kbd.keycode == Common::KEYCODE_UP) loc = Map::translatePoint(loc, 0, 1, dir&3);
+                        if(event.kbd.keycode == Common::KEYCODE_DOWN) loc = Map::translatePoint(loc, 0, -1, dir&3);
+                        if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
+                        if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
+    
+                        if(dir < 0) dir = 3;
+                        if(dir > 3) dir = 0;
+                    }
                 }
             
                 default:
@@ -135,7 +142,38 @@ Common::Error XEEN::XeenEngine::run()
         
         memcpy(buffer.buffer, file->getData(), 320 * 200);
         
-        testMap->draw(buffer.setClipArea(Common::Rect(8, 8, 224, 140)), ccf.getSpriteManager());
+        // MAIN ICONS: TODO: Support press release; context
+        static const Common::Point actionLocations[16] =
+        {
+            Common::Point(235,  75), Common::Point(260,  75), Common::Point(286,  75),
+            Common::Point(235,  96), Common::Point(260,  96), Common::Point(286,  96),
+            Common::Point(235, 117), Common::Point(260, 117), Common::Point(286, 117),
+            Common::Point(109, 137), //
+            Common::Point(235, 148), Common::Point(260, 148), Common::Point(286, 148),
+            Common::Point(235, 169), Common::Point(260, 169), Common::Point(286, 169),            
+        };
+        
+        
+        if(!showMenu)
+        {
+            buffer.setClipArea(Common::Rect(8, 8, 224, 140));
+            testMap->draw(buffer, ccf.getSpriteManager());
+            buffer.resetClipArea();
+                        
+            for(int i = 0; i != 16; i ++)
+            {
+                mainicn->drawCell(buffer, actionLocations[i], i * 2);
+            }
+        }
+        else
+        {
+            for(int i = 0; i != 16; i ++)
+            {
+                mainicn->drawCell(buffer, actionLocations[i], i * 2);
+            }        
+        
+            CharacterStatusWindow().draw(buffer, ccf);
+        }
         
         // PORTRAITS: TODO: Proper face and hpbar frames!
         static const Common::Point portraitLocations[6] = 
@@ -160,25 +198,7 @@ Common::Error XEEN::XeenEngine::run()
                 chara->face->drawCell(buffer, portraitLocations[i], 0);
                 hpbars->drawCell(buffer, hpbarLocations[i], 0);
             }
-        }
-        
-        // MAIN ICONS: TODO: Support press release; context
-        static const Common::Point actionLocations[16] =
-        {
-            Common::Point(235,  75), Common::Point(260,  75), Common::Point(286,  75),
-            Common::Point(235,  96), Common::Point(260,  96), Common::Point(286,  96),
-            Common::Point(235, 117), Common::Point(260, 117), Common::Point(286, 117),
-            Common::Point(109, 137), //
-            Common::Point(235, 148), Common::Point(260, 148), Common::Point(286, 148),
-            Common::Point(235, 169), Common::Point(260, 169), Common::Point(286, 169),            
-        };
-        
-        for(int i = 0; i != 16; i ++)
-        {
-            mainicn->drawCell(buffer, actionLocations[i], i * 2);
-        }
-                
-        CharacterStatusWindow().draw(buffer, ccf);
+        }                
                 
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
