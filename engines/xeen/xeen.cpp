@@ -105,6 +105,8 @@ Common::Error XEEN::XeenEngine::run()
     Sprite* mainicn = ccf.getSpriteManager().getSprite("MAIN.ICN");
      
     bool showMenu = false;
+    
+    CharacterStatusWindow window;
                 
     while(!shouldQuit())
     {
@@ -118,7 +120,7 @@ Common::Error XEEN::XeenEngine::run()
                 {
                     if(showMenu)
                     {
-                        CharacterStatusWindow().click(event.mouse);
+                        window.click(event.mouse);
                     }
                     
                     break;
@@ -177,12 +179,14 @@ Common::Error XEEN::XeenEngine::run()
         }
         else
         {
+            window.heartbeat();
+        
             for(int i = 0; i != 16; i ++)
             {
                 mainicn->drawCell(buffer, actionLocations[i], i * 2);
             }        
         
-            CharacterStatusWindow().draw(buffer, ccf);
+            window.draw(buffer, ccf);
         }
         
         // PORTRAITS: TODO: Proper face and hpbar frames!

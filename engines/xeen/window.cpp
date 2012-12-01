@@ -26,7 +26,9 @@
 #include "xeen/font.h"
 #include "xeen/imagebuffer.h"
 
-XEEN::Window::Window(const Common::Rect& area) : _area(area)
+#include "common/system.h"
+
+XEEN::Window::Window(const Common::Rect& area) : _area(area), _pressedButton(0), _pressedTime(0)
 {
 }
 
@@ -46,7 +48,8 @@ void XEEN::Window::draw(ImageBuffer& out, CCFile& assets)
         
         if(enforce(icon))
         {
-            icon->drawCell(out, location + Common::Point(button->area.x, button->area.y), button->normalFrame);
+            const uint32 frame = (button == _pressedButton) ? button->pressedFrame : button->normalFrame;
+            icon->drawCell(out, location + button->area, frame);
         }
     }
     
@@ -59,6 +62,15 @@ void XEEN::Window::draw(ImageBuffer& out, CCFile& assets)
     }
 }
 
+void XEEN::Window::heartbeat()
+{
+    if(_pressedButton && (g_system->getMillis() >= _pressedTime))
+    {
+        handleAction(_pressedButton->actionID);
+        _pressedButton = 0;
+    }
+}
+
 void XEEN::Window::click(const Common::Point& point)
 {
     // Check buttons    
@@ -68,7 +80,8 @@ void XEEN::Window::click(const Common::Point& point)
     
         if(r.contains(point))
         {
-            handleAction(button->actionID);
+            _pressedButton = button;
+            _pressedTime = g_system->getMillis() + BUTTON_DELAY;
         }
     }
 }

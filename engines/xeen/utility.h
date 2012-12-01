@@ -61,6 +61,11 @@ namespace XEEN
         {
             return Common::Rect(x, y, x + w, y + h);
         }
+        
+        operator Common::Point() const
+        {
+            return Common::Point(x, y);
+        }
     };
 
     struct CCFileId

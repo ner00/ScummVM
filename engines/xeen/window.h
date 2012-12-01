@@ -54,6 +54,8 @@ namespace XEEN
 
     class Window
     {
+        static const unsigned BUTTON_DELAY = 100;
+    
         protected:
             Window(const Common::Rect& area);
             virtual ~Window() {};
@@ -64,11 +66,15 @@ namespace XEEN
             virtual void handleAction(unsigned id) { }
 
         public:
+            void heartbeat();
             void draw(ImageBuffer& out, CCFile& assets);
             void click(const Common::Point& point);
         
         private:
             Common::Rect _area;
+            
+            const Button* _pressedButton;
+            uint32 _pressedTime;
     };
     
     class CharacterStatusWindow : public Window
