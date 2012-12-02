@@ -24,7 +24,10 @@
 #define XEEN_GAME_H
 
 #include "common/scummsys.h"
+#include "common/keyboard.h"
+
 #include "xeen/window.h"
+#include "xeen/utility.h"
 
 namespace XEEN
 {
@@ -36,14 +39,20 @@ namespace XEEN
     class Party;
     class Font;
 
-    class Game
+    class Game : public Validateable_Cleanable
     {
         public:
             Game();
             ~Game();
-        
+
+        protected:
+            void cleanse();
+            
+        public:
             void load();
         
+            void click(const Common::Point& location);
+            void key(Common::KeyCode key);
             void draw(ImageBuffer& out);
         
             CCFile& getAssets() { enforce(_assets); return *_assets; }

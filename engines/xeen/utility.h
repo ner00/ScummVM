@@ -99,6 +99,8 @@ namespace XEEN
         v = 0;
     }
     
+    #define XEEN_DELETE(T) delete T; T = 0;
+    
     // POD rect wrapper
     struct XRect
     {

@@ -113,7 +113,7 @@ namespace XEEN
             uint32 _height;
     };
     
-    class MapManager
+    class MapManager : public Validateable
     {
         friend class Game;
     

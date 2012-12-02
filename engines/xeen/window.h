@@ -69,7 +69,7 @@ namespace XEEN
         public:
             void heartbeat();
             void draw(ImageBuffer& out);
-            void click(const Common::Point& point);
+            bool click(const Common::Point& point);
         
         private:
             Common::Rect _area;

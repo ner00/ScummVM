@@ -43,8 +43,7 @@ namespace XEEN
             uint8 members[8];
 
             uint8 facing;
-            uint8 xPosition;
-            uint8 yPosition;
+            Common::Point position;
             uint8 mazeID;
     };
 }

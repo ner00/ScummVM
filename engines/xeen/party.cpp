@@ -36,8 +36,8 @@ XEEN::Party::Party()
         reader->read(members, 8);
         
         facing = reader->readByte();
-        xPosition = reader->readByte();
-        yPosition = reader->readByte();
+        position.x = reader->readByte();
+        position.y = reader->readByte();
         mazeID = reader->readByte();
     }
     else

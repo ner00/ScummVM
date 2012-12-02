@@ -55,7 +55,7 @@ namespace XEEN
             byte* _data;
     };
     
-    class CCToc
+    class CCToc : public Validateable
     {
         public:
             CCToc();

@@ -77,7 +77,7 @@ void XEEN::Window::heartbeat()
     }
 }
 
-void XEEN::Window::click(const Common::Point& point)
+bool XEEN::Window::click(const Common::Point& point)
 {
     // Check buttons    
     for(const Button* button = getButtons(); button && button->sprite; button ++)
@@ -88,8 +88,11 @@ void XEEN::Window::click(const Common::Point& point)
         {
             _pressedButton = button;
             _pressedTime = g_system->getMillis() + BUTTON_DELAY;
+            return true;
         }
     }
+    
+    return false;
 }
 
 XEEN::CharacterStatusWindow::CharacterStatusWindow() : Window(Common::Rect(0, 0, 320, 146))
@@ -180,14 +183,14 @@ const XEEN::Button* XEEN::MainIconWindow::getButtons() const
 {
     static const Button buttons[] = 
     {
-        {"MAIN.ICN",  0,  1, {235,  75, 32, 32}, 0}, {"MAIN.ICN", 16, 17, {286, 117, 32, 32}, 8}, 
-        {"MAIN.ICN",  2,  3, {260,  75, 32, 32}, 1}, {"MAIN.ICN", 18, 19, {109, 137, 32, 32}, 9}, //TODO: SIZE?
-        {"MAIN.ICN",  4,  5, {286,  75, 32, 32}, 2}, {"MAIN.ICN", 20, 21, {235, 148, 32, 32}, 10}, 
-        {"MAIN.ICN",  6,  7, {235,  96, 32, 32}, 3}, {"MAIN.ICN", 22, 23, {260, 148, 32, 32}, 11}, 
-        {"MAIN.ICN",  8,  9, {260,  96, 32, 32}, 4}, {"MAIN.ICN", 24, 25, {286, 148, 32, 32}, 12}, 
-        {"MAIN.ICN", 10, 11, {286,  96, 32, 32}, 5}, {"MAIN.ICN", 26, 27, {235, 169, 32, 32}, 13}, 
-        {"MAIN.ICN", 12, 13, {235, 117, 32, 32}, 6}, {"MAIN.ICN", 28, 29, {260, 169, 32, 32}, 14}, 
-        {"MAIN.ICN", 14, 15, {260, 117, 32, 32}, 7}, {"MAIN.ICN", 30, 31, {286, 169, 32, 32}, 15}, 
+        {"MAIN.ICN",  0,  1, {235,  75, 24, 20}, 0}, {"MAIN.ICN", 16, 17, {286, 117, 24, 20}, 8}, 
+        {"MAIN.ICN",  2,  3, {260,  75, 24, 20}, 1}, {"MAIN.ICN", 18, 19, {109, 137, 24, 20}, 9}, //TODO: SIZE?
+        {"MAIN.ICN",  4,  5, {286,  75, 24, 20}, 2}, {"MAIN.ICN", 20, 21, {235, 148, 24, 20}, 10}, 
+        {"MAIN.ICN",  6,  7, {235,  96, 24, 20}, 3}, {"MAIN.ICN", 22, 23, {260, 148, 24, 20}, 11}, 
+        {"MAIN.ICN",  8,  9, {260,  96, 24, 20}, 4}, {"MAIN.ICN", 24, 25, {286, 148, 24, 20}, 12}, 
+        {"MAIN.ICN", 10, 11, {286,  96, 24, 20}, 5}, {"MAIN.ICN", 26, 27, {235, 169, 24, 20}, 13}, 
+        {"MAIN.ICN", 12, 13, {235, 117, 24, 20}, 6}, {"MAIN.ICN", 28, 29, {260, 169, 24, 20}, 14}, 
+        {"MAIN.ICN", 14, 15, {260, 117, 24, 20}, 7}, {"MAIN.ICN", 30, 31, {286, 169, 24, 20}, 15}, 
 
         {0, 0, 0, {0, 0, 0, 0}, 0}
     };

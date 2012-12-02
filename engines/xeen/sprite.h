@@ -63,7 +63,7 @@ namespace XEEN
             Cell* _cells;
     };
     
-    class SpriteManager
+    class SpriteManager : public Validateable
     {
         static const unsigned MAX_SPRITES = 65536;
         friend class Game;

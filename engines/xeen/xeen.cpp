@@ -61,8 +61,7 @@ Common::Error XEEN::XeenEngine::run()
     //
 
     XEENgame.load();
-    bool showMenu = false;
-                    
+
     while(!shouldQuit())
     {
     	Common::Event event;    
@@ -71,36 +70,9 @@ Common::Error XEEN::XeenEngine::run()
         {
             switch(event.type)
             {
-                case Common::EVENT_LBUTTONDOWN:
-                {
-                    if(showMenu)
-                    {
-//                        window.click(event.mouse);
-                    }
-                    
-                    break;
-                }
-            
-                case Common::EVENT_KEYDOWN:
-                {
-                    if(event.kbd.keycode == Common::KEYCODE_TAB) showMenu = !showMenu;                
-                
-                    if(!showMenu)
-                    {
-//                        if(event.kbd.keycode == Common::KEYCODE_UP) loc = Map::translatePoint(loc, 0, 1, dir&3);
-//                        if(event.kbd.keycode == Common::KEYCODE_DOWN) loc = Map::translatePoint(loc, 0, -1, dir&3);
-//                        if(event.kbd.keycode == Common::KEYCODE_LEFT) dir --;
-//                        if(event.kbd.keycode == Common::KEYCODE_RIGHT) dir ++;                    
-    
-//                        if(dir < 0) dir = 3;
-//                        if(dir > 3) dir = 0;
-                    }
-                }
-            
-                default:
-                {
-                    break;
-                }
+                case Common::EVENT_LBUTTONDOWN: XEENgame.click(event.mouse); break;
+                case Common::EVENT_KEYDOWN: XEENgame.key(event.kbd.keycode); break;
+                default: break;
             }
         }
 

@@ -37,16 +37,22 @@ XEEN::Game XEENgame;
 
 XEEN::Game::Game() : _assets(0), _spriteManager(0),_mapManager(0), _characterManager(0), _party(0), _font(0)
 {
+    markInvalid();
 }
 
 XEEN::Game::~Game()
 {
-    delete _font;
-    delete _party;
-    delete _characterManager;
-    delete _mapManager;
-    delete _spriteManager;
-    delete _assets;
+    cleanse();
+}
+
+void XEEN::Game::cleanse()
+{
+    XEEN_DELETE(_font);
+    XEEN_DELETE(_party);
+    XEEN_DELETE(_characterManager);
+    XEEN_DELETE(_mapManager);
+    XEEN_DELETE(_spriteManager);
+    XEEN_DELETE(_assets);
 }
 
 void XEEN::Game::load()
@@ -58,6 +64,15 @@ void XEEN::Game::load()
     _party = new Party();
     _font = new Font();
     
+    if(!(valid(_assets) && valid(_spriteManager) && valid(_mapManager) && valid(_characterManager) && valid(_party) && valid(_font)))
+    {
+        markInvalidAndClean();
+        return;
+    }
+    
+    markValid();
+
+    // HACK: TODO Error check
     // Load palette
     {
         byte palette[256 * 3];
@@ -90,14 +105,52 @@ void XEEN::Game::load()
     }
 }
 
+void XEEN::Game::click(const Common::Point& location)
+{
+    XEEN_VALID();
+    
+    if(!_commandsWnd.click(location))
+    {
+        if(!_portraitWnd.click(location))
+        {
+        
+        }
+    }
+}
+
+void XEEN::Game::key(Common::KeyCode keycode)
+{
+    XEEN_VALID();
+
+//    if(event.kbd.keycode == Common::KEYCODE_TAB) showMenu = !showMenu;                
+
+//    if(!showMenu)
+//    {
+
+    switch(keycode)
+    {
+        case Common::KEYCODE_UP:    _party->position = Map::translatePoint(_party->position, 0, 1, _party->facing & 3); break;
+        case Common::KEYCODE_DOWN:  _party->position = Map::translatePoint(_party->position, 0, -1, _party->facing & 3); break;
+        case Common::KEYCODE_LEFT:  _party->facing --; break;
+        case Common::KEYCODE_RIGHT: _party->facing ++; break;
+        
+        default: break;
+    }
+}
+
+
 void XEEN::Game::draw(ImageBuffer& out)
 {   
+    XEEN_VALID();
+
     if(true) // HACK
     {
+        _commandsWnd.heartbeat();
+    
         Map* m = _mapManager->getMap(_party->mazeID);
         if(enforce(m))
         {
-            m->fillDrawStruct(Common::Point(_party->xPosition, _party->yPosition), _party->facing & 3);
+            m->fillDrawStruct(_party->position, _party->facing & 3);
             m->draw(out, *_spriteManager);
         }
 
@@ -119,9 +172,10 @@ void XEEN::Game::draw(ImageBuffer& out)
 
 void XEEN::Game::movePartyTo(uint16 map, int16 x, int16 y, uint32 direction)
 {
+    XEEN_VALID();
+
     _party->mazeID = map;
-    _party->xPosition = x;
-    _party->yPosition = y;
+    _party->position = Common::Point(x, y);
     _party->facing = direction;
 }
 
