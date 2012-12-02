@@ -32,7 +32,7 @@
 
 namespace XEEN
 {
-    struct CCFileData : public Common::MemoryReadStream
+    class File : public Common::MemoryReadStream, public Validateable
     {
         public:
             CCFileData(CCFileId id, byte* data, uint32 size);
@@ -46,38 +46,6 @@ namespace XEEN
     
             uint32 _size;
             byte* _data;
-    };
-
-    class CCSaveFile;
-
-    class CCFile : public Toc
-    {
-        public:
-            CCFile(const char* name);
-            virtual ~CCFile();
-            
-            CCFileData* getFile(CCFileId id);
-            
-            CCSaveFile& getSaveFile();
-                        
-        private:
-            Common::File _file;            
-            CCSaveFile* _saveGame;
-    };
-    
-    class CCSaveFile : public Toc
-    {
-        public:
-            CCSaveFile(CCFile& base);
-            virtual ~CCSaveFile();
-    
-            CCFileData* getFile(CCFileId id);
-    
-        private:
-            byte* _data;
-            uint32 _size;
-            
-            Common::MemoryReadStream* _file;
     };
 }
 

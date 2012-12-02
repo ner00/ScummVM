@@ -27,10 +27,12 @@
 #include "xeen/imagebuffer.h"
 #include "xeen/ccfile.h"
 #include "xeen/map.h"
-#include "xeen/sprite.h"
 #include "xeen/party.h"
 #include "xeen/characters.h"
 #include "xeen/font.h"
+
+#include "xeen/graphics/sprite.h"
+#include "xeen/graphics/spritemanager.h"
 
 
 XEEN::Game XEENgame;

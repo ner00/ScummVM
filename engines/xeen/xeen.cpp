@@ -31,7 +31,6 @@
 
 #include "xeen/xeen.h"
 #include "xeen/ccfile.h"
-#include "xeen/sprite.h"
 #include "xeen/map.h"
 #include "xeen/characters.h"
 #include "xeen/party.h"

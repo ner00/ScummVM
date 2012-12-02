@@ -19,15 +19,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+#include "common/system.h"
+
 
 #include "xeen/game.h"
 #include "xeen/window.h"
-
-#include "xeen/sprite.h"
 #include "xeen/font.h"
 #include "xeen/imagebuffer.h"
 
-#include "common/system.h"
+#include "xeen/graphics/sprite.h"
+#include "xeen/graphics/spritemanager.h"
+
 
 XEEN::Window::Window(const Common::Rect& area) : _area(area), _pressedButton(0), _pressedTime(0)
 {

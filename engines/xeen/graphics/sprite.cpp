@@ -21,32 +21,10 @@
  */
 
 #include "xeen/ccfile.h"
-#include "xeen/sprite.h"
 #include "xeen/imagebuffer.h"
 #include "xeen/game.h"
 
-XEEN::SpriteManager::SpriteManager()
-{
-    memset(_sprites, 0, sizeof(_sprites));
-}
-
-XEEN::SpriteManager::~SpriteManager()
-{
-    for(unsigned i = 0; i != MAX_SPRITES; i ++)
-    {
-        delete _sprites[i];
-    }
-}
-
-XEEN::Sprite* XEEN::SpriteManager::getSprite(CCFileId id)
-{
-    if(!_sprites[id] && XEENgame.getAssets().getEntry(id))
-    {
-        _sprites[id] = new Sprite(XEENgame.getAssets().getFile(id));
-    }
-    
-    return _sprites[id];
-}
+#include "xeen/graphics/sprite.h"
 
 XEEN::Sprite::Sprite(CCFileData* file) : _file(file), _cellCount(0), _cells(0)
 {

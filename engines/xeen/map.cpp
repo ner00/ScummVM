@@ -24,7 +24,9 @@
 
 #include "xeen/ccfile.h"
 #include "xeen/map.h"
-#include "xeen/sprite.h"
+
+#include "xeen/graphics/spritemanager.h"
+#include "xeen/graphics/sprite.h"
 
 #include "xeen/utility.h"
 #include "xeen/drawlist.h"

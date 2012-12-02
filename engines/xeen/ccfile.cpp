@@ -32,61 +32,6 @@ XEEN::CCFileData::~CCFileData()
     delete[] _data;
 }
 
-XEEN::CCToc::CCToc() : _entryCount(0), _entries(0), _key(0xAC)
-{
-
-}
-
-XEEN::CCToc::~CCToc()
-{
-    delete[] _entries;
-}
-
-const XEEN::CCFileEntry* XEEN::CCToc::getEntry(CCFileId id)
-{
-    for(int i = 0; i != _entryCount; i ++)
-    {
-        if(_entries[i].id == id)
-        {
-            return &_entries[i];
-        }
-    }
-    
-    return 0;
-}
-
-void XEEN::CCToc::readToc(Common::SeekableReadStream& data)
-{
-    _entryCount = data.readUint16LE();
-    _entries = new CCFileEntry[_entryCount];
-    
-    for(int i = 0; i != _entryCount; i ++)
-    {
-        _entries[i].id = readValue<2>(data);
-        _entries[i].offset = readValue<3>(data);
-        _entries[i].size = readValue<2>(data);
-        _entries[i].padding = readValue<1>(data);
-    }
-}
-
-template<int COUNT>
-uint32 XEEN::CCToc::readValue(Common::SeekableReadStream& data)
-{
-    uint32 result = 0;
-
-    for(int i = 0; i != COUNT; i ++)
-    {
-        uint8 nextbyte = data.readByte();
-        nextbyte = ((nextbyte << 2) | (nextbyte >> 6)) + _key;
-        
-        result |= nextbyte << (i * 8);
-        
-        _key += 0x67;
-    }
-    
-    return result;    
-}
-
 XEEN::CCFile::CCFile(const char* name) : _saveGame(0)
 {
     if(_file.open(name))

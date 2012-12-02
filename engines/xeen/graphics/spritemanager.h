@@ -20,48 +20,15 @@
  *
  */
 
-#ifndef XEEN_SPRITE_H
-#define XEEN_SPRITE_H
+#ifndef XEEN_GRAPHICS_SPRITEMANAGER_H
+#define XEEN_GRAPHICS_SPRITEMANAGER_H
 
-#include "common/scummsys.h"
 #include "xeen/utility.h"
 
 namespace XEEN
 {
+    class Sprite;
     class Game;
-    class CCFileData;
-    class SpriteManager;
-    class ImageBuffer;
-
-    class Sprite : public Validateable_Cleanable
-    {
-        friend class SpriteManager;
-    
-        private:
-            Sprite(CCFileData* file);
-            ~Sprite();
-            
-        public:
-            void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false);
-
-        protected:
-            void cleanse();
-            
-        private:
-            void drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip);
-            uint32 drawLine(ImageBuffer& out);
-            
-        private:
-            CCFileData* _file;
-
-            struct Cell
-            {
-                uint16 offset[2];
-            };
-            
-            uint32 _cellCount;
-            Cell* _cells;
-    };
     
     class SpriteManager : public Validateable
     {
@@ -80,4 +47,4 @@ namespace XEEN
     };
 }
 
-#endif // XEEN_SPRITE_H
+#endif // XEEN_GRAPHICS_SPRITEMANAGER_H

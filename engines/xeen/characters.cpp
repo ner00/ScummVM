@@ -24,7 +24,9 @@
 #include "xeen/ccfile.h"
 #include "xeen/game.h"
 #include "xeen/utility.h"
-#include "xeen/sprite.h"
+
+#include "xeen/graphics/spritemanager.h"
+#include "xeen/graphics/sprite.h"
 
 ///
 /// CharacterManager
