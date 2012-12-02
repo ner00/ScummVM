@@ -94,6 +94,8 @@ namespace XEEN
         void resetTemp() { temp = 0; }
     };
 
+    enum Stat { MIGHT, INTELLECT, PERSONALITY, ENDURANCE, SPEED, ACCURACY, LUCK, STAT_COUNT };
+
     // Stats for a single playable character
     class Character : public Validateable
     {
@@ -103,6 +105,9 @@ namespace XEEN
             Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSprite);
         
         public:
+            const Statistic& getStat(Stat stat) const;
+        
+        public:
             Sprite* face;
         
             char name[16];
@@ -110,14 +115,6 @@ namespace XEEN
             Race race;
             Side saveSide;
             Class profession;
-            
-            Statistic might;
-            Statistic intellect;
-            Statistic personality;
-            Statistic endurance;
-            Statistic speed;
-            Statistic accuracy;
-            Statistic luck;
             
             int8 actemp;
             
@@ -160,6 +157,9 @@ namespace XEEN
             
             uint8 adventureSpell;
             uint8 combatSpell;
+            
+        private:
+            Statistic _statistics[STAT_COUNT];
     };
 }
 

@@ -44,15 +44,11 @@ XEEN::Character::Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSpri
         saveSide = (Side)data->readByte();
         profession = (Class)data->readByte();
         
-        might = Statistic(*data);
-        intellect = Statistic(*data);
-        personality = Statistic(*data);
-        endurance = Statistic(*data);
-        speed = Statistic(*data);
-        accuracy = Statistic(*data);
-        luck = Statistic(*data);
-    
-    
+        for(unsigned i = 0; i != STAT_COUNT; i ++)
+        {
+            _statistics[i] = Statistic(*data);
+        }
+        
         actemp = data->readByte();
         data->read(level, 2);
         dbday = data->readByte();
@@ -94,4 +90,11 @@ XEEN::Character::Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSpri
     {
         markInvalid();
     }
+}
+
+const XEEN::Statistic& XEEN::Character::getStat(Stat stat) const
+{
+    XEEN_VALID_RET(_statistics[0]);
+
+    return (enforce(stat < STAT_COUNT)) ? _statistics[stat] : _statistics[0];
 }

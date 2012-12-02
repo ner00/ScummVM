@@ -176,23 +176,25 @@ const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
         {
             switch(id)
             {
-                case  1: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->might.getValue()); break;
-                case  2: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->accuracy.getValue()); break;
+                case  1: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(MIGHT).getValue()); break;
+                case  2: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(ACCURACY).getValue()); break;
+                case  5: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(INTELLECT).getValue()); break;
+                case  6: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(LUCK).getValue()); break;
+                case  9: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(PERSONALITY).getValue()); break;
+                case 13: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(ENDURANCE).getValue()); break;
+                case 17: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(SPEED).getValue()); break;                
+
                 case  3: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->hp); break;
                 case  4: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->experience); break;
-                case  5: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->intellect.getValue()); break;
-                case  6: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->luck.getValue()); break;
                 case  7: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->sp); break;
                 case  8: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case  9: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->personality.getValue()); break;
                 case 10: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 11: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 12: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case 13: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->endurance.getValue()); break;
                 case 14: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 15: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 16: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case 17: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->speed.getValue()); break;
+
                 case 18: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 19: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 20: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
