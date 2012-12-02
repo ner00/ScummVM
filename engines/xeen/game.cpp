@@ -150,12 +150,14 @@ void XEEN::Game::draw(ImageBuffer& out)
     }
     else
     {
+        out.setClipArea(Common::Rect(8, 8, 224, 140));    
         Map* m = _mapManager->getMap(_party->mazeID);
         if(enforce(m))
         {
             m->fillDrawStruct(_party->position, _party->facing & 3);
             m->draw(out, *_spriteManager);
         }
+        out.resetClipArea();
     }
 }
 
