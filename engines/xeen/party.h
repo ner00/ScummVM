@@ -29,15 +29,24 @@ namespace XEEN
 {
     class Game;
     class CCFile;
+    class Character;
 
     class Party : public Validateable
     {
         friend class Game;
 
+        static const uint32 MAX_CHARACTERS = 30;
+
         private:
             Party();
+            ~Party();
+
+        public:
+            Character* getCharacter(uint16 id);
     
         public:
+            Character* _characters[MAX_CHARACTERS];
+        
             uint8 memberCount;
             uint8 realMemberCount;
             uint8 members[8];

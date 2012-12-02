@@ -37,7 +37,7 @@
 
 XEEN::Game XEENgame;
 
-XEEN::Game::Game() : _assets(0), _spriteManager(0),_mapManager(0), _characterManager(0), _party(0), _font(0)
+XEEN::Game::Game() : _assets(0), _spriteManager(0),_mapManager(0), _party(0), _font(0)
 {
     markInvalid();
 }
@@ -51,7 +51,6 @@ void XEEN::Game::cleanse()
 {
     XEEN_DELETE(_font);
     XEEN_DELETE(_party);
-    XEEN_DELETE(_characterManager);
     XEEN_DELETE(_mapManager);
     XEEN_DELETE(_spriteManager);
     XEEN_DELETE(_assets);
@@ -62,13 +61,12 @@ void XEEN::Game::load()
     _assets = new CCFile("XEEN.CC");
     _spriteManager = new SpriteManager();
     _mapManager = new MapManager();
-    _characterManager = new CharacterManager();
     _party = new Party();
     _font = new Font();
     
     _windowID = 0;
     
-    if(!(valid(_assets) && valid(_spriteManager) && valid(_mapManager) && valid(_characterManager) && valid(_party) && valid(_font)))
+    if(!(valid(_assets) && valid(_spriteManager) && valid(_mapManager) && valid(_party) && valid(_font)))
     {
         markInvalidAndClean();
         return;

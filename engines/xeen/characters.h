@@ -33,8 +33,8 @@ namespace XEEN
 {
     class Game;
     class CCFileData;
-    class CharacterManager;
     class Sprite;
+    class Party;
 
     enum Sex {MALE, FEMALE};
     enum Race {HUMAN, ELF, DWARF, GNOME, HALFORC};
@@ -59,7 +59,7 @@ namespace XEEN
     // Stats for a single playable character
     class Character : public Validateable
     {
-        friend class CharacterManager;
+        friend class Party;
     
         private:
             Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSprite);
@@ -122,24 +122,6 @@ namespace XEEN
             
             uint8 adventureSpell;
             uint8 combatSpell;
-    };
-    
-    class CharacterManager : public Validateable
-    {
-        friend class Game;
-    
-        private:
-            static const uint32 MAX_CHARACTERS = 30;
-    
-        private:
-            CharacterManager();
-            ~CharacterManager();
-            
-        public:
-            Character* getCharacter(uint16 id);
-            
-        private:            
-            Character* _characters[MAX_CHARACTERS];
     };
 }
 

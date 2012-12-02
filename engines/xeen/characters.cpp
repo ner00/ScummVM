@@ -29,53 +29,6 @@
 #include "xeen/graphics/sprite.h"
 
 ///
-/// CharacterManager
-///
-XEEN::CharacterManager::CharacterManager()
-{
-    memset(_characters, 0, sizeof(_characters));
-    
-    Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getSaveFile().getFile("MAZE.CHR"));
-    
-    if(reader)
-    {
-        for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
-        {
-            Sprite* faceSprite = XEENgame.getSpriteManager().getSprite(CCFileId("CHAR%02d.FAC", i + 1));
-        
-            if(valid(faceSprite))
-            {
-                _characters[i] = new Character(reader, faceSprite);
-            }
-            else
-            {
-                _characters[i] = 0;
-                reader->seek(354);
-            }
-        }
-    }
-    else
-    {
-        markInvalid();
-    }
-}
-
-XEEN::CharacterManager::~CharacterManager()
-{
-    for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
-    {
-        delete _characters[i];
-    }
-}
-
-XEEN::Character* XEEN::CharacterManager::getCharacter(uint16 id)
-{
-    XEEN_VALID_RET(0);
-
-    return (enforce(id < MAX_CHARACTERS)) ? _characters[id] : 0;
-}
-
-///
 /// Character
 ///
 XEEN::Character::Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSprite) : face(0)
@@ -83,7 +36,6 @@ XEEN::Character::Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSpri
     if(data && valid(faceSprite))
     {
         face = faceSprite;
-        enforce(face);
     
         data->read(name, 16);
     

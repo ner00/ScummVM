@@ -37,7 +37,6 @@ namespace XEEN
     class CCFile;
     class SpriteManager;
     class MapManager;
-    class CharacterManager;
     class Party;
     class Font;
 
@@ -62,7 +61,6 @@ namespace XEEN
             CCFile& getAssets() { enforce(_assets); return *_assets; }
             SpriteManager& getSpriteManager() { enforce(_spriteManager); return *_spriteManager; }
             MapManager& getMapManager() { enforce(_mapManager); return *_mapManager; }
-            CharacterManager& getCharacterManager() { enforce(_characterManager); return *_characterManager; }
             Party& getParty() { enforce(_party); return *_party; }
             Font& getFont() { enforce(_font); return *_font; }
 
@@ -76,7 +74,6 @@ namespace XEEN
 
             SpriteManager* _spriteManager;
             MapManager* _mapManager;
-            CharacterManager* _characterManager;
             Party* _party;
             Font* _font;
 
