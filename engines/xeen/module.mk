@@ -15,6 +15,7 @@ MODULE_OBJS := \
     maze/mazeobjects.o \
     maze/mazetext.o \
     ui/window.o \
+    ui/characterwindow.o \
     ui/gamewindow.o
 
 # This module can be built as a plugin

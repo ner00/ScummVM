@@ -48,7 +48,7 @@ const XEEN::Button* XEEN::GameWindow::getButtons() const
         {"MAIN.ICN", 12, 13, {235, 117, 24, 20}, 6}, {"MAIN.ICN", 28, 29, {260, 169, 24, 20}, 14}, 
         {"MAIN.ICN", 14, 15, {260, 117, 24, 20}, 7}, {"MAIN.ICN", 30, 31, {286, 169, 24, 20}, 15}, 
 
-        {0, 0, 0, {0, 0, 0, 0}, 0}
+        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
     };
     
     return buttons;

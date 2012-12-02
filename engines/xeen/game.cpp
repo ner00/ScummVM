@@ -66,6 +66,8 @@ void XEEN::Game::load()
     _party = new Party();
     _font = new Font();
     
+    _windowID = 0;
+    
     if(!(valid(_assets) && valid(_spriteManager) && valid(_mapManager) && valid(_characterManager) && valid(_party) && valid(_font)))
     {
         markInvalidAndClean();
@@ -107,16 +109,23 @@ void XEEN::Game::load()
     }
 }
 
+void XEEN::Game::showWindow(uint32 id)
+{
+    _windowID = id;
+}
+
 void XEEN::Game::click(const Common::Point& location)
 {
     XEEN_VALID();
-    
-    if(!_mainWnd.click(location))
+
+    if(!(_windowID && _statusWnd.click(location)))
     {
         if(!_portraitWnd.click(location))
-        {
-        
-        }
+        {    
+            if(!_mainWnd.click(location))
+            {
+            }
+        }    
     }
 }
 
@@ -125,36 +134,31 @@ void XEEN::Game::key(Common::KeyCode keycode)
     XEEN_VALID();
 }
 
-
 void XEEN::Game::draw(ImageBuffer& out)
 {   
     XEEN_VALID();
 
-    if(true) // HACK
-    {
-        _mainWnd.heartbeat();
+    _portraitWnd.heartbeat();
+    _mainWnd.heartbeat();
     
+    out.resetClipArea();
+    _mainWnd.draw(out);
+    _portraitWnd.draw(out);
+    
+    if(_windowID)
+    {
+        _statusWnd.heartbeat();
+        _statusWnd.draw(out);
+    }
+    else
+    {
         Map* m = _mapManager->getMap(_party->mazeID);
         if(enforce(m))
         {
             m->fillDrawStruct(_party->position, _party->facing & 3);
             m->draw(out, *_spriteManager);
         }
-
-        out.resetClipArea();
-        _mainWnd.draw(out);
     }
-    else
-    {
-        _statusWnd.heartbeat();
-    
-        _mainWnd.draw(out);
-    
-        _statusWnd.draw(out);
-    }
-    
-    out.resetClipArea();
-    _portraitWnd.draw(out);
 }
 
 void XEEN::Game::movePartyTo(uint16 map, int16 x, int16 y, uint32 direction)

@@ -28,6 +28,7 @@
 
 #include "xeen/utility.h"
 #include "xeen/ui/window.h"
+#include "xeen/ui/characterwindow.h"
 #include "xeen/ui/gamewindow.h"
 
 namespace XEEN
@@ -52,6 +53,8 @@ namespace XEEN
         public:
             void load();
         
+            void showWindow(uint32 id);
+        
             void click(const Common::Point& location);
             void key(Common::KeyCode key);
             void draw(ImageBuffer& out);
@@ -66,6 +69,9 @@ namespace XEEN
             void movePartyTo(uint16 map, int16 x, int16 y, uint32 direction);
                 
         private:
+            uint32 _windowID;
+                
+        private:
             CCFile* _assets;
 
             SpriteManager* _spriteManager;
@@ -75,7 +81,7 @@ namespace XEEN
             Font* _font;
 
             CharacterStatusWindow _statusWnd;
-            CharacterPortraitWindow _portraitWnd;
+            CharacterWindow _portraitWnd;
             GameWindow _mainWnd;
 
     };

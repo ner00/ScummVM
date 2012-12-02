@@ -123,6 +123,10 @@ namespace XEEN
     struct CCFileId
     {
         public:        
+            CCFileId() : _id(0)
+            {
+            }        
+        
             CCFileId(uint16 id) : _id(id)
             {
             }

@@ -120,7 +120,7 @@ const XEEN::Button* XEEN::CharacterStatusWindow::getButtons() const
         {"VIEW.ICN", 40, 41, {285,  11, 24, 20}, 20}, {"VIEW.ICN", 42, 43, {285,  43, 24, 20}, 21},
         {"VIEW.ICN", 44, 45, {285,  75, 24, 20}, 22}, {"VIEW.ICN", 46, 47, {285, 107, 24, 20}, 23}, 
 
-        {0, 0, 0, {0, 0, 0, 0}, 0}
+        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
     };
     
     return buttons;
@@ -136,7 +136,7 @@ const XEEN::String* XEEN::CharacterStatusWindow::getStrings() const
         {"End", 0, 37,  93}, {"Lvl", 0, 88,  93}, {"Skills", 0, 139,  93}, {"Party Food", 0, 204,  93},
         {"Spd", 0, 37, 116}, {"AC",  0, 88, 116}, {"Awrds",  0, 139, 116}, {"Condition",  0, 204, 116},
 
-        {0, 0, 0, 0}
+        {(uint16)0, 0, 0, 0}
     };
     
     return strings;
@@ -144,35 +144,17 @@ const XEEN::String* XEEN::CharacterStatusWindow::getStrings() const
 
 void XEEN::CharacterStatusWindow::handleAction(unsigned id)
 {
-    debug("%d", id);
+    XEEN_VALID();
+
+    if(id == 23 && valid(XEENgame))
+    {
+        XEENgame.showWindow(0);
+    }
 }
 
 const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
 {
     snprintf(stringBuffer, sizeof(stringBuffer), "%d", id);
     return stringBuffer;
-}
-
-XEEN::CharacterPortraitWindow::CharacterPortraitWindow() : Window(Common::Rect(0, 0, 0, 0))
-{
-    
-}
-
-const XEEN::Button* XEEN::CharacterPortraitWindow::getButtons() const
-{
-    static const Button buttons[] = 
-    {
-        // TODO: Fill proper values; check HP bar size
-        {"CHAR01.FAC",  0,  0, { 10, 150, 32, 32},  0}, {"HPBARS.ICN", 0, 0, { 14, 182, 23, 8}, 0},
-        {"CHAR02.FAC",  0,  0, { 45, 150, 32, 32},  1}, {"HPBARS.ICN", 0, 0, { 50, 182, 23, 8}, 0},
-        {"CHAR03.FAC",  0,  0, { 81, 150, 32, 32},  2}, {"HPBARS.ICN", 0, 0, { 87, 182, 23, 8}, 0},
-        {"CHAR04.FAC",  0,  0, {117, 150, 32, 32},  3}, {"HPBARS.ICN", 0, 0, {122, 182, 23, 8}, 0},
-        {"CHAR05.FAC",  0,  0, {153, 150, 32, 32},  4}, {"HPBARS.ICN", 0, 0, {159, 182, 23, 8}, 0},
-        {"CHAR06.FAC",  0,  0, {189, 150, 32, 32},  5}, {"HPBARS.ICN", 0, 0, {195, 182, 23, 8}, 0},
-
-        {0, 0, 0, {0, 0, 0, 0}, 0}
-    };
-    
-    return buttons;
 }
 

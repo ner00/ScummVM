@@ -35,13 +35,13 @@ namespace XEEN
     
     struct Button
     {
-        const char* const sprite;
-        const uint32 normalFrame;
-        const uint32 pressedFrame;
+        CCFileId sprite;
+        uint32 normalFrame;
+        uint32 pressedFrame;
 
-        const XRect area;
+        XRect area;
         
-        const uint32 actionID;
+        uint32 actionID;
     };
     
     struct String
@@ -53,7 +53,7 @@ namespace XEEN
         const int32 y;        
     };
 
-    class Window
+    class Window : public Validateable
     {
         static const unsigned BUTTON_DELAY = 100;
     
@@ -93,15 +93,6 @@ namespace XEEN
             
         private:
             char stringBuffer[128];
-    };
-    
-    class CharacterPortraitWindow : public Window
-    {
-        public:
-            CharacterPortraitWindow();
-            
-        protected:
-            const Button* getButtons() const;                    
     };
 }
 

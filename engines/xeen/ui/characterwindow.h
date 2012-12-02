@@ -20,23 +20,26 @@
  *
  */
 
-#ifndef XEEN_UI_GAMEWINDOW_H
-#define XEEN_UI_GAMEWINDOW_H
+#ifndef XEEN_UI_CHARACTERWINDOW_H
+#define XEEN_UI_CHARACTERWINDOW_H
 
 #include "xeen/utility.h"
 #include "xeen/ui/window.h"
 
 namespace XEEN
 {
-    class GameWindow : public Window
+    class CharacterWindow : public Window
     {
         public:
-            GameWindow();
+            CharacterWindow();
             
         protected:
             const Button* getButtons() const;
             void handleAction(unsigned id);
+            
+        private:
+            Button _buttons[13];
     };
 }
 
-#endif // XEEN_UI_GAMEWINDOW_H
+#endif // XEEN_UI_CHARACTERWINDOW_H
