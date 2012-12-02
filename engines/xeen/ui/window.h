@@ -25,6 +25,7 @@
 
 #include "common/scummsys.h"
 #include "common/rect.h"
+#include "common/keyboard.h"
 
 #include "xeen/utility.h"
 
@@ -101,15 +102,6 @@ namespace XEEN
             
         protected:
             const Button* getButtons() const;                    
-    };
-    
-    class MainIconWindow : public Window
-    {
-        public:
-            MainIconWindow();
-            
-        protected:
-            const Button* getButtons() const;
     };
 }
 

@@ -111,7 +111,7 @@ void XEEN::Game::click(const Common::Point& location)
 {
     XEEN_VALID();
     
-    if(!_commandsWnd.click(location))
+    if(!_mainWnd.click(location))
     {
         if(!_portraitWnd.click(location))
         {
@@ -123,21 +123,6 @@ void XEEN::Game::click(const Common::Point& location)
 void XEEN::Game::key(Common::KeyCode keycode)
 {
     XEEN_VALID();
-
-//    if(event.kbd.keycode == Common::KEYCODE_TAB) showMenu = !showMenu;                
-
-//    if(!showMenu)
-//    {
-
-    switch(keycode)
-    {
-        case Common::KEYCODE_UP:    _party->position = Map::translatePoint(_party->position, 0, 1, _party->facing & 3); break;
-        case Common::KEYCODE_DOWN:  _party->position = Map::translatePoint(_party->position, 0, -1, _party->facing & 3); break;
-        case Common::KEYCODE_LEFT:  _party->facing --; break;
-        case Common::KEYCODE_RIGHT: _party->facing ++; break;
-        
-        default: break;
-    }
 }
 
 
@@ -147,7 +132,7 @@ void XEEN::Game::draw(ImageBuffer& out)
 
     if(true) // HACK
     {
-        _commandsWnd.heartbeat();
+        _mainWnd.heartbeat();
     
         Map* m = _mapManager->getMap(_party->mazeID);
         if(enforce(m))
@@ -157,13 +142,13 @@ void XEEN::Game::draw(ImageBuffer& out)
         }
 
         out.resetClipArea();
-        _commandsWnd.draw(out);
+        _mainWnd.draw(out);
     }
     else
     {
         _statusWnd.heartbeat();
     
-        _commandsWnd.draw(out);
+        _mainWnd.draw(out);
     
         _statusWnd.draw(out);
     }

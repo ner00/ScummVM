@@ -14,7 +14,8 @@ MODULE_OBJS := \
     maze/map.o \
     maze/mazeobjects.o \
     maze/mazetext.o \
-    ui/window.o
+    ui/window.o \
+    ui/gamewindow.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)

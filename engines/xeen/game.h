@@ -28,6 +28,7 @@
 
 #include "xeen/utility.h"
 #include "xeen/ui/window.h"
+#include "xeen/ui/gamewindow.h"
 
 namespace XEEN
 {
@@ -63,7 +64,7 @@ namespace XEEN
             Font& getFont() { enforce(_font); return *_font; }
 
             void movePartyTo(uint16 map, int16 x, int16 y, uint32 direction);
-        
+                
         private:
             CCFile* _assets;
 
@@ -75,7 +76,7 @@ namespace XEEN
 
             CharacterStatusWindow _statusWnd;
             CharacterPortraitWindow _portraitWnd;
-            MainIconWindow _commandsWnd;
+            GameWindow _mainWnd;
 
     };
 }
