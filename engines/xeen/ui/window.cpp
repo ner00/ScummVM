@@ -23,6 +23,8 @@
 
 
 #include "xeen/game.h"
+#include "xeen/party.h"
+#include "xeen/characters.h"
 
 #include "xeen/graphics/font.h"
 #include "xeen/graphics/imagebuffer.h"
@@ -86,7 +88,7 @@ bool XEEN::Window::click(const Common::Point& point)
     {
         const Common::Rect r = button->area;
     
-        if(r.contains(point))
+        if(button->actionID != Button::NOACTION && r.contains(point))
         {
             _pressedButton = button;
             _pressedTime = g_system->getMillis() + BUTTON_DELAY;
@@ -130,11 +132,16 @@ const XEEN::String* XEEN::CharacterStatusWindow::getStrings() const
 {
     static const String strings[] = 
     {
-        {"Mgt", 0, 37,  26}, {"Acy", 0, 88,  26}, {"H.P.",   0, 139,  26}, {"Experience", 0, 204,  26},
-        {"Int", 0, 37,  49}, {"Lck", 0, 88,  49}, {"S.P.",   0, 139,  49}, {"Party Gold", 0, 204,  49},
-        {"Per", 0, 37,  70}, {"Age", 0, 88,  70}, {"Resis",  0, 139,  70}, {"Party Gems", 0, 204,  70},
-        {"End", 0, 37,  93}, {"Lvl", 0, 88,  93}, {"Skills", 0, 139,  93}, {"Party Food", 0, 204,  93},
-        {"Spd", 0, 37, 116}, {"AC",  0, 88, 116}, {"Awrds",  0, 139, 116}, {"Condition",  0, 204, 116},
+        {"Mgt",    0,  37,  26}, {0,  1,  37,  34}, {"Acy",        0,  88,  26}, {0,  2,  88,  34}, 
+        {"H.P.",   0, 139,  26}, {0,  3, 139,  34}, {"Experience", 0, 204,  26}, {0,  4, 204,  34}, 
+        {"Int",    0,  37,  49}, {0,  5,  37,  57}, {"Lck",        0,  88,  49}, {0,  6,  88,  57}, 
+        {"S.P.",   0, 139,  49}, {0,  7, 139,  57}, {"Party Gold", 0, 204,  49}, {0,  8, 204,  57}, 
+        {"Per",    0,  37,  70}, {0,  9,  37,  78}, {"Age",        0,  88,  70}, {0, 10,  88,  78}, 
+        {"Resis",  0, 139,  70}, {0, 11, 139,  78}, {"Party Gems", 0, 204,  70}, {0, 12, 204,  78}, 
+        {"End",    0,  37,  93}, {0, 13,  37, 101}, {"Lvl",        0,  88,  93}, {0, 14,  88, 101}, 
+        {"Skills", 0, 139,  93}, {0, 15, 139, 101}, {"Party Food", 0, 204,  93}, {0, 16, 204, 101}, 
+        {"Spd",    0,  37, 116}, {0, 17,  37, 124}, {"AC",         0,  88, 116}, {0, 18,  88, 124}, 
+        {"Awrds",  0, 139, 116}, {0, 19, 139, 124}, {"Condition",  0, 204, 116}, {0, 20, 204, 124}, 
 
         {(uint16)0, 0, 0, 0}
     };
@@ -154,7 +161,43 @@ void XEEN::CharacterStatusWindow::handleAction(unsigned id)
 
 const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
 {
-    snprintf(stringBuffer, sizeof(stringBuffer), "%d", id);
+    XEEN_VALID_RET(0);
+
+    stringBuffer[0] = 0;
+
+    if(valid(XEENgame) && valid(XEENgame.getParty()))
+    {
+        Party& party = XEENgame.getParty();
+        Character* character = XEENgame.getActiveCharacter();
+    
+        if(valid(character))
+        {
+            switch(id)
+            {
+                case  1: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->might.getValue()); break;
+                case  2: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->accuracy.getValue()); break;
+                case  3: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->hp); break;
+                case  4: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->experience); break;
+                case  5: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->intellect.getValue()); break;
+                case  6: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->luck.getValue()); break;
+                case  7: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->sp); break;
+                case  8: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case  9: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->personality.getValue()); break;
+                case 10: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 11: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 12: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 13: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->endurance.getValue()); break;
+                case 14: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 15: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 16: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 17: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->speed.getValue()); break;
+                case 18: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 19: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 20: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+            }
+        }
+    }
+
     return stringBuffer;
 }
 

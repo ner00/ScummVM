@@ -78,3 +78,10 @@ XEEN::Character* XEEN::Party::getCharacter(uint16 id)
 
     return (enforce(id < MAX_CHARACTERS)) ? _characters[id] : 0;
 }
+
+XEEN::Character* XEEN::Party::getCharacterInSlot(unsigned slot)
+{
+    XEEN_VALID_RET(0);
+    
+    return (enforce(slot < 8)) ? getCharacter(members[slot]) : 0;
+}

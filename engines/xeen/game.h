@@ -38,6 +38,7 @@ namespace XEEN
     class SpriteManager;
     class MapManager;
     class Party;
+    class Character;
     class Font;
 
     class Game : public Validateable_Cleanable
@@ -64,10 +65,15 @@ namespace XEEN
             Party& getParty() { enforce(_party); return *_party; }
             Font& getFont() { enforce(_font); return *_font; }
 
+            Character* getActiveCharacter();
+            unsigned getActiveCharacterSlot() const { return _activeCharacterSlot; }
+            void selectCharacter(unsigned slot) { _activeCharacterSlot = slot; }
+
             void movePartyTo(uint16 map, int16 x, int16 y, uint32 direction);
                 
         private:
             uint32 _windowID;
+            unsigned _activeCharacterSlot;
                 
         private:
             CCFile* _assets;

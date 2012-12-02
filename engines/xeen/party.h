@@ -43,6 +43,7 @@ namespace XEEN
 
         public:
             Character* getCharacter(uint16 id);
+            Character* getCharacterInSlot(unsigned slot);
     
         public:
             Character* _characters[MAX_CHARACTERS];

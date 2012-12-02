@@ -35,6 +35,8 @@ namespace XEEN
     
     struct Button
     {
+        static const uint32 NOACTION = 0xFFFFFFFF;
+    
         CCFileId sprite;
         uint32 normalFrame;
         uint32 pressedFrame;

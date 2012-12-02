@@ -27,15 +27,17 @@
 
 XEEN::CharacterWindow::CharacterWindow() : Window(Common::Rect(0, 0, 0, 0))
 {
+    static const uint32 X = Button::NOACTION;
+
     static const Button buttons[] = 
     {
         // TODO: Fill proper values; check HP bar size
-        {"CHAR01.FAC",  0,  0, { 10, 150, 32, 32},  0}, {"HPBARS.ICN", 0, 0, { 14, 182, 23, 8}, 0},
-        {"CHAR02.FAC",  0,  0, { 45, 150, 32, 32},  1}, {"HPBARS.ICN", 0, 0, { 50, 182, 23, 8}, 1},
-        {"CHAR03.FAC",  0,  0, { 81, 150, 32, 32},  2}, {"HPBARS.ICN", 0, 0, { 87, 182, 23, 8}, 2},
-        {"CHAR04.FAC",  0,  0, {117, 150, 32, 32},  3}, {"HPBARS.ICN", 0, 0, {122, 182, 23, 8}, 3},
-        {"CHAR05.FAC",  0,  0, {153, 150, 32, 32},  4}, {"HPBARS.ICN", 0, 0, {159, 182, 23, 8}, 4},
-        {"CHAR06.FAC",  0,  0, {189, 150, 32, 32},  5}, {"HPBARS.ICN", 0, 0, {195, 182, 23, 8}, 5},
+        {"CHAR01.FAC",  0,  0, { 10, 150, 32, 32},  0}, {"HPBARS.ICN", 0, 0, { 14, 182, 23, 8}, X},
+        {"CHAR02.FAC",  0,  0, { 45, 150, 32, 32},  1}, {"HPBARS.ICN", 0, 0, { 50, 182, 23, 8}, X},
+        {"CHAR03.FAC",  0,  0, { 81, 150, 32, 32},  2}, {"HPBARS.ICN", 0, 0, { 87, 182, 23, 8}, X},
+        {"CHAR04.FAC",  0,  0, {117, 150, 32, 32},  3}, {"HPBARS.ICN", 0, 0, {122, 182, 23, 8}, X},
+        {"CHAR05.FAC",  0,  0, {153, 150, 32, 32},  4}, {"HPBARS.ICN", 0, 0, {159, 182, 23, 8}, X},
+        {"CHAR06.FAC",  0,  0, {189, 150, 32, 32},  5}, {"HPBARS.ICN", 0, 0, {195, 182, 23, 8}, X},
 
         {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
     };
@@ -70,6 +72,7 @@ void XEEN::CharacterWindow::handleAction(unsigned id)
 
     if(valid(XEENgame))
     {
+        XEENgame.selectCharacter(id);
         XEENgame.showWindow(1);
     }
 }

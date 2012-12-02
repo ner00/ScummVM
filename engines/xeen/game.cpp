@@ -159,6 +159,13 @@ void XEEN::Game::draw(ImageBuffer& out)
     }
 }
 
+XEEN::Character* XEEN::Game::getActiveCharacter()
+{
+    XEEN_VALID_RET(0);
+    
+    return valid(_party) ? _party->getCharacterInSlot(_activeCharacterSlot) : 0;
+}
+
 void XEEN::Game::movePartyTo(uint16 map, int16 x, int16 y, uint32 direction)
 {
     XEEN_VALID();

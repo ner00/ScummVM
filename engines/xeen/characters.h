@@ -63,7 +63,7 @@ namespace XEEN
     
         private:
             Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSprite);
-    
+        
         public:
             Sprite* face;
         
