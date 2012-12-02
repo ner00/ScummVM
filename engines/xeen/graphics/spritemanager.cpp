@@ -21,9 +21,9 @@
  */
 
 #include "xeen/ccfile.h"
-#include "xeen/imagebuffer.h"
 #include "xeen/game.h"
 
+#include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
 

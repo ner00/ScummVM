@@ -4,17 +4,17 @@ MODULE_OBJS := \
     xeen.o \
     detection.o \
     ccfile.o \
-    map.o \
     characters.o \
     party.o \
-    mazetext.o \
-    mazeobjects.o \
-    font.o \
-    window.o \
     game.o \
     archive/toc.o \
+    graphics/font.o \
     graphics/sprite.o \
-    graphics/spritemanager.o    
+    graphics/spritemanager.o \
+    maze/map.o \
+    maze/mazeobjects.o \
+    maze/mazetext.o \
+    ui/window.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)

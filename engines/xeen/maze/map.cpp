@@ -23,17 +23,17 @@
 #include "xeen/game.h"
 
 #include "xeen/ccfile.h"
-#include "xeen/map.h"
 
+#include "xeen/utility.h"
+
+#include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/spritemanager.h"
 #include "xeen/graphics/sprite.h"
 
-#include "xeen/utility.h"
-#include "xeen/drawlist.h"
-#include "xeen/imagebuffer.h"
-
-#include "xeen/mazetext.h"
-#include "xeen/mazeobjects.h"
+#include "xeen/maze/drawlist.h"
+#include "xeen/maze/map.h"
+#include "xeen/maze/mazetext.h"
+#include "xeen/maze/mazeobjects.h"
 
 ///
 /// MapManager

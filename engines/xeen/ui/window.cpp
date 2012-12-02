@@ -23,13 +23,13 @@
 
 
 #include "xeen/game.h"
-#include "xeen/window.h"
-#include "xeen/font.h"
-#include "xeen/imagebuffer.h"
 
+#include "xeen/graphics/font.h"
+#include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
 
+#include "xeen/ui/window.h"
 
 XEEN::Window::Window(const Common::Rect& area) : _area(area), _pressedButton(0), _pressedTime(0)
 {

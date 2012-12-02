@@ -23,8 +23,9 @@
 
 #include "xeen/game.h"
 #include "xeen/ccfile.h"
-#include "xeen/mazeobjects.h"
 #include "xeen/utility.h"
+
+#include "xeen/maze/mazeobjects.h"
 
 ///
 /// MazeObjects

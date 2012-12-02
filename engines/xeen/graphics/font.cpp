@@ -24,9 +24,10 @@
 
 #include "xeen/game.h"
 #include "xeen/ccfile.h"
-#include "xeen/font.h"
-#include "xeen/imagebuffer.h"
 #include "xeen/utility.h"
+
+#include "xeen/graphics/font.h"
+#include "xeen/graphics/imagebuffer.h"
 
 ///
 /// Font

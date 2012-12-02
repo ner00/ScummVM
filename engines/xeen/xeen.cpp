@@ -31,14 +31,9 @@
 
 #include "xeen/xeen.h"
 #include "xeen/ccfile.h"
-#include "xeen/map.h"
-#include "xeen/characters.h"
-#include "xeen/party.h"
-#include "xeen/font.h"
-#include "xeen/window.h"
 #include "xeen/game.h"
 
-#include "xeen/imagebuffer.h"
+#include "xeen/graphics/imagebuffer.h"
 
 XEEN::XeenEngine::XeenEngine(OSystem* syst) : Engine(syst), _console(0)
 {

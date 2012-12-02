@@ -26,8 +26,8 @@
 #include "common/scummsys.h"
 #include "common/keyboard.h"
 
-#include "xeen/window.h"
 #include "xeen/utility.h"
+#include "xeen/ui/window.h"
 
 namespace XEEN
 {

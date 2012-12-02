@@ -21,9 +21,9 @@
  */
 
 #include "xeen/ccfile.h"
-#include "xeen/imagebuffer.h"
 #include "xeen/game.h"
 
+#include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/sprite.h"
 
 XEEN::Sprite::Sprite(CCFileData* file) : _file(file), _cellCount(0), _cells(0)
