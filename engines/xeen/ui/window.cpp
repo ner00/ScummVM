@@ -143,6 +143,8 @@ const XEEN::String* XEEN::CharacterStatusWindow::getStrings() const
         {"Spd",    0,  37, 116}, {0, 17,  37, 124}, {"AC",         0,  88, 116}, {0, 18,  88, 124}, 
         {"Awrds",  0, 139, 116}, {0, 19, 139, 124}, {"Condition",  0, 204, 116}, {0, 20, 204, 124}, 
 
+        {0, 21, 7, 12},
+
         {(uint16)0, 0, 0, 0}
     };
     
@@ -194,6 +196,13 @@ const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
                 case 18: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 19: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 20: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                
+                case 21:
+                {
+                    snprintf(stringBuffer, sizeof(stringBuffer), "%s : %s %s %s", character->name, getSexName(character->sex),
+                             getRaceName(character->race), getClassName(character->profession));
+                    break;
+                }
             }
         }
     }

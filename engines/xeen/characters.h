@@ -37,9 +37,47 @@ namespace XEEN
     class Party;
 
     enum Sex {MALE, FEMALE};
+    inline const char* getSexName(Sex sex)
+    {
+        return (sex == MALE) ? "Male" : "Female";
+    }
+
     enum Race {HUMAN, ELF, DWARF, GNOME, HALFORC};
+
+    inline const char* getRaceName(Race race)
+    {
+        switch(race)
+        {
+            case HUMAN: return "Human";
+            case ELF: return "Elf";
+            case DWARF: return "Dwarf";
+            case GNOME: return "Gnome";
+            case HALFORC: return "Half-orc";
+            default: return "BAD RACE VALUE";
+        }
+    }
+
+
     enum Side {CLOUDS, DARKSIDE};
     enum Class {KNIGHT, PALADIN, ARCHER, CLERIC, SORCERER, ROBBER, NINJA, BARBARIAN, DRUID, RANGER};
+    
+    inline const char* getClassName(Class clazz)
+    {
+        switch(clazz)
+        {
+            case KNIGHT: return "Knight";
+            case PALADIN: return "Paladin";
+            case ARCHER: return "Archer";
+            case CLERIC: return "Cleric";
+            case SORCERER: return "Sorcerer";
+            case ROBBER: return "Robber";
+            case NINJA: return "Ninja";
+            case BARBARIAN: return "Barbarian";
+            case DRUID: return "Druid";
+            case RANGER: return "Ranger";
+            default: return "BAD CLASS VALUE";
+        }
+    }    
 
     struct Statistic
     {
