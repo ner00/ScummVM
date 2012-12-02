@@ -31,6 +31,7 @@
 #include "xeen/graphics/sprite.h"
 
 #include "xeen/maze/drawlist.h"
+#include "xeen/maze/eventlist.h"
 #include "xeen/maze/map.h"
 #include "xeen/maze/mazetext.h"
 #include "xeen/maze/mazeobjects.h"
@@ -150,6 +151,7 @@ XEEN::Map::Map(uint16 mapNumber) : MazeSegment(mapNumber), _text(0), _width(0), 
  
     // Load Maze Data
     _text = new MazeText(mapNumber);
+    _events = new EventList(mapNumber);
     
     // Calculate size
     for(MazeSegment* tag = this; tag; tag = tag->getEast())

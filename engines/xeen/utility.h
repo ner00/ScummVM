@@ -66,7 +66,16 @@ namespace XEEN
             virtual ~Validateable_Cleanable() { };
     
         public:
-            void markInvalidAndClean() { markInvalid(); cleanse(); }
+            void markInvalidAndClean(const char* msg = 0)
+            {
+                if(msg)
+                {
+                    debug("%s", msg);
+                }
+            
+                markInvalid();
+                cleanse();
+            }
     
         protected:
             virtual void cleanse() = 0;

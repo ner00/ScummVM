@@ -11,6 +11,7 @@ MODULE_OBJS := \
     graphics/font.o \
     graphics/sprite.o \
     graphics/spritemanager.o \
+    maze/eventlist.o \
     maze/map.o \
     maze/mazeobjects.o \
     maze/mazetext.o \

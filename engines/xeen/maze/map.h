@@ -35,6 +35,7 @@ namespace XEEN
 
     class MazeText;
     class MazeObjects;
+    class EventList;
 
     class MazeSegment
     {
@@ -108,6 +109,7 @@ namespace XEEN
 
         private:
             MazeText* _text;
+            EventList* _events;            
             
             uint32 _width;
             uint32 _height;
