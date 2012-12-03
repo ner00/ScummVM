@@ -31,6 +31,7 @@ namespace XEEN
     class CCFile;
     class Character;
     class Map;
+    class CCFileData;
 
     class Party : public Validateable
     {
@@ -42,39 +43,40 @@ namespace XEEN
             static const uint32 INVALID_CHARACTER = 255;
             static const uint32 INVALID_SLOT = 255;
 
+            enum PartyValue {
+                PARTY_COUNT, GOLD, GOLD_BANK, GEMS, GEMS_BANK, FOOD, MAZE_ID,
+                MAZE_X, MAZE_Y, MAZE_FACING, PARTY_VALUE_MAX };
+
         private:
             Party();
             ~Party();
 
         public:
-            uint8 getMemberCount() const { return _memberCount; }
-            Character* getCharacter(uint16 id);
-            Character* getCharacterInSlot(unsigned slot);
-            uint16 getCharacterIdInSlot(unsigned slot) const;
+            // Read basic values
+            uint32 getValue(PartyValue val) const;
+            Common::Point getPosition() const;
+            uint8 getMemberIdFromSlot(unsigned slot) const;            
 
+            // Manage members
+            Character* getMember(uint16 id);
+            Character* getMemberInSlot(unsigned slot);            
+            
             void addMember(uint16 id);
             void removeMember(unsigned slot);
             void exchangeMember(unsigned slot1, unsigned slot2);
             
+            // Manager Maze
             Map* getMap() const;
-            Common::Point getPosition() const { return _position; }
-            uint8 getFacing() const { return _facing; }
             
             void moveTo(uint8 maze, const Common::Point& position, uint8 facing);
             void moveTo(const Common::Point& position, uint8 facing = 255);
             void moveRelative(const Common::Point& delta);
             void turn(bool left);
-    
+                
         private:
-            Character* _characters[MAX_CHARACTERS];        
-        
-            uint8 _memberCount;
-            uint8 _realMemberCount;
-            uint8 _members[8];        
-        
-            uint8 _facing;
-            Common::Point _position;
-            uint8 _mazeID;
+            Character* _characters[MAX_CHARACTERS];
+            
+            CCFileData* _mazePTY;
     };
 }
 

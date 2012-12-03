@@ -63,9 +63,9 @@ void XEEN::CharacterWindow::handleAction(unsigned id)
         
         if(valid(party))
         {
-            for(unsigned i = 0; i != party.getMemberCount(); i ++)
+            for(unsigned i = 0; i != party.getValue(Party::PARTY_COUNT); i ++)
             {
-                _buttons[i * 2].sprite = CCFileId("CHAR%02d.FAC", party.getCharacterIdInSlot(i) + 1);
+                _buttons[i * 2].sprite = CCFileId("CHAR%02d.FAC", party.getMemberIdFromSlot(i) + 1);
             }
         }
     }

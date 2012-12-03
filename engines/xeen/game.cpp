@@ -156,7 +156,7 @@ void XEEN::Game::draw(ImageBuffer& out)
         
         if(valid(m))
         {
-           m->fillDrawStruct(_party->getPosition(), _party->getFacing());
+           m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
            m->draw(out, *_spriteManager); 
         }
 
@@ -168,5 +168,5 @@ XEEN::Character* XEEN::Game::getActiveCharacter()
 {
     XEEN_VALID_RET(0);
     
-    return valid(_party) ? _party->getCharacterInSlot(_activeCharacterSlot) : 0;
+    return valid(_party) ? _party->getMemberInSlot(_activeCharacterSlot) : 0;
 }

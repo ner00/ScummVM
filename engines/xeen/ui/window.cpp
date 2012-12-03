@@ -187,13 +187,15 @@ const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
                 case  3: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->hp); break;
                 case  4: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->experience); break;
                 case  7: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->sp); break;
-                case  8: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 10: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 11: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case 12: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 14: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 15: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case 16: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+
+                case  8: snprintf(stringBuffer, sizeof(stringBuffer), "%d", party.getValue(Party::GOLD)); break;
+                case 12: snprintf(stringBuffer, sizeof(stringBuffer), "%d", party.getValue(Party::GEMS)); break;
+                case 16: snprintf(stringBuffer, sizeof(stringBuffer), "%d", party.getValue(Party::FOOD)); break; // TODO: / 3 / PARTY_COUNT: needs to be shown in days!
+                
 
                 case 18: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 19: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
