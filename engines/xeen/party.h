@@ -30,6 +30,7 @@ namespace XEEN
     class Game;
     class CCFile;
     class Character;
+    class Map;
 
     class Party : public Validateable
     {
@@ -44,6 +45,15 @@ namespace XEEN
         public:
             Character* getCharacter(uint16 id);
             Character* getCharacterInSlot(unsigned slot);
+            
+            Map* getMap() const;
+            Common::Point getPosition() const { return _position; }
+            uint8 getFacing() const { return _facing; }
+            
+            void moveTo(uint8 maze, const Common::Point& position, uint8 facing);
+            void moveTo(const Common::Point& position, uint8 facing = 255);
+            void moveRelative(const Common::Point& delta);
+            void turn(bool left);
     
         public:
             Character* _characters[MAX_CHARACTERS];
@@ -52,9 +62,10 @@ namespace XEEN
             uint8 realMemberCount;
             uint8 members[8];
 
-            uint8 facing;
-            Common::Point position;
-            uint8 mazeID;
+        private:
+            uint8 _facing;
+            Common::Point _position;
+            uint8 _mazeID;
     };
 }
 

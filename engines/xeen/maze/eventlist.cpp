@@ -58,7 +58,7 @@ XEEN::EventList::EventList(uint16 mapNumber)
                 markInvalidAndClean("EventList: Line too long.");
                 return;
             }
-            
+           
             // Read line data
             line.x = reader->readByte();
             line.y = reader->readByte();

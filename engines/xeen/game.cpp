@@ -151,12 +151,15 @@ void XEEN::Game::draw(ImageBuffer& out)
     else
     {
         out.setClipArea(Common::Rect(8, 8, 224, 140));    
-        Map* m = _mapManager->getMap(_party->mazeID);
-        if(enforce(m))
+        
+        Map* m = _party->getMap();
+        
+        if(valid(m))
         {
-            m->fillDrawStruct(_party->position, _party->facing & 3);
-            m->draw(out, *_spriteManager);
+           m->fillDrawStruct(_party->getPosition(), _party->getFacing());
+           m->draw(out, *_spriteManager); 
         }
+
         out.resetClipArea();
     }
 }
@@ -167,13 +170,3 @@ XEEN::Character* XEEN::Game::getActiveCharacter()
     
     return valid(_party) ? _party->getCharacterInSlot(_activeCharacterSlot) : 0;
 }
-
-void XEEN::Game::movePartyTo(uint16 map, int16 x, int16 y, uint32 direction)
-{
-    XEEN_VALID();
-
-    _party->mazeID = map;
-    _party->position = Common::Point(x, y);
-    _party->facing = direction;
-}
-

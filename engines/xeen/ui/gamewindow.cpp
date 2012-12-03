@@ -67,12 +67,12 @@ void XEEN::GameWindow::handleAction(unsigned id)
             switch(id)
             {
                 // MOVEMENT
-                case 10: party.facing --; break;
-                case 11: party.position = Map::translatePoint(party.position, 0, 1, party.facing & 3); break;
-                case 12: party.facing ++; break;
-                case 13: party.position = Map::translatePoint(party.position, -1, 0, party.facing & 3); break;
-                case 14: party.position = Map::translatePoint(party.position, 0, -1, party.facing & 3); break;
-                case 15: party.position = Map::translatePoint(party.position, 1, 0, party.facing & 3); break;                
+                case 10: party.turn(true); break;
+                case 11: party.moveRelative(Common::Point(0, 1)); break;
+                case 12: party.turn(false); break;
+                case 13: party.moveRelative(Common::Point(-1, 0)); break;
+                case 14: party.moveRelative(Common::Point(0, -1)); break;
+                case 15: party.moveRelative(Common::Point(1, 0)); break;
             }
         }
     }

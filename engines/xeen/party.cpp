@@ -29,6 +29,8 @@
 #include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
 
+#include "xeen/maze/map.h"
+
 XEEN::Party::Party()
 {
     Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getSaveFile().getFile("MAZE.PTY"));
@@ -43,10 +45,10 @@ XEEN::Party::Party()
         realMemberCount = reader->readByte();
         reader->read(members, 8);
         
-        facing = reader->readByte();
-        position.x = reader->readByte();
-        position.y = reader->readByte();
-        mazeID = reader->readByte();
+        _facing = reader->readByte();
+        _position.x = reader->readByte();
+        _position.y = reader->readByte();
+        _mazeID = reader->readByte();
     
         // Read each character
         for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
@@ -84,4 +86,50 @@ XEEN::Character* XEEN::Party::getCharacterInSlot(unsigned slot)
     XEEN_VALID_RET(0);
     
     return (enforce(slot < 8)) ? getCharacter(members[slot]) : 0;
+}
+
+XEEN::Map* XEEN::Party::getMap() const
+{
+    XEEN_VALID_RET(0);
+    
+    if(valid(XEENgame))
+    {
+        MapManager& maps = XEENgame.getMapManager();
+        
+        if(valid(maps))
+        {
+            return maps.getMap(_mazeID);
+        }
+    }
+}
+
+void XEEN::Party::moveTo(uint8 maze, const Common::Point& position, uint8 facing)
+{
+    XEEN_VALID();
+
+    _mazeID = maze;
+    moveTo(position, facing);
+}
+
+void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
+{
+    XEEN_VALID();
+    
+    _position = position;
+    _facing = (facing < 3) ? facing : _facing;
+}
+
+void XEEN::Party::moveRelative(const Common::Point& delta)
+{
+    XEEN_VALID();
+
+    _position = Map::translatePoint(_position, delta.x, delta.y, _facing);
+}
+
+void XEEN::Party::turn(bool left)
+{
+    XEEN_VALID();
+
+    _facing = _facing + (left ? -1 : 1);
+    _facing &= 3;
 }

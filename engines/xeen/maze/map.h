@@ -37,7 +37,7 @@ namespace XEEN
     class MazeObjects;
     class EventList;
 
-    class MazeSegment
+    class MazeSegment : public Validateable
     {
         friend class MapManager;
         friend class Map;
