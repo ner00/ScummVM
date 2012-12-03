@@ -36,15 +36,25 @@ namespace XEEN
     {
         friend class Game;
 
-        static const uint32 MAX_CHARACTERS = 30;
+        public:
+            static const uint32 MAX_CHARACTERS = 30;
+            static const uint32 MAX_SLOTS = 6;
+            static const uint32 INVALID_CHARACTER = 255;
+            static const uint32 INVALID_SLOT = 255;
 
         private:
             Party();
             ~Party();
 
         public:
+            uint8 getMemberCount() const { return _memberCount; }
             Character* getCharacter(uint16 id);
             Character* getCharacterInSlot(unsigned slot);
+            uint16 getCharacterIdInSlot(unsigned slot) const;
+
+            void addMember(uint16 id);
+            void removeMember(unsigned slot);
+            void exchangeMember(unsigned slot1, unsigned slot2);
             
             Map* getMap() const;
             Common::Point getPosition() const { return _position; }
@@ -55,14 +65,13 @@ namespace XEEN
             void moveRelative(const Common::Point& delta);
             void turn(bool left);
     
-        public:
-            Character* _characters[MAX_CHARACTERS];
-        
-            uint8 memberCount;
-            uint8 realMemberCount;
-            uint8 members[8];
-
         private:
+            Character* _characters[MAX_CHARACTERS];        
+        
+            uint8 _memberCount;
+            uint8 _realMemberCount;
+            uint8 _members[8];        
+        
             uint8 _facing;
             Common::Point _position;
             uint8 _mazeID;

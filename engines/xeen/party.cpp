@@ -41,9 +41,9 @@ XEEN::Party::Party()
     if(reader && charReader)
     {
         // Read the data pertaining to the whole party
-        memberCount = reader->readByte();
-        realMemberCount = reader->readByte();
-        reader->read(members, 8);
+        _memberCount = reader->readByte();
+        _realMemberCount = reader->readByte();
+        reader->read(_members, 8);
         
         _facing = reader->readByte();
         _position.x = reader->readByte();
@@ -85,7 +85,57 @@ XEEN::Character* XEEN::Party::getCharacterInSlot(unsigned slot)
 {
     XEEN_VALID_RET(0);
     
-    return (enforce(slot < 8)) ? getCharacter(members[slot]) : 0;
+    return (enforce(slot < MAX_SLOTS)) ? getCharacter(_members[slot]) : 0;
+}
+
+uint16 XEEN::Party::getCharacterIdInSlot(unsigned slot) const
+{
+    XEEN_VALID_RET(0);
+    
+    return (enforce(slot < MAX_SLOTS)) ? _members[slot] : INVALID_CHARACTER;
+}
+
+void XEEN::Party::addMember(uint16 id)
+{
+    XEEN_VALID();
+    
+    if(enforce(id < MAX_CHARACTERS) && _memberCount < MAX_SLOTS)
+    {
+        _members[_memberCount ++] = id;
+    }
+}
+
+void XEEN::Party::removeMember(unsigned slot)
+{
+    XEEN_VALID();
+    
+    if(enforce(slot < MAX_SLOTS) && slot < _memberCount)
+    {
+        _members[slot] = 0;
+        
+        for(int i = slot; i != MAX_SLOTS - 1; i ++)
+        {
+            _members[i + 1] = _members[i];
+        }
+        
+        _members[MAX_SLOTS - 1] = 0;
+        _memberCount -= 1;
+    }
+}
+
+void XEEN::Party::exchangeMember(unsigned slot1, unsigned slot2)
+{
+    XEEN_VALID();
+    
+    if(enforce(slot1 < MAX_SLOTS) && enforce(slot2 < MAX_SLOTS))
+    {
+        if(slot1 < _memberCount && slot2 < _memberCount)
+        {
+            uint16 t = _members[slot1];
+            _members[slot1] = _members[slot2];
+            _members[slot2] = t;
+        }
+    }
 }
 
 XEEN::Map* XEEN::Party::getMap() const
@@ -101,6 +151,8 @@ XEEN::Map* XEEN::Party::getMap() const
             return maps.getMap(_mazeID);
         }
     }
+    
+    return 0;
 }
 
 void XEEN::Party::moveTo(uint8 maze, const Common::Point& position, uint8 facing)
