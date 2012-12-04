@@ -29,7 +29,9 @@
 
 namespace XEEN
 {
-    class MazeObjects : public Validateable
+    class CCFileData;
+
+    class MazeObjects : public Validateable_Cleanable
     {
         public:
             struct Entry
@@ -43,16 +45,16 @@ namespace XEEN
             MazeObjects(uint16 mapNumber);
             ~MazeObjects();
             
-            bool getObjectAt(const Common::Point& position, Entry& facing);
-                        
+            bool getObjectAt(const Common::Point& position, Entry& data);
+            
+        protected:
+            void cleanse();
+            
         private:
-            uint8 _objectTypes[16];
-            uint8 _monsterTypes[16];
-            uint8 _wallObjectTypes[16];
-
-            Common::List<Entry> _objects;
-            Common::List<Entry> _monsters;
-            Common::List<Entry> _wallObjects;            
+            CCFileData* _data;
+        
+            uint16 _offsets[3];
+            uint16 _counts[3];
     };
 }
 

@@ -30,35 +30,42 @@
 ///
 /// MazeObjects
 ///
-XEEN::MazeObjects::MazeObjects(uint16 mapNumber)
+XEEN::MazeObjects::MazeObjects(uint16 mapNumber) : _data(0)
 {
-    memset(_objectTypes, 0xFF, sizeof(_objectTypes));
-    memset(_monsterTypes, 0xFF, sizeof(_monsterTypes));
-    memset(_wallObjectTypes, 0xFF, sizeof(_wallObjectTypes));
-
-    Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getSaveFile().getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber)));
+    _data = XEENgame.getAssets().getSaveFile().getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber));
     
-    if(reader)
+    memset(_offsets, 0xFF, sizeof(_offsets));
+    memset(_counts, 0xFF, sizeof(_counts));
+    
+    if(_data)
     {
-        reader->read(_objectTypes, 16);
-        reader->read(_monsterTypes, 16);
-        reader->read(_wallObjectTypes, 16);
-    
-        // Read object list
-        while(!reader->eos())
+        unsigned onList = 0;
+        int32 dataPos = 48;
+        
+        _offsets[0] = dataPos;
+        
+        for(; dataPos < _data->size() && onList != 3; dataPos += 4)
         {
-            Entry e;
-            e.position.x = reader->readSByte();
-            e.position.y = reader->readSByte();
-            e.id = reader->readByte();
-            e.facing = reader->readByte();
-            
-            if(e.id == 0xFF)
+            if(_data->getU32At(dataPos) == 0xFFFFFFFF)
             {
-                break;
+                onList ++;
+                
+                if(onList != 3)
+                {
+                    _offsets[onList] = dataPos + 4;
+                }
             }
-            
-            _objects.push_back(e);
+            else
+            {
+                _counts[onList] ++;
+                
+                // TODO: Assert object entry validity: id < 16, facing < 4 ?
+            }
+        }
+        
+        if(onList != 3 || dataPos != _data->size())
+        {
+            markInvalidAndClean("Check maze object loading.");
         }
     }
     else
@@ -72,16 +79,29 @@ XEEN::MazeObjects::~MazeObjects()
     // TODO: Store the values back into the save game
 }
 
+void XEEN::MazeObjects::cleanse()
+{
+    memset(_offsets, 0xFF, sizeof(_offsets));
+    memset(_counts, 0xFF, sizeof(_counts));
+}
+
 bool XEEN::MazeObjects::getObjectAt(const Common::Point& position, Entry& data)
 {
     XEEN_VALID_RET(false);
 
-    for(Common::List<Entry>::iterator i = _objects.begin(); i != _objects.end(); i ++)
+    for(unsigned i = 0; i != _counts[0]; i ++)
     {
-        if(i->position == position)
+        const uint8 x = _data->getByteAt(_offsets[0] + (i * 4));
+        const uint8 y = _data->getByteAt(_offsets[0] + (i * 4) + 1);
+        const uint8 type = _data->getByteAt(_offsets[0] + (i * 4) + 2);    
+        const uint8 facing = _data->getByteAt(_offsets[0] + (i * 4) + 3);
+    
+        if(x == position.x && y == position.y)
         {
-            data = *i;
-            data.id = _objectTypes[data.id];
+            data.position = Common::Point(x, y);
+            data.facing = facing;
+            data.id = _data->getByteAt(0 + type);
+            
             return true;
         }
     }
