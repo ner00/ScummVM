@@ -42,7 +42,24 @@ XEEN::CharacterWindow::CharacterWindow() : Window(Common::Rect(0, 0, 0, 0))
         {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
     };
 
-    memcpy(_buttons, buttons, sizeof(_buttons));    
+    memcpy(_buttons, buttons, sizeof(_buttons));
+}
+
+void XEEN::CharacterWindow::show()
+{
+    // TODO: Update when needed
+    if(valid(XEENgame))
+    {
+        Party& party = XEENgame.getParty();
+        
+        if(valid(party))
+        {
+            for(unsigned i = 0; i != party.getValue(Party::PARTY_COUNT); i ++)
+            {
+                _buttons[i * 2].sprite = CCFileId("CHAR%02d.FAC", party.getMemberIdFromSlot(i) + 1);
+            }
+        }
+    }
 }
 
 const XEEN::Button* XEEN::CharacterWindow::getButtons() const
@@ -56,23 +73,9 @@ void XEEN::CharacterWindow::handleAction(unsigned id)
 {
     XEEN_VALID();
 
-    // TODO: Only when needed
-    if(valid(XEENgame))
-    {
-        Party& party = XEENgame.getParty();
-        
-        if(valid(party))
-        {
-            for(unsigned i = 0; i != party.getValue(Party::PARTY_COUNT); i ++)
-            {
-                _buttons[i * 2].sprite = CCFileId("CHAR%02d.FAC", party.getMemberIdFromSlot(i) + 1);
-            }
-        }
-    }
-
     if(valid(XEENgame))
     {
         XEENgame.selectCharacter(id);
-        XEENgame.showWindow(1);
+        XEENgame.showWindow(Game::STATUS);
     }
 }

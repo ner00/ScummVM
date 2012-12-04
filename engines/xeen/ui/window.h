@@ -60,7 +60,7 @@ namespace XEEN
         static const unsigned BUTTON_DELAY = 100;
     
         protected:
-            Window(const Common::Rect& area);
+            Window(const Common::Rect& area, bool clickToClose = false);
             virtual ~Window() {};
 
             virtual const Button* getButtons() const { return 0; }
@@ -70,12 +70,15 @@ namespace XEEN
             virtual const char* produceString(unsigned id) { return 0; }
 
         public:
+            virtual void show() { };        
+        
             void heartbeat();
             void draw(ImageBuffer& out);
             bool click(const Common::Point& point);
         
         private:
             Common::Rect _area;
+            bool _clickToClose;
             
             const Button* _pressedButton;
             uint32 _pressedTime;

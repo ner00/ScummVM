@@ -26,7 +26,7 @@
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
-XEEN::QuickReferenceWindow::QuickReferenceWindow() : Window(Common::Rect(0, 0, 320, 146))
+XEEN::QuickReferenceWindow::QuickReferenceWindow() : Window(Common::Rect(0, 0, 320, 146), true)
 {
 }
 

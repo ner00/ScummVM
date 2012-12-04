@@ -64,7 +64,7 @@ void XEEN::Game::load()
     _party = new Party();
     _font = new Font();
     
-    _windowID = 0;
+    _windowID = NONE;
     
     if(!(valid(_assets) && valid(_spriteManager) && valid(_mapManager) && valid(_party) && valid(_font)))
     {
@@ -73,6 +73,10 @@ void XEEN::Game::load()
     }
     
     markValid();
+
+    //
+    _mainWnd.show();
+    _portraitWnd.show();
 
     // HACK: TODO Error check
     // Load palette
@@ -107,23 +111,40 @@ void XEEN::Game::load()
     }
 }
 
-void XEEN::Game::showWindow(uint32 id)
+void XEEN::Game::showWindow(WindowID id)
 {
     _windowID = id;
+    
+    if(id == STATUS)
+    {
+        _statusWnd.show();
+    }
+    else if(id == QUICKREF)
+    {
+        _statusWnd.show();
+    }
 }
 
 void XEEN::Game::click(const Common::Point& location)
 {
     XEEN_VALID();
 
-    if(!(_windowID && _statusWnd.click(location)))
+    if(_windowID != NONE)
     {
-        if(!_portraitWnd.click(location))
-        {    
-            if(!_mainWnd.click(location))
-            {
-            }
-        }    
+        if(_windowID == STATUS)
+        {
+            _statusWnd.click(location);
+            _portraitWnd.click(location);
+        }
+        else if(_windowID == QUICKREF)
+        {
+            _quickrefWnd.click(location);
+        }
+    }
+    else
+    {
+        _portraitWnd.click(location);
+        _mainWnd.click(location);
     }
 }
 
@@ -143,10 +164,18 @@ void XEEN::Game::draw(ImageBuffer& out)
     _mainWnd.draw(out);
     _portraitWnd.draw(out);
     
-    if(_windowID)
+    if(_windowID != NONE)
     {
-        _statusWnd.heartbeat();
-        _statusWnd.draw(out);
+        if(_windowID == STATUS)
+        {
+            _statusWnd.heartbeat();
+            _statusWnd.draw(out);
+        }
+        else if(_windowID == QUICKREF)
+        {
+            _quickrefWnd.heartbeat();
+            _quickrefWnd.draw(out);
+        }
     }
     else
     {

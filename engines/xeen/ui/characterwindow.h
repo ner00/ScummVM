@@ -33,6 +33,8 @@ namespace XEEN
         public:
             CharacterWindow();
             
+            void show();
+            
         protected:
             const Button* getButtons() const;
             void handleAction(unsigned id);

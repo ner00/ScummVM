@@ -33,7 +33,7 @@
 
 #include "xeen/ui/window.h"
 
-XEEN::Window::Window(const Common::Rect& area) : _area(area), _pressedButton(0), _pressedTime(0)
+XEEN::Window::Window(const Common::Rect& area, bool clickToClose) : _area(area), _clickToClose(clickToClose), _pressedButton(0), _pressedTime(0)
 {
 }
 
@@ -96,6 +96,12 @@ bool XEEN::Window::click(const Common::Point& point)
         }
     }
     
+    if(_clickToClose && valid(XEENgame))
+    {
+        XEENgame.showWindow(Game::NONE);
+        return true;
+    }
+    
     return false;
 }
 
@@ -155,9 +161,14 @@ void XEEN::CharacterStatusWindow::handleAction(unsigned id)
 {
     XEEN_VALID();
 
-    if(id == 23 && valid(XEENgame))
+    if(valid(XEENgame))
     {
-        XEENgame.showWindow(0);
+        switch(id)
+        {
+            //TODO: Make QUICKREF retrun to STATUS window
+            case 21: XEENgame.showWindow(Game::QUICKREF); break;
+            case 23: XEENgame.showWindow(Game::NONE); break;
+        }
     }
 }
 
@@ -183,13 +194,14 @@ const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
                 case  9: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(PERSONALITY).getValue()); break;
                 case 13: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(ENDURANCE).getValue()); break;
                 case 17: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(SPEED).getValue()); break;                
+                case 14: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(LEVEL).getValue()); break;
 
                 case  3: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::HP)); break;
                 case  4: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::EXPERIENCE)); break;
                 case  7: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::SP)); break;
                 case 10: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 11: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case 14: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+
                 case 15: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
 
                 case  8: snprintf(stringBuffer, sizeof(stringBuffer), "%d", party.getValue(Party::GOLD)); break;

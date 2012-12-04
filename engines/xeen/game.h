@@ -45,6 +45,9 @@ namespace XEEN
     class Game : public Validateable_Cleanable
     {
         public:
+            enum WindowID { NONE, STATUS, QUICKREF, MAX_WINDOW_ID };
+    
+        public:
             Game();
             ~Game();
 
@@ -54,7 +57,7 @@ namespace XEEN
         public:
             void load();
         
-            void showWindow(uint32 id);
+            void showWindow(WindowID id);
         
             void click(const Common::Point& location);
             void key(Common::KeyCode key);
@@ -73,7 +76,7 @@ namespace XEEN
             void movePartyTo(uint16 map, int16 x, int16 y, uint32 direction);
                 
         private:
-            uint32 _windowID;
+            WindowID _windowID;
             unsigned _activeCharacterSlot;
                 
         private:

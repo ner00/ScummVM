@@ -93,7 +93,7 @@ namespace XEEN
             int8* temp;
     };
 
-    enum Stat { MIGHT, INTELLECT, PERSONALITY, ENDURANCE, SPEED, ACCURACY, LUCK, STAT_COUNT };
+    enum Stat { MIGHT, INTELLECT, PERSONALITY, ENDURANCE, SPEED, ACCURACY, LUCK, LEVEL, STAT_COUNT };
 
     // Stats for a single playable character
     class Character : public Validateable
