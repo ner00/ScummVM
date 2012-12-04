@@ -30,6 +30,7 @@
 #include "xeen/ui/window.h"
 #include "xeen/ui/characterwindow.h"
 #include "xeen/ui/gamewindow.h"
+#include "xeen/ui/quickreference.h"
 
 namespace XEEN
 {
@@ -86,6 +87,7 @@ namespace XEEN
             CharacterStatusWindow _statusWnd;
             CharacterWindow _portraitWnd;
             GameWindow _mainWnd;
+            QuickReferenceWindow _quickrefWnd;
 
     };
 }
