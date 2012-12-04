@@ -184,9 +184,9 @@ const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
                 case 13: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(ENDURANCE).getValue()); break;
                 case 17: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(SPEED).getValue()); break;                
 
-                case  3: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->hp); break;
-                case  4: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->experience); break;
-                case  7: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->sp); break;
+                case  3: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::HP)); break;
+                case  4: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::EXPERIENCE)); break;
+                case  7: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::SP)); break;
                 case 10: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 11: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
                 case 14: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
@@ -203,8 +203,8 @@ const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
                 
                 case 21:
                 {
-                    snprintf(stringBuffer, sizeof(stringBuffer), "%s : %s %s %s", character->name, getSexName(character->sex),
-                             getRaceName(character->race), getClassName(character->profession));
+                    snprintf(stringBuffer, sizeof(stringBuffer), "%s : %s %s %s", character->getName(), getSexName(character->getSex()),
+                             getRaceName(character->getRace()), getClassName(character->getClass()));
                     break;
                 }
             }

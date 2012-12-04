@@ -80,18 +80,17 @@ namespace XEEN
     }    
 
     struct Statistic
-    {
-        int8 real;
-        int8 temp;
+    {        
+        Statistic(int8* realv, int8* tempv) : real(realv), temp(tempv) {}
         
-        Statistic() : real(0), temp(0) {}
-        Statistic(int8 realv, int8 tempv) : real(realv), temp(tempv) {}
-        Statistic(Common::ReadStream& stream) : real(stream.readByte()), temp(stream.readByte()) {}
+        int16 getValue() const { return (*real) + (*temp); }
+        void modifyReal(int8 value) { *real += value; }
+        void modifyTemp(int8 value) { *temp += value; }
+        void resetTemp() { *temp = 0; }
         
-        int16 getValue() const { return real + temp; }
-        void modifyReal(int8 value) { real += value; }
-        void modifyTemp(int8 value) { temp += value; }
-        void resetTemp() { temp = 0; }
+        private:
+            int8* real;
+            int8* temp;
     };
 
     enum Stat { MIGHT, INTELLECT, PERSONALITY, ENDURANCE, SPEED, ACCURACY, LUCK, STAT_COUNT };
@@ -100,66 +99,30 @@ namespace XEEN
     class Character : public Validateable
     {
         friend class Party;
+
+        public:
+            enum Value {
+                HP, SP, EXPERIENCE, VALUE_MAX};
+        
     
         private:
-            Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSprite);
+            Character(CCFileData* data, uint8 index, Sprite* faceSprite);
         
         public:
-            const Statistic& getStat(Stat stat) const;
+            uint32 getValue(Value val) const;
+        
+            const char* getName() const;
+            Statistic getStat(Stat stat) const;
+            
+            Sex getSex() const;
+            Class getClass() const;
+            Race getRace() const;
         
         public:
+            CCFileData* _data;
+            uint8 _index;
+        
             Sprite* face;
-        
-            char name[16];
-            Sex sex;
-            Race race;
-            Side saveSide;
-            Class profession;
-            
-            int8 actemp;
-            
-            int8 level[2];
-            
-            int8 dbday;
-            int8 agetemp;
-            
-            int8 skills[18];
-            int8 awards[64];
-            int8 spells[39];
-
-            // Beacon
-            uint8 beaconMap;
-            uint8 beaconX;
-            uint8 beaconY;
-            Side beaconSide;
-
-            uint8 hasSpells;
-            uint8 currentSpell;
-            uint8 quickOption;
-
-            // Items
-            uint8 weapons[36];
-            uint8 armor[36];
-            uint8 accessories[36];
-            uint8 misc[36];
-            
-            
-            int8 resistences[12];            
-            int8 conditions[16];
-            
-            int8 unknown[3];
-
-            int16 hp;
-            int16 sp;
-            int16 bday2;
-            
-            uint32 experience;
-            
-            uint8 adventureSpell;
-            uint8 combatSpell;
-            
-        private:
-            Statistic _statistics[STAT_COUNT];
     };
 }
 

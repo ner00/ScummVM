@@ -23,68 +23,28 @@
 #include "xeen/characters.h"
 #include "xeen/ccfile.h"
 #include "xeen/game.h"
+#include "xeen/party.h"
 #include "xeen/utility.h"
 
 #include "xeen/graphics/spritemanager.h"
 #include "xeen/graphics/sprite.h"
 
+static const int OFF_SEX        = 0x010;
+static const int OFF_RACE       = 0x011;
+static const int OFF_CLASS      = 0x012;
+static const int OFF_STATS      = 0x014;
+static const int OFF_HP         = 0x156;
+static const int OFF_SP         = 0x158;
+static const int OFF_EXPERIENCE = 0x15C;
+
 ///
 /// Character
 ///
-XEEN::Character::Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSprite) : face(0)
+XEEN::Character::Character(CCFileData* data, uint8 index, Sprite* faceSprite) : _data(data), _index(index), face(0)
 {
-    if(data && valid(faceSprite))
+    if(enforce(index < Party::MAX_CHARACTERS))
     {
-        face = faceSprite;
-    
-        data->read(name, 16);
-    
-        sex = (Sex)data->readByte();
-        race = (Race)data->readByte();
-        saveSide = (Side)data->readByte();
-        profession = (Class)data->readByte();
         
-        for(unsigned i = 0; i != STAT_COUNT; i ++)
-        {
-            _statistics[i] = Statistic(*data);
-        }
-        
-        actemp = data->readByte();
-        data->read(level, 2);
-        dbday = data->readByte();
-        
-        agetemp = data->readByte();
-        
-        data->read(skills, 18);
-        data->read(awards, 64);
-        data->read(spells, 39);
-    
-        beaconMap = data->readByte();
-        beaconX = data->readByte();
-        beaconY = data->readByte();
-        
-        hasSpells = data->readByte();
-        currentSpell = data->readByte();
-        quickOption = data->readByte();
-        
-        data->read(weapons, 36);
-        data->read(armor, 36);
-        data->read(accessories, 36);
-        data->read(misc, 36);
-        
-        beaconSide = (Side)data->readByte();
-        
-        data->read(resistences, 12);
-        data->read(conditions, 16);
-        data->read(unknown, 3);
-        
-        hp = data->readSint16LE();
-        sp = data->readSint16LE();
-        bday2 = data->readUint16LE();
-        experience = data->readUint32LE();
-        
-        adventureSpell = data->readByte();
-        combatSpell = data->readByte();
     }
     else
     {
@@ -92,9 +52,82 @@ XEEN::Character::Character(Common::ScopedPtr<CCFileData>& data, Sprite* faceSpri
     }
 }
 
-const XEEN::Statistic& XEEN::Character::getStat(Stat stat) const
+uint32 XEEN::Character::getValue(Value val) const
 {
-    XEEN_VALID_RET(_statistics[0]);
+    XEEN_VALID_RET(0);
 
-    return (enforce(stat < STAT_COUNT)) ? _statistics[stat] : _statistics[0];
+    static const struct
+    {
+        int offset;
+        int size;
+    }   values[] =
+    {
+        { OFF_HP, 2 },
+        { OFF_SP, 2 },
+        { OFF_EXPERIENCE, 4 }
+    };
+        
+    if(enforce(val < VALUE_MAX))
+    {
+        if(values[val].size == 4)
+        {
+            return _data->getU32At((_index * 354) + values[val].offset);
+        }
+        else if(values[val].size == 2)
+        {
+            return _data->getU16At((_index * 354) + values[val].offset);
+        }
+        else
+        {
+            return _data->getByteAt((_index * 354) + values[val].offset);
+        }
+    }
+    
+    return 0;
+}
+
+
+const char* XEEN::Character::getName() const
+{
+    XEEN_VALID_RET("");
+    
+    return (const char*)_data->getBytePtrAt((_index * 354));
+}
+
+XEEN::Statistic XEEN::Character::getStat(Stat stat) const
+{
+    static int8 errorStatP;
+    static const Statistic errorStat(&errorStatP, &errorStatP);
+
+    XEEN_VALID_RET(errorStat);
+
+    if(enforce(stat < STAT_COUNT))
+    {
+        int8* real = (int8*)_data->getBytePtrAt((_index * 354) + OFF_STATS + (2 * stat) + 0);
+        int8* temp = (int8*)_data->getBytePtrAt((_index * 354) + OFF_STATS + (2 * stat) + 1);
+
+        return Statistic(real, temp);
+    }
+    else
+    {
+        return errorStat;
+    }
+}
+
+XEEN::Sex XEEN::Character::getSex() const
+{
+    XEEN_VALID_RET(MALE);    
+    return (Sex)_data->getByteAt((_index * 354) + OFF_SEX);
+}
+
+XEEN::Class XEEN::Character::getClass() const
+{
+    XEEN_VALID_RET(KNIGHT);    
+    return (Class)_data->getByteAt((_index * 354) + OFF_CLASS);
+}
+
+XEEN::Race XEEN::Character::getRace() const
+{
+    XEEN_VALID_RET(HUMAN);
+    return (Race)_data->getByteAt((_index * 354) + OFF_RACE);
 }

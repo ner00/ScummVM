@@ -77,6 +77,7 @@ namespace XEEN
             Character* _characters[MAX_CHARACTERS];
             
             CCFileData* _mazePTY;
+            CCFileData* _mazeCHR;
     };
 }
 

@@ -78,20 +78,18 @@ static inline uint32 getDwordAt(XEEN::CCFileData* file, uint32 pos)
 XEEN::Party::Party()
 {
     _mazePTY = XEENgame.getAssets().getSaveFile().getFile("MAZE.PTY");
-    Common::ScopedPtr<CCFileData> charReader(XEENgame.getAssets().getSaveFile().getFile("MAZE.CHR"));
+    _mazeCHR = XEENgame.getAssets().getSaveFile().getFile("MAZE.CHR");
 
     memset(_characters, 0, sizeof(_characters));
     
-    if(_mazePTY && charReader)
-    {    
+    if(_mazePTY && _mazeCHR)
+    {
         // Read each character
         for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
         {
-            charReader->seek(i * 354);
-        
             // Only accept a character that has a matching face image
             Sprite* faceSprite = XEENgame.getSpriteManager().getSprite(CCFileId("CHAR%02d.FAC", i + 1));
-            _characters[i] = valid(faceSprite) ? new Character(charReader, faceSprite) : 0;
+            _characters[i] = valid(faceSprite) ? new Character(_mazeCHR, i, faceSprite) : 0;
         }
     }
     else

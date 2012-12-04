@@ -69,7 +69,7 @@ const char* XEEN::QuickReferenceWindow::produceString(unsigned id)
         if(id >= 7 && id <= 12)
         {
             Character* character = party.getMemberInSlot(id - 7);
-            snprintf(stringBuffer, sizeof(stringBuffer), "%s", valid(character) ? character->name : "");
+            snprintf(stringBuffer, sizeof(stringBuffer), "%s", valid(character) ? character->getName() : "");
             return stringBuffer;
         }
         
@@ -77,7 +77,7 @@ const char* XEEN::QuickReferenceWindow::produceString(unsigned id)
         if(id >= 13 && id <= 18)
         {
             Character* character = party.getMemberInSlot(id - 13);
-            snprintf(stringBuffer, sizeof(stringBuffer), "%.3s", valid(character) ? getClassName(character->profession) : "");
+            snprintf(stringBuffer, sizeof(stringBuffer), "%.3s", valid(character) ? getClassName(character->getClass()) : "");
             return stringBuffer;
         }
     }
