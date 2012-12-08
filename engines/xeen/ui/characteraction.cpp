@@ -36,7 +36,7 @@ const XEEN::Button* XEEN::CharacterActionWindow::getButtons() const
 {
     static const Button buttons[] = 
     {
-        {"VIEW.ICN",  0,  1, {175, 8, 24, 20}, 0}, // TODO: Use proper icon
+        {"ESC.ICN",  0,  1, {175, 8, 24, 20}, 0},
 
         {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
     };
