@@ -38,6 +38,7 @@ namespace XEEN
         public:
             static const uint32 SMALL = 1;
             static const uint32 CENTER = 2;
+            static const uint32 ALIGN_RIGHT = 4;
 
         private:
             Font();

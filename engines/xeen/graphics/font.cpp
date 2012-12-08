@@ -65,6 +65,14 @@ XEEN::Font::Font()
         _glyphs['p'].verticalOffset = 1;
         _glyphs['q'].verticalOffset = 1;
         _glyphs['y'].verticalOffset = 1;
+
+        _glyphs[32 + 128].spacing -= 2;
+        _glyphs['g' + 128].verticalOffset = 1;
+        _glyphs['j' + 128].verticalOffset = 1;
+        _glyphs['p' + 128].verticalOffset = 1;
+        _glyphs['q' + 128].verticalOffset = 1;
+        _glyphs['y' + 128].verticalOffset = 1;
+
     }
     else
     {
@@ -78,11 +86,16 @@ void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* tex
 
     // TODO: Check centering measurements against real game
     const byte* btext = (const byte*)text;
+    const unsigned size = measureString(text, flags);
 
     if(flags & CENTER)
     {
-        const unsigned size = measureString(text, flags);
         pen.x += (width - size) / 2;
+    }
+    else if(flags & ALIGN_RIGHT)
+    {
+        //HACK: Account for right side of window
+        pen.x += (width - 8) - size;
     }
 
     for(; *btext; btext ++)

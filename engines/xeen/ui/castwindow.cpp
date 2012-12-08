@@ -64,13 +64,13 @@ const XEEN::String* XEEN::CastWindow::getStrings() const
 
     static const String strings[] = 
     {
-        {"Cast Spell", 0, 18, 8, 0},
-
-        {0, 1, 8, 28, 0}, // TODO: Center
-
+        {"Cast Spell", 0, 0, 8, Font::CENTER},
+        {0, 1, 0, 28, Font::CENTER},
         {"Spell Ready:", 0, 8, 48, 0},
-        {"Cost", 0, 8, 90, Font::SMALL},
-        {"Cur SP", 0, 8, 99, Font::SMALL},
+        {0, 2, 0, 68, Font::CENTER},
+
+        {"Cost", 0, 8, 90, Font::SMALL}, {0, 3, 0, 90, Font::SMALL | Font::ALIGN_RIGHT},
+        {"Cur SP", 0, 8, 99, Font::SMALL},  {0, 4, 0, 99, Font::SMALL | Font::ALIGN_RIGHT},
 
         {"Cast", 0, 9, 130, Font::SMALL}, {"New", 0, 38, 130, Font::SMALL}, {"ESC", 0, 66, 130, Font::SMALL}, // TODO: Highlight 'C' and 'N'
 
@@ -94,6 +94,9 @@ void XEEN::CastWindow::produceString(unsigned id)
             switch(id)
             {
                 case  1: fillStringBuffer("%s", character->getName()); return;
+                case  2: fillStringBuffer("Light"); return; // TODO: Use real spell name, make yellow
+                case  3: fillStringBuffer("1/0"); return; //TODO: Use real cost
+                case  4: fillStringBuffer("2"); return; //TODO: Use real cur sp
             }
         }
     }
