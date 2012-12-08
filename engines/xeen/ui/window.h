@@ -49,10 +49,12 @@ namespace XEEN
     struct String
     {
         const char* const text;
-        const uint32 stringID;
+        uint32 stringID;
 
-        const int32 x;
-        const int32 y;        
+        int32 x;
+        int32 y;
+
+        uint32 flags;
     };
 
     class Window : public Validateable

@@ -26,6 +26,8 @@
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
+#include "xeen/graphics/font.h"
+
 XEEN::CastWindow::CastWindow() : Window(Common::Rect(226, 0, 226 + 94, 146), false)
 {
 }
@@ -67,10 +69,10 @@ const XEEN::String* XEEN::CastWindow::getStrings() const
         {0, 1, 8, 28}, // TODO: Center
 
         {"Spell Ready:", 0, 8, 48},
-        {"Cost", 0, 8, 90}, // TODO: Small font
-        {"Cur SP", 0, 8, 99}, // TODO: Small font
+        {"Cost", 0, 8, 90, Font::SMALL},
+        {"Cur SP", 0, 8, 99, Font::SMALL},
 
-        {"Cast", 0, 9, 130}, {"New", 0, 38, 130}, {"ESC", 0, 66, 130}, // TODO: Small font, Highlight 'C' and 'N'
+        {"Cast", 0, 9, 130, Font::SMALL}, {"New", 0, 38, 130, Font::SMALL}, {"ESC", 0, 66, 130, Font::SMALL}, // TODO: Highlight 'C' and 'N'
 
         {(uint16)0, 0, 0, 0}
     };

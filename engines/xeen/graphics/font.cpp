@@ -65,7 +65,7 @@ XEEN::Font::Font()
     }
 }
 
-void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* text) const
+void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags) const
 {
     XEEN_VALID();
 
@@ -73,7 +73,7 @@ void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* tex
 
     for(; *btext; btext ++)
     {
-        const Glyph& ch = _glyphs[*btext];
+        const Glyph& ch = _glyphs[(*btext) + ((flags & SMALL) ? 128 : 0)];
         
         for(int i = 0; i != 8; i ++)
         {

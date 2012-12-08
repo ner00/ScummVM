@@ -72,7 +72,7 @@ Common::Error XEEN::XeenEngine::run()
 
         ImageBuffer buffer;        
         XEENgame.draw(buffer);
-                
+
         _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
         _system->updateScreen();
     }

@@ -35,11 +35,14 @@ namespace XEEN
         static const unsigned CHARACTER_COUNT = 256;
         friend class Game;
     
+        public:
+            static const uint32 SMALL = 1;
+
         private:
             Font();
 
         public:            
-            void drawString(ImageBuffer& out, Common::Point pen, const char* text) const;
+            void drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags = 0) const;
             
         private:
             struct Glyph
