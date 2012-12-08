@@ -60,16 +60,15 @@ const XEEN::String* XEEN::CharacterActionWindow::getStrings() const
 {
     static const String strings[] = 
     {
-        {"Dismiss Whom?", 0, 18, 13}, // TODO: Allow customization
-        {(uint16)0, 0, 0, 0}
+        {"Dismiss Whom?", 0, 18, 13, 0}, // TODO: Allow customization
+        {(uint16)0, 0, 0, 0, 0}
     };
     
     return strings;
 }
 
-const char* XEEN::CharacterActionWindow::produceString(unsigned id)
+void XEEN::CharacterActionWindow::produceString(unsigned id)
 {
-    XEEN_VALID_RET(0);
-    return "";
+    XEEN_VALID();
 }
 

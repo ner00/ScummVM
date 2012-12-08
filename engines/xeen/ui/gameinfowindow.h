@@ -35,10 +35,7 @@ namespace XEEN
             
         protected:
             const String* getStrings() const;
-            const char* produceString(unsigned id);        
-
-        private:
-            char stringBuffer[128];        
+            void produceString(unsigned id);        
     };
 }
 

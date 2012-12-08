@@ -38,6 +38,9 @@ static const int OFF_MAZE_FACING        = 0x00A;
 static const int OFF_MAZE_X             = 0x00B;
 static const int OFF_MAZE_Y             = 0x00C;
 static const int OFF_MAZE_ID            = 0x00D;
+static const int OFF_DAY                = 0x264;
+static const int OFF_YEAR               = 0x266;
+static const int OFF_MINUTES            = 0x268;
 static const int OFF_FOOD               = 0x26A;
 static const int OFF_GOLD               = 0x27E;
 static const int OFF_GEMS               = 0x282;
@@ -127,7 +130,10 @@ uint32 XEEN::Party::getValue(PartyValue val) const
         { OFF_MAZE_ID, 1 },
         { OFF_MAZE_X, 1 },
         { OFF_MAZE_Y, 1 },
-        { OFF_MAZE_FACING, 1 }
+        { OFF_MAZE_FACING, 1 },
+        { OFF_DAY, 2 },
+        { OFF_YEAR, 2 },
+        { OFF_MINUTES, 2 }
     };
         
     if(enforce(val < PARTY_VALUE_MAX))

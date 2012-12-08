@@ -69,7 +69,9 @@ namespace XEEN
             virtual const String* getStrings() const { return 0; }
             
             virtual void handleAction(unsigned id) { }
-            virtual const char* produceString(unsigned id) { return 0; }
+            virtual void produceString(unsigned id) { }
+
+            void fillStringBuffer(const char* fmt, ...);
 
         public:
             virtual void show() { };        
@@ -77,8 +79,10 @@ namespace XEEN
             void heartbeat();
             void draw(ImageBuffer& out);
             bool click(const Common::Point& point);
-        
+
         private:
+            char _stringBuffer[128];
+
             Common::Rect _area;
             bool _clickToClose;
             
@@ -96,10 +100,7 @@ namespace XEEN
             const String* getStrings() const;
             
             void handleAction(unsigned id);
-            const char* produceString(unsigned id);
-            
-        private:
-            char stringBuffer[128];
+            void produceString(unsigned id);
     };
 }
 

@@ -45,7 +45,7 @@ namespace XEEN
 
             enum PartyValue {
                 PARTY_COUNT, GOLD, GOLD_BANK, GEMS, GEMS_BANK, FOOD, MAZE_ID,
-                MAZE_X, MAZE_Y, MAZE_FACING, PARTY_VALUE_MAX };
+                MAZE_X, MAZE_Y, MAZE_FACING, DAY, YEAR, MINUTES, PARTY_VALUE_MAX };
 
         private:
             Party();

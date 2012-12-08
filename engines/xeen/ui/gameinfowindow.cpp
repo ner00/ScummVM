@@ -35,25 +35,44 @@ const XEEN::String* XEEN::GameInfoWindow::getStrings() const
 
     static const String strings[] = 
     {
-        {"World of Xeen", 0, 40, 9}, // TODO: Yellow
-        {"Game Information", 0, 29, 19},
-        {"Today is", 0, 30, 39}, {0, 1, 83, 39}, // TODO: Should be one centered string, day should be yellow
+        {"World of Xeen", 0, 40, 9, 0}, // TODO: Yellow
+        {"Game Information", 0, 29, 19, 0},
+        {"Today is", 0, 30, 39, 0}, {0, 1, 83, 39, 0}, // TODO: Should be one centered string, day should be yellow
 
-        {"Time", 0, 28, 59}, {"Day", 0, 70, 59}, {"Year", 0, 106, 59},
+        {"Time", 0, 28, 59, 0}, {"Day", 0, 70, 59, 0}, {"Year", 0, 106, 59, 0},
+        {0, 2, 25, 69, 0},      {0, 3, 78, 69, 0},     {0, 4, 110, 69, 0}, // TODO: Position, Make yellow
 
-        // TODO: Current Time day and year
-
-        {(uint16)0, 0, 0, 0}
+        {(uint16)0, 0, 0, 0, 0}
     };
     
     return strings;
 }
 
-const char* XEEN::GameInfoWindow::produceString(unsigned id)
+void XEEN::GameInfoWindow::produceString(unsigned id)
 {
-    XEEN_VALID_RET("");
+    XEEN_VALID();
 
-    // TODO
+    if(valid(XEENgame) && valid(XEENgame.getParty()))
+    {
+        Party& party = XEENgame.getParty();
 
-    return "";
+        const unsigned day = party.getValue(Party::DAY);
+        const unsigned year = party.getValue(Party::YEAR);
+        const unsigned mins = party.getValue(Party::MINUTES);
+
+        // TODO: Check day names
+        static const char* const daynames[10] =
+        {
+            "Tensday", "Onesday", "Twosday", "Threesday", "Foursday",
+            "Fivesday", "Sixday", "Sevenday", "Eightday", "Ninesday", 
+        };
+
+        switch(id)
+        {
+            case 1: fillStringBuffer("%s", daynames[day % 10]); return;
+            case 2: fillStringBuffer("000"); return;
+            case 3: fillStringBuffer("%d", day); return;
+            case 4: fillStringBuffer("%d", year); return;
+        }
+    }
 }

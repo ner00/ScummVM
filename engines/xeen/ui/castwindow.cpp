@@ -64,27 +64,25 @@ const XEEN::String* XEEN::CastWindow::getStrings() const
 
     static const String strings[] = 
     {
-        {"Cast Spell", 0, 18, 8},
+        {"Cast Spell", 0, 18, 8, 0},
 
-        {0, 1, 8, 28}, // TODO: Center
+        {0, 1, 8, 28, 0}, // TODO: Center
 
-        {"Spell Ready:", 0, 8, 48},
+        {"Spell Ready:", 0, 8, 48, 0},
         {"Cost", 0, 8, 90, Font::SMALL},
         {"Cur SP", 0, 8, 99, Font::SMALL},
 
         {"Cast", 0, 9, 130, Font::SMALL}, {"New", 0, 38, 130, Font::SMALL}, {"ESC", 0, 66, 130, Font::SMALL}, // TODO: Highlight 'C' and 'N'
 
-        {(uint16)0, 0, 0, 0}
+        {(uint16)0, 0, 0, 0, 0}
     };
     
     return strings;
 }
 
-const char* XEEN::CastWindow::produceString(unsigned id)
+void XEEN::CastWindow::produceString(unsigned id)
 {
-    XEEN_VALID_RET("");
-
-    stringBuffer[0] = 0;
+    XEEN_VALID();
 
     if(valid(XEENgame) && valid(XEENgame.getParty()))
     {
@@ -95,12 +93,8 @@ const char* XEEN::CastWindow::produceString(unsigned id)
         {
             switch(id)
             {
-                case  1: snprintf(stringBuffer, sizeof(stringBuffer), "%s", character->getName()); break;
+                case  1: fillStringBuffer("%s", character->getName()); return;
             }
-
-            return stringBuffer;
         }
     }
-
-    return "";
 }

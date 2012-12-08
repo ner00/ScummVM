@@ -37,6 +37,14 @@ XEEN::Window::Window(const Common::Rect& area, bool clickToClose) : _area(area),
 {
 }
 
+void XEEN::Window::fillStringBuffer(const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(_stringBuffer, sizeof(_stringBuffer), fmt, args);
+    va_end(args);
+}
+
 void XEEN::Window::draw(ImageBuffer& out)
 {
     const Common::Point location(_area.left, _area.top);
@@ -63,11 +71,14 @@ void XEEN::Window::draw(ImageBuffer& out)
     
     for(const String* string = getStrings(); string && (string->text || string->stringID); string ++)
     {
-        const char* text = string->text ? string->text : produceString(string->stringID);
-        
-        if(text)
+        if(string->text)
         {
-            font.drawString(out, location + Common::Point(string->x, string->y), text, string->flags);
+            font.drawString(out, location + Common::Point(string->x, string->y), string->text, string->flags);
+        }
+        else
+        {
+            produceString(string->stringID);
+            font.drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags);            
         }
     }
 }
@@ -140,20 +151,20 @@ const XEEN::String* XEEN::CharacterStatusWindow::getStrings() const
 {
     static const String strings[] = 
     {
-        {"Mgt",    0,  37,  26}, {0,  1,  37,  34}, {"Acy",        0,  88,  26}, {0,  2,  88,  34}, 
-        {"H.P.",   0, 139,  26}, {0,  3, 139,  34}, {"Experience", 0, 204,  26}, {0,  4, 204,  34}, 
-        {"Int",    0,  37,  49}, {0,  5,  37,  57}, {"Lck",        0,  88,  49}, {0,  6,  88,  57}, 
-        {"S.P.",   0, 139,  49}, {0,  7, 139,  57}, {"Party Gold", 0, 204,  49}, {0,  8, 204,  57}, 
-        {"Per",    0,  37,  70}, {0,  9,  37,  78}, {"Age",        0,  88,  70}, {0, 10,  88,  78}, 
-        {"Resis",  0, 139,  70}, {0, 11, 139,  78}, {"Party Gems", 0, 204,  70}, {0, 12, 204,  78}, 
-        {"End",    0,  37,  93}, {0, 13,  37, 101}, {"Lvl",        0,  88,  93}, {0, 14,  88, 101}, 
-        {"Skills", 0, 139,  93}, {0, 15, 139, 101}, {"Party Food", 0, 204,  93}, {0, 16, 204, 101}, 
-        {"Spd",    0,  37, 116}, {0, 17,  37, 124}, {"AC",         0,  88, 116}, {0, 18,  88, 124}, 
-        {"Awrds",  0, 139, 116}, {0, 19, 139, 124}, {"Condition",  0, 204, 116}, {0, 20, 204, 124}, 
+        {"Mgt",    0,  37,  26, 0}, {0,  1,  37,  34, 0}, {"Acy",        0,  88,  26, 0}, {0,  2,  88,  34, 0}, 
+        {"H.P.",   0, 139,  26, 0}, {0,  3, 139,  34, 0}, {"Experience", 0, 204,  26, 0}, {0,  4, 204,  34, 0}, 
+        {"Int",    0,  37,  49, 0}, {0,  5,  37,  57, 0}, {"Lck",        0,  88,  49, 0}, {0,  6,  88,  57, 0}, 
+        {"S.P.",   0, 139,  49, 0}, {0,  7, 139,  57, 0}, {"Party Gold", 0, 204,  49, 0}, {0,  8, 204,  57, 0}, 
+        {"Per",    0,  37,  70, 0}, {0,  9,  37,  78, 0}, {"Age",        0,  88,  70, 0}, {0, 10,  88,  78, 0}, 
+        {"Resis",  0, 139,  70, 0}, {0, 11, 139,  78, 0}, {"Party Gems", 0, 204,  70, 0}, {0, 12, 204,  78, 0}, 
+        {"End",    0,  37,  93, 0}, {0, 13,  37, 101, 0}, {"Lvl",        0,  88,  93, 0}, {0, 14,  88, 101, 0}, 
+        {"Skills", 0, 139,  93, 0}, {0, 15, 139, 101, 0}, {"Party Food", 0, 204,  93, 0}, {0, 16, 204, 101, 0}, 
+        {"Spd",    0,  37, 116, 0}, {0, 17,  37, 124, 0}, {"AC",         0,  88, 116, 0}, {0, 18,  88, 124, 0}, 
+        {"Awrds",  0, 139, 116, 0}, {0, 19, 139, 124, 0}, {"Condition",  0, 204, 116, 0}, {0, 20, 204, 124, 0}, 
 
-        {0, 21, 7, 12},
+        {0, 21, 7, 12, 0},
 
-        {(uint16)0, 0, 0, 0}
+        {(uint16)0, 0, 0, 0, 0}
     };
     
     return strings;
@@ -174,11 +185,9 @@ void XEEN::CharacterStatusWindow::handleAction(unsigned id)
     }
 }
 
-const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
+void XEEN::CharacterStatusWindow::produceString(unsigned id)
 {
-    XEEN_VALID_RET(0);
-
-    stringBuffer[0] = 0;
+    XEEN_VALID();
 
     if(valid(XEENgame) && valid(XEENgame.getParty()))
     {
@@ -189,42 +198,40 @@ const char* XEEN::CharacterStatusWindow::produceString(unsigned id)
         {
             switch(id)
             {
-                case  1: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(MIGHT).getValue()); break;
-                case  2: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(ACCURACY).getValue()); break;
-                case  5: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(INTELLECT).getValue()); break;
-                case  6: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(LUCK).getValue()); break;
-                case  9: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(PERSONALITY).getValue()); break;
-                case 13: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(ENDURANCE).getValue()); break;
-                case 17: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(SPEED).getValue()); break;                
-                case 14: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getStat(LEVEL).getValue()); break;
+                case  1: fillStringBuffer("%d", character->getStat(MIGHT).getValue()); break;
+                case  2: fillStringBuffer("%d", character->getStat(ACCURACY).getValue()); break;
+                case  5: fillStringBuffer("%d", character->getStat(INTELLECT).getValue()); break;
+                case  6: fillStringBuffer("%d", character->getStat(LUCK).getValue()); break;
+                case  9: fillStringBuffer("%d", character->getStat(PERSONALITY).getValue()); break;
+                case 13: fillStringBuffer("%d", character->getStat(ENDURANCE).getValue()); break;
+                case 17: fillStringBuffer("%d", character->getStat(SPEED).getValue()); break;                
+                case 14: fillStringBuffer("%d", character->getStat(LEVEL).getValue()); break;
 
-                case  3: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::HP)); break;
-                case  4: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::EXPERIENCE)); break;
-                case  7: snprintf(stringBuffer, sizeof(stringBuffer), "%d", character->getValue(Character::SP)); break;
-                case 10: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case 11: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case  3: fillStringBuffer("%d", character->getValue(Character::HP)); break;
+                case  4: fillStringBuffer("%d", character->getValue(Character::EXPERIENCE)); break;
+                case  7: fillStringBuffer("%d", character->getValue(Character::SP)); break;
+                case 10: fillStringBuffer("DANG"); break;
+                case 11: fillStringBuffer("DANG"); break;
 
-                case 15: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 15: fillStringBuffer("DANG"); break;
 
-                case  8: snprintf(stringBuffer, sizeof(stringBuffer), "%d", party.getValue(Party::GOLD)); break;
-                case 12: snprintf(stringBuffer, sizeof(stringBuffer), "%d", party.getValue(Party::GEMS)); break;
-                case 16: snprintf(stringBuffer, sizeof(stringBuffer), "%d", party.getValue(Party::FOOD)); break; // TODO: / 3 / PARTY_COUNT: needs to be shown in days!
+                case  8: fillStringBuffer("%d", party.getValue(Party::GOLD)); break;
+                case 12: fillStringBuffer("%d", party.getValue(Party::GEMS)); break;
+                case 16: fillStringBuffer("%d", party.getValue(Party::FOOD)); break; // TODO: / 3 / PARTY_COUNT: needs to be shown in days!
                 
 
-                case 18: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case 19: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
-                case 20: snprintf(stringBuffer, sizeof(stringBuffer), "DANG"); break;
+                case 18: fillStringBuffer("DANG"); break;
+                case 19: fillStringBuffer("DANG"); break;
+                case 20: fillStringBuffer("DANG"); break;
                 
                 case 21:
                 {
-                    snprintf(stringBuffer, sizeof(stringBuffer), "%s : %s %s %s", character->getName(), getSexName(character->getSex()),
+                    fillStringBuffer("%s : %s %s %s", character->getName(), getSexName(character->getSex()),
                              getRaceName(character->getRace()), getClassName(character->getClass()));
                     break;
                 }
             }
         }
     }
-
-    return stringBuffer;
 }
 
