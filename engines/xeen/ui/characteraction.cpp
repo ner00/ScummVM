@@ -1,0 +1,75 @@
+/* ScummVM - Graphic Adventure Engine
+ *
+ * ScummVM is the legal property of its developers, whose names
+ * are too numerous to list here. Please refer to the COPYRIGHT
+ * file distributed with this source distribution.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ */
+#include "common/system.h"
+
+#include "xeen/game.h"
+#include "xeen/party.h"
+#include "xeen/characters.h"
+
+#include "xeen/ui/characteraction.h"
+
+XEEN::CharacterActionWindow::CharacterActionWindow() : Window(Common::Rect(50, 112, 50 + 216, 112 + 36))
+{
+}
+
+            
+const XEEN::Button* XEEN::CharacterActionWindow::getButtons() const
+{
+    static const Button buttons[] = 
+    {
+        {"VIEW.ICN",  0,  1, {175, 8, 24, 20}, 0}, // TODO: Use proper icon
+
+        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
+    };
+    
+    return buttons;
+}
+
+void XEEN::CharacterActionWindow::handleAction(unsigned id)
+{
+    XEEN_VALID();
+
+    if(valid(XEENgame) && id == 0)
+    {
+        XEENgame.showWindow(Game::NONE);
+    }
+}
+
+
+
+const XEEN::String* XEEN::CharacterActionWindow::getStrings() const
+{
+    static const String strings[] = 
+    {
+        {"Dismiss Whom?", 0, 18, 13}, // TODO: Allow customization
+        {(uint16)0, 0, 0, 0}
+    };
+    
+    return strings;
+}
+
+const char* XEEN::CharacterActionWindow::produceString(unsigned id)
+{
+    XEEN_VALID_RET(0);
+    return "";
+}
+

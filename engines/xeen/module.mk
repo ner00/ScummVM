@@ -17,6 +17,7 @@ MODULE_OBJS := \
     maze/mazetext.o \
     ui/window.o \
     ui/castwindow.o \
+    ui/characteraction.o \
     ui/characterwindow.o \
     ui/gameinfowindow.o \
     ui/gamewindow.o \

@@ -123,6 +123,7 @@ void XEEN::Game::showWindow(WindowID id)
         case QUICKREF: _currentWindow = &_quickrefWnd; break;
         case CASTSPELL: _currentWindow = &_castWnd; break;
         case GAMEINFO: _currentWindow = &_gameInfoWnd; break;
+        case CHARACTION: _currentWindow = &_charActionWnd; break;
     }
 
     if(_currentWindow)
@@ -166,7 +167,11 @@ void XEEN::Game::draw(ImageBuffer& out)
     if(_currentWindow)
     {
         _currentWindow->heartbeat();
-        _currentWindow->draw(out);
+
+        if(_currentWindow)
+        {
+            _currentWindow->draw(out);
+        }
     }
     else
     {
