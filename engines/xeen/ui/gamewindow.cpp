@@ -67,6 +67,7 @@ void XEEN::GameWindow::handleAction(unsigned id)
             switch(id)
             {
                 case  1: XEENgame.showWindow(Game::CASTSPELL); break;
+                case  7: XEENgame.showWindow(Game::GAMEINFO); break;
                 case  8: XEENgame.showWindow(Game::QUICKREF); break;
 
                 // MOVEMENT

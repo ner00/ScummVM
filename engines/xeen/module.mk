@@ -18,6 +18,7 @@ MODULE_OBJS := \
     ui/window.o \
     ui/castwindow.o \
     ui/characterwindow.o \
+    ui/gameinfowindow.o \
     ui/gamewindow.o \
     ui/quickreference.o
 

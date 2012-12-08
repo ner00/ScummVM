@@ -37,7 +37,7 @@
 
 XEEN::Game XEENgame;
 
-XEEN::Game::Game() : _assets(0), _spriteManager(0),_mapManager(0), _party(0), _font(0)
+XEEN::Game::Game() : _windowID(NONE), _currentWindow(0), _activeCharacterSlot(0), _assets(0), _spriteManager(0),_mapManager(0), _party(0), _font(0)
 {
     markInvalid();
 }
@@ -65,6 +65,7 @@ void XEEN::Game::load()
     _font = new Font();
     
     _windowID = NONE;
+    _currentWindow = 0;
     
     if(!(valid(_assets) && valid(_spriteManager) && valid(_mapManager) && valid(_party) && valid(_font)))
     {
@@ -114,18 +115,19 @@ void XEEN::Game::load()
 void XEEN::Game::showWindow(WindowID id)
 {
     _windowID = id;
-    
-    if(id == STATUS)
+    _currentWindow = 0;
+
+    switch(id)
     {
-        _statusWnd.show();
+        case STATUS: _currentWindow = &_statusWnd; break;
+        case QUICKREF: _currentWindow = &_quickrefWnd; break;
+        case CASTSPELL: _currentWindow = &_castWnd; break;
+        case GAMEINFO: _currentWindow = &_gameInfoWnd; break;
     }
-    else if(id == QUICKREF)
+
+    if(_currentWindow)
     {
-        _statusWnd.show();
-    }
-    else if(id == CASTSPELL)
-    {
-        _castWnd.show();
+        _currentWindow->show();
     }
 }
 
@@ -133,22 +135,10 @@ void XEEN::Game::click(const Common::Point& location)
 {
     XEEN_VALID();
 
-    if(_windowID != NONE)
+    if(_currentWindow)
     {
-        if(_windowID == STATUS)
-        {
-            _statusWnd.click(location);
-            _portraitWnd.click(location);
-        }
-        else if(_windowID == QUICKREF)
-        {
-            _quickrefWnd.click(location);
-        }
-        else if(_windowID == CASTSPELL)
-        {
-            _castWnd.click(location);
-            _portraitWnd.click(location);
-        }
+        _currentWindow->click(location);
+        // TODO: Portraits if needed!
     }
     else
     {
@@ -173,23 +163,10 @@ void XEEN::Game::draw(ImageBuffer& out)
     _mainWnd.draw(out);
     _portraitWnd.draw(out);
     
-    if(_windowID != NONE)
+    if(_currentWindow)
     {
-        if(_windowID == STATUS)
-        {
-            _statusWnd.heartbeat();
-            _statusWnd.draw(out);
-        }
-        else if(_windowID == QUICKREF)
-        {
-            _quickrefWnd.heartbeat();
-            _quickrefWnd.draw(out);
-        }
-        else if(_windowID == CASTSPELL)
-        {
-            _castWnd.heartbeat();
-            _castWnd.draw(out);
-        }
+        _currentWindow->heartbeat();
+        _currentWindow->draw(out);
     }
     else
     {
