@@ -37,18 +37,23 @@ namespace XEEN
     
         public:
             static const uint32 SMALL = 1;
+            static const uint32 CENTER = 2;
 
         private:
             Font();
 
-        public:            
-            void drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags = 0) const;
+        public:
+            void drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags = 0, unsigned width = 0) const;
+
+        private:
+            unsigned measureString(const char* text, uint32 flags) const;
             
         private:
             struct Glyph
             {
                 byte pixels[8 * 8];
                 uint8 spacing;
+                uint8 verticalOffset;
             };
             
             Glyph _glyphs[CHARACTER_COUNT];

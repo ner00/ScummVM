@@ -25,6 +25,8 @@
 #include "xeen/ui/gameinfowindow.h"
 #include "xeen/party.h"
 
+#include "xeen/graphics/font.h"
+
 XEEN::GameInfoWindow::GameInfoWindow() : Window(Common::Rect(88, 20, 88 + 160, 20 + 92), true)
 {
 }
@@ -35,9 +37,9 @@ const XEEN::String* XEEN::GameInfoWindow::getStrings() const
 
     static const String strings[] = 
     {
-        {"World of Xeen", 0, 40, 9, 0}, // TODO: Yellow
-        {"Game Information", 0, 29, 19, 0},
-        {"Today is", 0, 30, 39, 0}, {0, 1, 83, 39, 0}, // TODO: Should be one centered string, day should be yellow
+        {"World of Xeen", 0, 0, 9, Font::CENTER}, // TODO: Yellow
+        {"Game Information", 0, 0, 19, Font::CENTER},
+        {0, 1, 0, 39, Font::CENTER}, // TODO: Should be one centered string, day should be yellow
 
         {"Time", 0, 28, 59, 0}, {"Day", 0, 70, 59, 0}, {"Year", 0, 106, 59, 0},
         {0, 2, 25, 69, 0},      {0, 3, 78, 69, 0},     {0, 4, 110, 69, 0}, // TODO: Position, Make yellow
@@ -69,7 +71,7 @@ void XEEN::GameInfoWindow::produceString(unsigned id)
 
         switch(id)
         {
-            case 1: fillStringBuffer("%s", daynames[day % 10]); return;
+            case 1: fillStringBuffer("Today is %s", daynames[day % 10]); return; // TODO: Make dayname yellow
             case 2: fillStringBuffer("000"); return;
             case 3: fillStringBuffer("%d", day); return;
             case 4: fillStringBuffer("%d", year); return;

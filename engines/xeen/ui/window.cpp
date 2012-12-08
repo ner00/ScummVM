@@ -73,12 +73,12 @@ void XEEN::Window::draw(ImageBuffer& out)
     {
         if(string->text)
         {
-            font.drawString(out, location + Common::Point(string->x, string->y), string->text, string->flags);
+            font.drawString(out, location + Common::Point(string->x, string->y), string->text, string->flags, _area.width());
         }
         else
         {
             produceString(string->stringID);
-            font.drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags);            
+            font.drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags, _area.width());
         }
     }
 }
