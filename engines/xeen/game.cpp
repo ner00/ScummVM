@@ -123,6 +123,10 @@ void XEEN::Game::showWindow(WindowID id)
     {
         _statusWnd.show();
     }
+    else if(id == CASTSPELL)
+    {
+        _castWnd.show();
+    }
 }
 
 void XEEN::Game::click(const Common::Point& location)
@@ -139,6 +143,11 @@ void XEEN::Game::click(const Common::Point& location)
         else if(_windowID == QUICKREF)
         {
             _quickrefWnd.click(location);
+        }
+        else if(_windowID == CASTSPELL)
+        {
+            _castWnd.click(location);
+            _portraitWnd.click(location);
         }
     }
     else
@@ -175,6 +184,11 @@ void XEEN::Game::draw(ImageBuffer& out)
         {
             _quickrefWnd.heartbeat();
             _quickrefWnd.draw(out);
+        }
+        else if(_windowID == CASTSPELL)
+        {
+            _castWnd.heartbeat();
+            _castWnd.draw(out);
         }
     }
     else

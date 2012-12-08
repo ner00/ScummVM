@@ -16,6 +16,7 @@ MODULE_OBJS := \
     maze/mazeobjects.o \
     maze/mazetext.o \
     ui/window.o \
+    ui/castwindow.o \
     ui/characterwindow.o \
     ui/gamewindow.o \
     ui/quickreference.o

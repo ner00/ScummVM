@@ -83,12 +83,14 @@ void XEEN::Window::heartbeat()
 
 bool XEEN::Window::click(const Common::Point& point)
 {
-    // Check buttons    
+    Common::Point target = point - Common::Point(_area.left, _area.top);
+
+    // Check buttons
     for(const Button* button = getButtons(); button && button->sprite; button ++)
     {
         const Common::Rect r = button->area;
     
-        if(button->actionID != Button::NOACTION && r.contains(point))
+        if(button->actionID != Button::NOACTION && r.contains(target))
         {
             _pressedButton = button;
             _pressedTime = g_system->getMillis() + BUTTON_DELAY;

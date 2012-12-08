@@ -66,8 +66,9 @@ void XEEN::GameWindow::handleAction(unsigned id)
         {
             switch(id)
             {
+                case  1: XEENgame.showWindow(Game::CASTSPELL); break;
                 case  8: XEENgame.showWindow(Game::QUICKREF); break;
-            
+
                 // MOVEMENT
                 case 10: party.turn(true); break;
                 case 11: party.moveRelative(Common::Point(0, 1)); break;

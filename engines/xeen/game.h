@@ -31,6 +31,7 @@
 #include "xeen/ui/characterwindow.h"
 #include "xeen/ui/gamewindow.h"
 #include "xeen/ui/quickreference.h"
+#include "xeen/ui/castwindow.h"
 
 namespace XEEN
 {
@@ -45,7 +46,7 @@ namespace XEEN
     class Game : public Validateable_Cleanable
     {
         public:
-            enum WindowID { NONE, STATUS, QUICKREF, MAX_WINDOW_ID };
+            enum WindowID { NONE, STATUS, QUICKREF, CASTSPELL, MAX_WINDOW_ID };
     
         public:
             Game();
@@ -91,7 +92,7 @@ namespace XEEN
             CharacterWindow _portraitWnd;
             GameWindow _mainWnd;
             QuickReferenceWindow _quickrefWnd;
-
+            CastWindow _castWnd;
     };
 }
 
