@@ -118,6 +118,9 @@ namespace XEEN
             Class getClass() const;
             Race getRace() const;
         
+            bool hasSpell(uint32 id) const;
+            static const char* getSpellName(uint32 id);
+
         public:
             CCFileData* _data;
             uint8 _index;

@@ -39,6 +39,8 @@ XEEN::Window::Window(const Common::Rect& area, bool clickToClose) : _area(area),
 
 void XEEN::Window::fillStringBuffer(const char* fmt, ...)
 {
+    XEEN_VALID();
+
     va_list args;
     va_start(args, fmt);
     vsnprintf(_stringBuffer, sizeof(_stringBuffer), fmt, args);
@@ -47,6 +49,8 @@ void XEEN::Window::fillStringBuffer(const char* fmt, ...)
 
 void XEEN::Window::draw(ImageBuffer& out)
 {
+    XEEN_VALID();
+
     const Common::Point location(_area.left, _area.top);
 
     // Background: TODO: Get correct color; draw border.    
@@ -55,14 +59,17 @@ void XEEN::Window::draw(ImageBuffer& out)
     // Draw buttons
     SpriteManager& sprites = XEENgame.getSpriteManager();
     
-    for(const Button* button = getButtons(); button && button->sprite; button ++)
+    for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)
     {
-        Sprite* const icon = sprites.getSprite(button->sprite);
-        
-        if(enforce(icon))
+        if(button->sprite)
         {
-            const uint32 frame = (button == _pressedButton) ? button->pressedFrame : button->normalFrame;
-            icon->drawCell(out, location + button->area, frame);
+            Sprite* const icon = sprites.getSprite(button->sprite);
+        
+            if(valid(icon))
+            {
+                const uint32 frame = (button == _pressedButton) ? button->pressedFrame : button->normalFrame;
+                icon->drawCell(out, location + button->area, frame);
+            }
         }
     }
     
@@ -77,6 +84,7 @@ void XEEN::Window::draw(ImageBuffer& out)
         }
         else
         {
+            _stringBuffer[0] = 0;
             produceString(string->stringID);
             font.drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags, _area.width());
         }
@@ -85,6 +93,8 @@ void XEEN::Window::draw(ImageBuffer& out)
 
 void XEEN::Window::heartbeat()
 {
+    XEEN_VALID();
+
     if(_pressedButton && (g_system->getMillis() >= _pressedTime))
     {
         handleAction(_pressedButton->actionID);
@@ -94,10 +104,13 @@ void XEEN::Window::heartbeat()
 
 bool XEEN::Window::click(const Common::Point& point)
 {
+
+    XEEN_VALID_RET(false);
+
     Common::Point target = point - Common::Point(_area.left, _area.top);
 
     // Check buttons
-    for(const Button* button = getButtons(); button && button->sprite; button ++)
+    for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)
     {
         const Common::Rect r = button->area;
     

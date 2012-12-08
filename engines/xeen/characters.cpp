@@ -34,9 +34,24 @@ static const int OFF_RACE       = 0x011;
 static const int OFF_CLASS      = 0x012;
 static const int OFF_STATS      = 0x014;
 static const int OFF_LEVEL      = 0x023;
+static const int OFF_SPELLS     = 0x079;
 static const int OFF_HP         = 0x156;
 static const int OFF_SP         = 0x158;
 static const int OFF_EXPERIENCE = 0x15C;
+
+static const char* const spellNames[] = 
+{
+    "Acid Spray", "Awaken", "Beast Master", "Bless", "Clairvoyance", "Cold Ray", "Create Food", "Cure Disease", "Cure Paralysis", "Cure Poison", "Cure Wounds", "Dancing Sword",
+    "Day of Protection", "Day of Sorcery", "Deadly Swarm", "Detect Monster", "Divine Intervention", "Dragon Sleep", "Elemental Storm", "Enchant Item", "Energy Blast",
+    "Etherealize", "Fantastic Freeze", "Fiery Flail", "Finger of Death", "Fire Ball", "First Aid", "Flying Fist", "Frost Bite", "Golem Stopper", "Heroism", "Holy Bonus",
+    "Holy Word", "Hypnotize", "Identify Monster", "Implosion", "Incinerate", "Inferno", "Insect Spray", "Item to Gold", "Jump", "Levitate", "Light", "Lightning Bolt",
+    "Lloyd\'s Beacon", "Magic Arrow", "Mass Distortion", "Mega Volts", "Moon Ray", "Nature\'s Cure", "Pain", "Poison Volley", "Power Cure", "Power Shield", "Prismatic Light",
+    "Prot. from Elements", "Raise Dead", "Recharge Item", "Resurrect", "Revitalize", "Shrapmetal", "Sleep", "Sparks", "Star Burst", "Stone to Flesh", "Sun Ray", "Super Shelter",
+    "Suppress Disease", "Suppress Poison", "Teleport", "Time Distortion", "Town Portal", "Toxic Cloud", "Turn Undead", "Walk on Water", "Wizard Eye", "None Ready"
+};
+static const uint32 TOTAL_SPELLS = sizeof(spellNames) / sizeof(spellNames[0]);
+static const uint32 MAX_SPELLS = 39;
+static const int divineSpells[MAX_SPELLS] = {0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 14, 16, 23, 26, 27, 28, 30, 31, 32, 33, 42, 46, 48, 49, 50, 52, 55, 56, 58, 59, 62, 64, 65, 67, 68, 71, 73, 74};
 
 ///
 /// Character
@@ -142,3 +157,17 @@ XEEN::Race XEEN::Character::getRace() const
     XEEN_VALID_RET(HUMAN);
     return (Race)_data->getByteAt((_index * 354) + OFF_RACE);
 }
+
+bool XEEN::Character::hasSpell(uint32 id) const
+{
+    XEEN_VALID_RET(false);
+
+    return (id < MAX_SPELLS) ? _data->getByteAt(OFF_SPELLS + id) : false;
+}
+
+const char* XEEN::Character::getSpellName(uint32 id)
+{
+    return (id < MAX_SPELLS) ? spellNames[divineSpells[id]] : "None Ready";
+}
+
+

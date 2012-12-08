@@ -45,6 +45,7 @@ namespace XEEN
         
         uint32 actionID;
     };
+    #define END_BUTTONS {(uint16)0xFFFF, 0, 0, {0, 0, 0, 0}, 0};
     
     struct String
     {

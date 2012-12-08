@@ -21,7 +21,8 @@ MODULE_OBJS := \
     ui/characterwindow.o \
     ui/gameinfowindow.o \
     ui/gamewindow.o \
-    ui/quickreference.o
+    ui/quickreference.o \
+    ui/scrollwindow.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)

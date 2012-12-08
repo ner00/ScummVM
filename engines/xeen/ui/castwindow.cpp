@@ -54,6 +54,7 @@ void XEEN::CastWindow::handleAction(unsigned id)
 
     switch(id)
     {
+        case 1: XEENgame.showWindow(Game::SELECTSPELL); return;
         case 2: XEENgame.showWindow(Game::NONE); return;
     }
 }

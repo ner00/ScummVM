@@ -122,6 +122,7 @@ void XEEN::Game::showWindow(WindowID id)
         case STATUS: _currentWindow = &_statusWnd; break;
         case QUICKREF: _currentWindow = &_quickrefWnd; break;
         case CASTSPELL: _currentWindow = &_castWnd; break;
+        case SELECTSPELL: _currentWindow = &_spellSelectWnd; break;
         case GAMEINFO: _currentWindow = &_gameInfoWnd; break;
         case CHARACTION: _currentWindow = &_charActionWnd; break;
     }
