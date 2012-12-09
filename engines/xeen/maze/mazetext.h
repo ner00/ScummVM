@@ -37,7 +37,7 @@ namespace XEEN
             const char* getString(uint32 id) const;
             
         private:
-            FilePtr _data;        
+            FilePtr _data;
             uint32 _stringOffsets[MAX_STRINGS];
     };
 }

@@ -57,7 +57,6 @@ XEEN::Archive::Archive(const char* name) : _saveData(0), _saveSize(0)
         // Make Stream
         _save = new Common::MemoryReadStream(_saveData, _saveSize);
         _saveToc.read(*_save);
-
     }
     else
     {

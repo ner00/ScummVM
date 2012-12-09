@@ -81,7 +81,7 @@ static inline uint32 getDwordAt(XEEN::FilePtr file, uint32 pos)
 XEEN::Party::Party()
 {
     _mazePTY = XEENgame.getFile("MAZE.PTY", true);
-    _mazeCHR = XEENgame.getFile("CHAR.PTY", true);
+    _mazeCHR = XEENgame.getFile("MAZE.CHR", true);
 
     memset(_characters, 0, sizeof(_characters));
     
