@@ -20,13 +20,12 @@
  *
  */
 
-#include "xeen/ccfile.h"
 #include "xeen/game.h"
 
 #include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/sprite.h"
 
-XEEN::Sprite::Sprite(CCFileData* file) : _file(file), _cellCount(0), _cells(0)
+XEEN::Sprite::Sprite(FilePtr file) : _file(file), _cellCount(0), _cells(0)
 {
     if(_file)
     {
@@ -60,7 +59,6 @@ XEEN::Sprite::~Sprite()
 void XEEN::Sprite::cleanse()
 {
     DELETE_ARRAY(_cells);
-    DELETE(_file);
     _cellCount = 0;
 }
 

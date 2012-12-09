@@ -50,13 +50,13 @@ void XEEN::CharacterWindow::show()
     // TODO: Update when needed
     if(valid(XEENgame))
     {
-        Party& party = XEENgame.getParty();
+        Party* party = XEENgame.getParty();
         
         if(valid(party))
         {
-            for(unsigned i = 0; i != party.getValue(Party::PARTY_COUNT); i ++)
+            for(unsigned i = 0; i != party->getValue(Party::PARTY_COUNT); i ++)
             {
-                _buttons[i * 2].sprite = CCFileId("CHAR%02d.FAC", party.getMemberIdFromSlot(i) + 1);
+                _buttons[i * 2].sprite = CCFileId("CHAR%02d.FAC", party->getMemberIdFromSlot(i) + 1);
             }
         }
     }

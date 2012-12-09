@@ -27,6 +27,15 @@
 #include "common/keyboard.h"
 
 #include "xeen/utility.h"
+
+#include "xeen/graphics/font.h"
+#include "xeen/graphics/spritemanager.h"
+#include "xeen/maze/map.h"
+#include "xeen/party.h"
+
+#include "xeen/archive/file.h"
+#include "xeen/archive/archive.h"
+
 #include "xeen/ui/window.h"
 #include "xeen/ui/characteraction.h"
 #include "xeen/ui/characterwindow.h"
@@ -39,7 +48,6 @@
 namespace XEEN
 {
     class ImageBuffer;
-    class CCFile;
     class SpriteManager;
     class MapManager;
     class Party;
@@ -67,11 +75,12 @@ namespace XEEN
             void key(Common::KeyCode key);
             void draw(ImageBuffer& out);
         
-            CCFile& getAssets() { enforce(_assets); return *_assets; }
-            SpriteManager& getSpriteManager() { enforce(_spriteManager); return *_spriteManager; }
-            MapManager& getMapManager() { enforce(_mapManager); return *_mapManager; }
-            Party& getParty() { enforce(_party); return *_party; }
-            Font& getFont() { enforce(_font); return *_font; }
+            FilePtr getFile(CCFileId id, bool fromSave = false);
+
+            Valid<SpriteManager> getSpriteManager() { return _spriteManager; }
+            Valid<MapManager> getMapManager() { return _mapManager; }
+            Valid<Party> getParty() { return _party; }
+            Valid<Font> getFont() { return _font; }
 
             Character* getActiveCharacter();
             unsigned getActiveCharacterSlot() const { return _activeCharacterSlot; }
@@ -85,7 +94,7 @@ namespace XEEN
             unsigned _activeCharacterSlot;
                 
         private:
-            CCFile* _assets;
+            Archive* _assets;
 
             SpriteManager* _spriteManager;
             MapManager* _mapManager;

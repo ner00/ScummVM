@@ -24,15 +24,11 @@
 #define XEEN_CHARACTERS_H
 
 #include "xeen/utility.h"
-
-#include "common/scummsys.h"
-#include "common/stream.h"
-#include "common/ptr.h"
+#include "xeen/archive/file.h"
 
 namespace XEEN
 {
     class Game;
-    class CCFileData;
     class Sprite;
     class Party;
 
@@ -106,7 +102,7 @@ namespace XEEN
         
     
         private:
-            Character(CCFileData* data, uint8 index, Sprite* faceSprite);
+            Character(FilePtr data, uint8 index, Sprite* faceSprite);
         
         public:
             uint32 getValue(Value val) const;
@@ -122,7 +118,7 @@ namespace XEEN
             static const char* getSpellName(uint32 id);
 
         public:
-            CCFileData* _data;
+            FilePtr _data;
             uint8 _index;
         
             Sprite* face;

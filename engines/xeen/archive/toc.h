@@ -30,28 +30,33 @@
 
 namespace XEEN
 {
-    struct CCFileEntry
-    {
-        uint16 id;
-        uint32 offset;
-        uint16 size;
-        uint8 padding;
-    };
-    
+    // This class is only accessible by Archive.
+    class Archive;
+
     class Toc : public Validateable
     {
-        public:
+        friend class Archive;
+
+        private:
+            struct Entry
+            {
+                uint16 id;
+                uint32 offset;
+                uint16 size;
+                uint8 padding;
+            };
+
+        private:
             Toc();
             virtual ~Toc();
 
-            const CCFileEntry* getEntry(CCFileId id) const;
+            const Entry* getEntry(CCFileId id) const;
 
-        protected:
-            void readToc(Common::SeekableReadStream& data);
+            void read(Common::SeekableReadStream& data);
 
-        protected:
+        private:
             uint16 _entryCount;
-            CCFileEntry* _entries;            
+            Entry* _entries;            
     };
 }
 

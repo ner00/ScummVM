@@ -23,13 +23,11 @@
 #ifndef XEEN_GRAPHICS_SPRITE_H
 #define XEEN_GRAPHICS_SPRITE_H
 
-#include "common/scummsys.h"
 #include "xeen/utility.h"
 
 namespace XEEN
 {
     class Game;
-    class CCFileData;
     class SpriteManager;
     class ImageBuffer;
 
@@ -38,7 +36,7 @@ namespace XEEN
         friend class SpriteManager;
     
         private:
-            Sprite(CCFileData* file);
+            Sprite(FilePtr file);
             ~Sprite();
             
         public:
@@ -52,7 +50,7 @@ namespace XEEN
             uint32 drawLine(ImageBuffer& out);
             
         private:
-            CCFileData* _file;
+            FilePtr _file;
 
             struct Cell
             {

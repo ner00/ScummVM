@@ -20,14 +20,35 @@
  *
  */
 
-#include "xeen/ccfile.h"
+#ifndef XEEN_ARCHIVE_ARCHIVE_H
+#define XEEN_ARCHIVE_ARCHIVE_H
 
-XEEN::CCFileData::CCFileData(CCFileId id, byte* data, uint32 size) : Common::MemoryReadStream(data, size), _id(id), _size(size), _data(data) 
+#include "xeen/utility.h"
+
+#include "xeen/archive/file.h"
+#include "xeen/archive/toc.h"
+
+#include "common/file.h"
+
+namespace XEEN
 {
+    class Archive : public Validateable
+    {
+        public:
+            Archive(const char* name);
+            virtual ~Archive();
+            
+            FilePtr getFile(CCFileId id, bool inSave);
+                        
+        private:
+            Toc _mainToc;
+            Common::File _file;
 
+            Toc _saveToc;
+            Common::MemoryReadStream* _save;
+            byte* _saveData;
+            uint32 _saveSize;
+    };
 }
 
-XEEN::CCFileData::~CCFileData()
-{
-    delete[] _data;
-}
+#endif // XEEN_ARCHIVE_ARCHIVE_H

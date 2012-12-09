@@ -23,15 +23,14 @@
 #ifndef XEEN_PARTY_H
 #define XEEN_PARTY_H
 
-#include "common/scummsys.h"
+#include "xeen/utility.h"
+#include "xeen/archive/file.h"
 
 namespace XEEN
 {
     class Game;
-    class CCFile;
     class Character;
     class Map;
-    class CCFileData;
 
     class Party : public Validateable
     {
@@ -76,8 +75,8 @@ namespace XEEN
         private:
             Character* _characters[MAX_CHARACTERS];
             
-            CCFileData* _mazePTY;
-            CCFileData* _mazeCHR;
+            FilePtr _mazePTY;
+            FilePtr _mazeCHR;
     };
 }
 

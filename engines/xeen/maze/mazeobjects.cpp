@@ -22,18 +22,16 @@
 
 
 #include "xeen/game.h"
-#include "xeen/ccfile.h"
 #include "xeen/utility.h"
 
+#include "xeen/archive/archive.h"
 #include "xeen/maze/mazeobjects.h"
 
 ///
 /// MazeObjects
 ///
-XEEN::MazeObjects::MazeObjects(uint16 mapNumber) : _data(0)
+XEEN::MazeObjects::MazeObjects(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber), true))
 {
-    _data = XEENgame.getAssets().getSaveFile().getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber));
-    
     memset(_offsets, 0xFF, sizeof(_offsets));
     memset(_counts, 0xFF, sizeof(_counts));
     

@@ -20,7 +20,6 @@
  *
  */
 
-#include "xeen/ccfile.h"
 #include "xeen/game.h"
 
 #include "xeen/graphics/imagebuffer.h"
@@ -42,9 +41,9 @@ XEEN::SpriteManager::~SpriteManager()
 
 XEEN::Sprite* XEEN::SpriteManager::getSprite(CCFileId id)
 {
-    if(!_sprites[id] && XEENgame.getAssets().getEntry(id))
+    if(!_sprites[id])
     {
-        _sprites[id] = new Sprite(XEENgame.getAssets().getFile(id));
+        _sprites[id] = new Sprite(XEENgame.getFile(id));
     }
     
     return _sprites[id];

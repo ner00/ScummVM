@@ -23,8 +23,9 @@
 #include "common/ptr.h"
 
 #include "xeen/game.h"
-#include "xeen/ccfile.h"
 #include "xeen/utility.h"
+
+#include "xeen/archive/archive.h"
 
 #include "xeen/graphics/font.h"
 #include "xeen/graphics/imagebuffer.h"
@@ -37,7 +38,7 @@ XEEN::Font::Font()
     memset(_glyphs, 0, sizeof(_glyphs));
     
     //
-    Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getFile("FNT"));
+    FilePtr reader(XEENgame.getFile("FNT"));
 
     if(reader)
     {

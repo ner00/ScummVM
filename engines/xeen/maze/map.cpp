@@ -22,9 +22,9 @@
 
 #include "xeen/game.h"
 
-#include "xeen/ccfile.h"
-
 #include "xeen/utility.h"
+
+#include "xeen/archive/archive.h"
 
 #include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/spritemanager.h"
@@ -79,7 +79,7 @@ XEEN::MazeSegment* XEEN::MapManager::getSegment(uint16 id)
 ///
 XEEN::MazeSegment::MazeSegment(uint16 mapNumber) : _north(0), _east(0), _objects(0)
 {
-    CCFileData* data = XEENgame.getAssets().getSaveFile().getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber));    
+    FilePtr data = XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true);
     assert(data->size() && "Failed to open maze segment chunk");
 
     // Parse data
@@ -125,20 +125,17 @@ XEEN::MazeSegment::MazeSegment(uint16 mapNumber) : _north(0), _east(0), _objects
     if(_mazeExtensions[0])
     {
         assert(_mazeExtensions[0] >= 100 && "Indoor map extension index issue.");
-        _north = XEENgame.getMapManager().getSegment(_mazeExtensions[0]);
+        _north = XEENgame.getMapManager()->getSegment(_mazeExtensions[0]);
     }
     
     if(_mazeExtensions[1])
     {
         assert(_mazeExtensions[1] >= 100 && "Indoor map extension index issue.");    
-        _east = XEENgame.getMapManager().getSegment(_mazeExtensions[1]);
+        _east = XEENgame.getMapManager()->getSegment(_mazeExtensions[1]);
     }
     
     // Load objects
     _objects = new MazeObjects(mapNumber);
-    
-    // Done
-    delete data;
 }
 
 

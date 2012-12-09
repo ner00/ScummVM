@@ -54,7 +54,7 @@ void XEEN::QuickReferenceWindow::produceString(unsigned id)
 
     if(valid(XEENgame) && valid(XEENgame.getParty()))
     {
-        Party& party = XEENgame.getParty();
+        Party* party = XEENgame.getParty();
     
         // #
         if(id >= 1 && id <= 6)
@@ -66,7 +66,7 @@ void XEEN::QuickReferenceWindow::produceString(unsigned id)
         // Name
         if(id >= 7 && id <= 12)
         {
-            Character* character = party.getMemberInSlot(id - 7);
+            Character* character = party->getMemberInSlot(id - 7);
             fillStringBuffer("%s", valid(character) ? character->getName() : "");
             return;
         }
@@ -74,7 +74,7 @@ void XEEN::QuickReferenceWindow::produceString(unsigned id)
         // Class
         if(id >= 13 && id <= 18)
         {
-            Character* character = party.getMemberInSlot(id - 13);
+            Character* character = party->getMemberInSlot(id - 13);
             fillStringBuffer("%.3s", valid(character) ? getClassName(character->getClass()) : "");
             return;
         }

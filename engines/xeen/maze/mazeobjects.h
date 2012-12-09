@@ -29,8 +29,6 @@
 
 namespace XEEN
 {
-    class CCFileData;
-
     class MazeObjects : public Validateable_Cleanable
     {
         public:
@@ -51,7 +49,7 @@ namespace XEEN
             void cleanse();
             
         private:
-            CCFileData* _data;
+            FilePtr _data;
         
             uint16 _offsets[3];
             uint16 _counts[3];

@@ -60,7 +60,7 @@ void XEEN::GameWindow::handleAction(unsigned id)
 
     if(valid(XEENgame))
     {
-        Party& party = XEENgame.getParty();
+        Party* party = XEENgame.getParty();
         
         if(valid(party))
         {
@@ -72,12 +72,12 @@ void XEEN::GameWindow::handleAction(unsigned id)
                 case  8: XEENgame.showWindow(Game::QUICKREF); break;
 
                 // MOVEMENT
-                case 10: party.turn(true); break;
-                case 11: party.moveRelative(Common::Point(0, 1)); break;
-                case 12: party.turn(false); break;
-                case 13: party.moveRelative(Common::Point(-1, 0)); break;
-                case 14: party.moveRelative(Common::Point(0, -1)); break;
-                case 15: party.moveRelative(Common::Point(1, 0)); break;
+                case 10: party->turn(true); break;
+                case 11: party->moveRelative(Common::Point(0, 1)); break;
+                case 12: party->turn(false); break;
+                case 13: party->moveRelative(Common::Point(-1, 0)); break;
+                case 14: party->moveRelative(Common::Point(0, -1)); break;
+                case 15: party->moveRelative(Common::Point(1, 0)); break;
             }
         }
     }

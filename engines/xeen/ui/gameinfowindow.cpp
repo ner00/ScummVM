@@ -56,11 +56,11 @@ void XEEN::GameInfoWindow::produceString(unsigned id)
 
     if(valid(XEENgame) && valid(XEENgame.getParty()))
     {
-        Party& party = XEENgame.getParty();
+        Party* party = XEENgame.getParty();
 
-        const unsigned day = party.getValue(Party::DAY);
-        const unsigned year = party.getValue(Party::YEAR);
-        const unsigned mins = party.getValue(Party::MINUTES);
+        const unsigned day = party->getValue(Party::DAY);
+        const unsigned year = party->getValue(Party::YEAR);
+        const unsigned mins = party->getValue(Party::MINUTES);
 
         // TODO: Check day names
         static const char* const daynames[10] =

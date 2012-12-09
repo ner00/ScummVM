@@ -22,9 +22,9 @@
 
 
 #include "xeen/game.h"
-#include "xeen/ccfile.h"
 #include "xeen/utility.h"
 
+#include "xeen/archive/archive.h"
 #include "xeen/maze/eventlist.h"
 
 ///
@@ -32,7 +32,7 @@
 ///
 XEEN::EventList::EventList(uint16 mapNumber)
 {
-    Common::ScopedPtr<CCFileData> reader(XEENgame.getAssets().getSaveFile().getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber)));
+    FilePtr reader(XEENgame.getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true));
     
     if(reader)
     {

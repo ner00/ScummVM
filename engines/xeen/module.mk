@@ -3,10 +3,10 @@ MODULE := engines/xeen
 MODULE_OBJS := \
     xeen.o \
     detection.o \
-    ccfile.o \
     characters.o \
     party.o \
     game.o \
+    archive/archive.o \
     archive/toc.o \
     graphics/font.o \
     graphics/sprite.o \

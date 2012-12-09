@@ -24,8 +24,8 @@
 #include "xeen/party.h"
 #include "xeen/characters.h"
 #include "xeen/utility.h"
-#include "xeen/ccfile.h"
 
+#include "xeen/archive/archive.h"
 #include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
 
@@ -47,24 +47,24 @@ static const int OFF_GEMS               = 0x282;
 static const int OFF_GOLD_BANK          = 0x286;
 static const int OFF_GEMS_BANK          = 0x28A;
 
-static inline byte getByteAt(XEEN::CCFileData* file, uint32 pos)
+static inline byte getByteAt(XEEN::FilePtr file, uint32 pos)
 {
     file->seek(pos);
     return file->readByte();
 }
 
-static inline void setByteAt(XEEN::CCFileData* file, uint32 pos, uint8 val)
+static inline void setByteAt(XEEN::FilePtr file, uint32 pos, uint8 val)
 {
     file->getData()[pos] = val;
 }
 
-static inline uint16 getWordAt(XEEN::CCFileData* file, uint32 pos)
+static inline uint16 getWordAt(XEEN::FilePtr file, uint32 pos)
 {
     file->seek(pos);
     return file->readUint16LE();
 }
 
-static inline uint32 getDwordAt(XEEN::CCFileData* file, uint32 pos)
+static inline uint32 getDwordAt(XEEN::FilePtr file, uint32 pos)
 {
     file->seek(pos);
     return file->readUint32LE();
@@ -80,8 +80,8 @@ static inline uint32 getDwordAt(XEEN::CCFileData* file, uint32 pos)
 
 XEEN::Party::Party()
 {
-    _mazePTY = XEENgame.getAssets().getSaveFile().getFile("MAZE.PTY");
-    _mazeCHR = XEENgame.getAssets().getSaveFile().getFile("MAZE.CHR");
+    _mazePTY = XEENgame.getFile("MAZE.PTY", true);
+    _mazeCHR = XEENgame.getFile("CHAR.PTY", true);
 
     memset(_characters, 0, sizeof(_characters));
     
@@ -91,7 +91,7 @@ XEEN::Party::Party()
         for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
         {
             // Only accept a character that has a matching face image
-            Sprite* faceSprite = XEENgame.getSpriteManager().getSprite(CCFileId("CHAR%02d.FAC", i + 1));
+            Sprite* faceSprite = XEENgame.getSpriteManager()->getSprite(CCFileId("CHAR%02d.FAC", i + 1));
             _characters[i] = valid(faceSprite) ? new Character(_mazeCHR, i, faceSprite) : 0;
         }
     }
@@ -107,8 +107,6 @@ XEEN::Party::~Party()
     {
         delete _characters[i];
     }
-    
-    delete _mazePTY;
 }
 
 uint32 XEEN::Party::getValue(PartyValue val) const
@@ -237,12 +235,7 @@ XEEN::Map* XEEN::Party::getMap() const
     
     if(valid(XEENgame))
     {
-        MapManager& maps = XEENgame.getMapManager();
-        
-        if(valid(maps))
-        {
-            return maps.getMap(getValue(MAZE_ID));
-        }
+        return XEENgame.getMapManager()->getMap(getValue(MAZE_ID));
     }
     
     return 0;

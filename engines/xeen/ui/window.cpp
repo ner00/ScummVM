@@ -57,13 +57,13 @@ void XEEN::Window::draw(ImageBuffer& out)
     out.fillRect(_area, 21);
     
     // Draw buttons
-    SpriteManager& sprites = XEENgame.getSpriteManager();
+    SpriteManager* sprites = XEENgame.getSpriteManager();
     
     for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)
     {
         if(button->sprite)
         {
-            Sprite* const icon = sprites.getSprite(button->sprite);
+            Sprite* const icon = sprites->getSprite(button->sprite);
         
             if(valid(icon))
             {
@@ -74,19 +74,19 @@ void XEEN::Window::draw(ImageBuffer& out)
     }
     
     // Draw strings
-    Font& font = XEENgame.getFont();
+    Font* font = XEENgame.getFont();
     
     for(const String* string = getStrings(); string && (string->text || string->stringID); string ++)
     {
         if(string->text)
         {
-            font.drawString(out, location + Common::Point(string->x, string->y), string->text, string->flags, _area.width());
+            font->drawString(out, location + Common::Point(string->x, string->y), string->text, string->flags, _area.width());
         }
         else
         {
             _stringBuffer[0] = 0;
             produceString(string->stringID);
-            font.drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags, _area.width());
+            font->drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags, _area.width());
         }
     }
 }
@@ -204,7 +204,7 @@ void XEEN::CharacterStatusWindow::produceString(unsigned id)
 
     if(valid(XEENgame) && valid(XEENgame.getParty()))
     {
-        Party& party = XEENgame.getParty();
+        Party* party = XEENgame.getParty();
         Character* character = XEENgame.getActiveCharacter();
     
         if(valid(character))
@@ -228,9 +228,9 @@ void XEEN::CharacterStatusWindow::produceString(unsigned id)
 
                 case 15: fillStringBuffer("DANG"); break;
 
-                case  8: fillStringBuffer("%d", party.getValue(Party::GOLD)); break;
-                case 12: fillStringBuffer("%d", party.getValue(Party::GEMS)); break;
-                case 16: fillStringBuffer("%d", party.getValue(Party::FOOD)); break; // TODO: / 3 / PARTY_COUNT: needs to be shown in days!
+                case  8: fillStringBuffer("%d", party->getValue(Party::GOLD)); break;
+                case 12: fillStringBuffer("%d", party->getValue(Party::GEMS)); break;
+                case 16: fillStringBuffer("%d", party->getValue(Party::FOOD)); break; // TODO: / 3 / PARTY_COUNT: needs to be shown in days!
                 
 
                 case 18: fillStringBuffer("DANG"); break;

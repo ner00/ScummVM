@@ -30,7 +30,6 @@
 #include "engines/util.h"
 
 #include "xeen/xeen.h"
-#include "xeen/ccfile.h"
 #include "xeen/game.h"
 
 #include "xeen/graphics/imagebuffer.h"

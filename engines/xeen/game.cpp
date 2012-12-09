@@ -24,9 +24,10 @@
 #include "graphics/palette.h"
 
 #include "xeen/game.h"
-#include "xeen/ccfile.h"
 #include "xeen/party.h"
 #include "xeen/characters.h"
+
+#include "xeen/archive/archive.h"
 
 #include "xeen/graphics/font.h"
 #include "xeen/graphics/imagebuffer.h"
@@ -58,7 +59,7 @@ void XEEN::Game::cleanse()
 
 void XEEN::Game::load()
 {
-    _assets = new CCFile("XEEN.CC");
+    _assets = new Archive("XEEN.CC");
     _spriteManager = new SpriteManager();
     _mapManager = new MapManager();
     _party = new Party();
@@ -84,12 +85,11 @@ void XEEN::Game::load()
     {
         byte palette[256 * 3];
         
-        CCFileData* pal = _assets->getFile("MM4.PAL");
+        FilePtr pal = _assets->getFile("MM4.PAL", false);
         for(int i = 0; i != 256 * 3; i ++)
         {
             palette[i] = pal->readByte() << 2;
         }
-        delete pal;
         
         g_system->getPaletteManager()->setPalette(palette, 0, 256);
     }
@@ -188,6 +188,11 @@ void XEEN::Game::draw(ImageBuffer& out)
 
         out.resetClipArea();
     }
+}
+
+XEEN::FilePtr XEEN::Game::getFile(CCFileId id, bool fromSave)
+{
+    return _assets->getFile(id, fromSave);
 }
 
 XEEN::Character* XEEN::Game::getActiveCharacter()

@@ -33,12 +33,11 @@ namespace XEEN
     
         public:
             MazeText(uint32 mapNumber);
-            ~MazeText();
             
             const char* getString(uint32 id) const;
             
         private:
-            CCFileData* _data;        
+            FilePtr _data;        
             uint32 _stringOffsets[MAX_STRINGS];
     };
 }

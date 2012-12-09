@@ -53,7 +53,7 @@ XEEN::Toc::~Toc()
     delete[] _entries;
 }
 
-const XEEN::CCFileEntry* XEEN::Toc::getEntry(CCFileId id) const
+const XEEN::Toc::Entry* XEEN::Toc::getEntry(CCFileId id) const
 {
     for(int i = 0; i != _entryCount; i ++)
     {
@@ -66,10 +66,10 @@ const XEEN::CCFileEntry* XEEN::Toc::getEntry(CCFileId id) const
     return 0;
 }
 
-void XEEN::Toc::readToc(Common::SeekableReadStream& data)
+void XEEN::Toc::read(Common::SeekableReadStream& data)
 {
     _entryCount = data.readUint16LE();
-    _entries = new CCFileEntry[_entryCount];
+    _entries = new Entry[_entryCount];
     
     if(_entryCount && _entries)
     {

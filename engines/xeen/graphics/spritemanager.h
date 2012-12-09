@@ -24,6 +24,7 @@
 #define XEEN_GRAPHICS_SPRITEMANAGER_H
 
 #include "xeen/utility.h"
+#include "xeen/archive/file.h"
 
 namespace XEEN
 {

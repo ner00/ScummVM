@@ -110,6 +110,35 @@ namespace XEEN
     
     #define XEEN_DELETE(T) delete T; T = 0;
     
+    // Type attributes
+    template <typename T>
+    class NonNull
+    {
+        public:
+            NonNull(T* _value) : value(check(_value)) { }
+            operator T() { return check(value); }
+            T* operator->() { return check(value); }
+
+            T* check(T* _value) const { assert(_value); return _value; }
+
+        private:
+            T* value;
+    };
+
+    template <typename T>
+    class Valid
+    {
+        public:
+            Valid(T* _value) : value(check(_value)) { }
+            operator T*() { return check(value); }
+            T* operator->() { return check(value); }
+
+            T* check(T* _value) const { assert(valid(_value)); return _value; }
+
+        private:
+            T* value;
+    };
+
     // POD rect wrapper
     struct XRect
     {
@@ -129,6 +158,7 @@ namespace XEEN
         }
     };
 
+    //
     struct CCFileId
     {
         public:        
@@ -172,6 +202,9 @@ namespace XEEN
         
             uint16 _id;
     };
+
+    struct CCFileData;
+    typedef Common::SharedPtr<CCFileData> CCFilePtr;
 }
 
 #endif // XEEN_CCFILE_H

@@ -21,11 +21,11 @@
  */
 
 #include "xeen/characters.h"
-#include "xeen/ccfile.h"
 #include "xeen/game.h"
 #include "xeen/party.h"
 #include "xeen/utility.h"
 
+#include "xeen/archive/archive.h"
 #include "xeen/graphics/spritemanager.h"
 #include "xeen/graphics/sprite.h"
 
@@ -56,7 +56,7 @@ static const int divineSpells[MAX_SPELLS] = {0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 
 ///
 /// Character
 ///
-XEEN::Character::Character(CCFileData* data, uint8 index, Sprite* faceSprite) : _data(data), _index(index), face(0)
+XEEN::Character::Character(FilePtr data, uint8 index, Sprite* faceSprite) : _data(data), _index(index), face(0)
 {
     if(enforce(index < Party::MAX_CHARACTERS))
     {

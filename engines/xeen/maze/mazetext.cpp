@@ -21,19 +21,16 @@
  */
 
 #include "xeen/game.h"
-#include "xeen/ccfile.h"
 
+#include "xeen/archive/archive.h"
 #include "xeen/maze/mazetext.h"
 
 ///
 /// MazeText
 ///
-XEEN::MazeText::MazeText(uint32 mapNumber) : _data(0)
+XEEN::MazeText::MazeText(uint32 mapNumber) : _data(XEENgame.getFile(CCFileId("AAZE%04d.TXT", mapNumber)))
 {
     memset(_stringOffsets, 0xFF, sizeof(_stringOffsets));
-
-    // Get ID
-    _data = XEENgame.getAssets().getFile(CCFileId("AAZE%04d.TXT", mapNumber));
 
     if(_data)
     {    
@@ -52,11 +49,6 @@ XEEN::MazeText::MazeText(uint32 mapNumber) : _data(0)
     {
         markInvalid();
     }
-}
-
-XEEN::MazeText::~MazeText()
-{
-    delete _data;
 }
 
 const char* XEEN::MazeText::getString(uint32 id) const

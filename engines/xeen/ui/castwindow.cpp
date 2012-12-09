@@ -87,7 +87,7 @@ void XEEN::CastWindow::produceString(unsigned id)
 
     if(valid(XEENgame) && valid(XEENgame.getParty()))
     {
-        Party& party = XEENgame.getParty();
+        Party* party = XEENgame.getParty();
         Character* character = XEENgame.getActiveCharacter();
 
         if(valid(character))
