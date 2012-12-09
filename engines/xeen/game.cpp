@@ -192,8 +192,15 @@ void XEEN::Game::draw(ImageBuffer& out)
 
 XEEN::FilePtr XEEN::Game::getFile(CCFileId id, bool fromSave)
 {
+    assert(valid(_assets));
     return _assets->getFile(id, fromSave);
 }
+
+void XEEN::Game::drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags, unsigned width) const
+{
+    return _font->drawString(out, pen, text, flags, width);
+}
+
 
 XEEN::Character* XEEN::Game::getActiveCharacter()
 {

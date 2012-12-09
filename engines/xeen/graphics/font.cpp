@@ -20,61 +20,24 @@
  *
  */
 
-#include "common/ptr.h"
-
 #include "xeen/game.h"
-#include "xeen/utility.h"
 
 #include "xeen/graphics/font.h"
 #include "xeen/graphics/imagebuffer.h"
 
+static const unsigned CHARACTER_COUNT = 256;
+static const unsigned CHARACTER_SIZE = 16;
+static const unsigned SPACING_OFFSET = 0x1000;
+
+
 ///
 /// Font
 ///
-XEEN::Font::Font()
+XEEN::Font::Font() : _data(XEENgame.getFile("FNT"))
 {
-    memset(_glyphs, 0, sizeof(_glyphs));
-    
-    //
-    FilePtr reader(XEENgame.getFile("FNT"));
-
-    if(reader)
+    if(!_data)
     {
-        for(unsigned i = 0; i != CHARACTER_COUNT; i ++)
-        {
-            for(int y = 0; y != 8; y ++)
-            {
-                const uint16 line = reader->readUint16LE();
-                
-                for(int x = 0; x != 8; x ++)
-                {
-                    _glyphs[i].pixels[y * 8 + x] = (line >> (2 * x)) & 3;
-                }
-            }
-        }
-            
-        for(unsigned i = 0; i != CHARACTER_COUNT; i ++)
-        {
-            _glyphs[i].spacing = reader->readByte();
-        }
-
-        _glyphs[32].spacing -= 1;
-        _glyphs['g'].verticalOffset = 1;
-        _glyphs['j'].verticalOffset = 1;
-        _glyphs['p'].verticalOffset = 1;
-        _glyphs['q'].verticalOffset = 1;
-        _glyphs['y'].verticalOffset = 1;
-
-        _glyphs[32 + 128].spacing -= 2;
-        _glyphs['g' + 128].verticalOffset = 1;
-        _glyphs['j' + 128].verticalOffset = 1;
-        _glyphs['p' + 128].verticalOffset = 1;
-        _glyphs['q' + 128].verticalOffset = 1;
-        _glyphs['y' + 128].verticalOffset = 1;
-
-    }
-    else
-    {
+        _data.reset();
         markInvalid();
     }
 }
@@ -99,14 +62,29 @@ void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* tex
 
     for(; *btext; btext ++)
     {
-        const Glyph& ch = _glyphs[(*btext) + ((flags & SMALL) ? 128 : 0)];
-        
-        for(int i = 0; i != 8; i ++)
+        uint32 character = (flags & SMALL) ? *btext + 128 : *btext;
+        uint32 spacing = _data->getByteAt(SPACING_OFFSET + character);
+        uint32 offset = character * CHARACTER_SIZE;
+
+        for(int i = 0; i != 8; i ++, offset += 2)
         {
-            out.setPen(pen + Common::Point(0, ch.verticalOffset + i)).drawPixels_K_U_NF<0>(&ch.pixels[i * 8], ch.spacing - 1);
+            out.setPen(pen + Common::Point(0, i));
+            uint16 line = _data->getU16At(offset);
+
+            for(int j = 0; j != 8 && line; j ++, line >>= 2)
+            {
+                if(line & 3)
+                {
+                    out.putPixel(line & 3);
+                }
+                else
+                {
+                    out.movePen(Common::Point(1, 0));
+                }
+            }
         }
         
-        pen.x += ch.spacing;
+        pen.x += spacing;
     }
 }
 
@@ -115,12 +93,12 @@ unsigned XEEN::Font::measureString(const char* text, uint32 flags) const
     XEEN_VALID_RET(0);
 
     const byte* btext = (const byte*)text;
-    unsigned result = 0;
+    uint32 result = 0;
 
     for(; *btext; btext ++)
     {
-        const Glyph& ch = _glyphs[(*btext) + ((flags & SMALL) ? 128 : 0)];
-        result += ch.spacing;
+        uint32 character = (flags & SMALL) ? *btext + 128 : *btext;
+        result += _data->getByteAt(SPACING_OFFSET + character);
     }
 
     return result;

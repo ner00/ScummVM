@@ -26,7 +26,6 @@
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
-#include "xeen/graphics/font.h"
 #include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
@@ -74,19 +73,17 @@ void XEEN::Window::draw(ImageBuffer& out)
     }
     
     // Draw strings
-    Font* font = XEENgame.getFont();
-    
     for(const String* string = getStrings(); string && (string->text || string->stringID); string ++)
     {
         if(string->text)
         {
-            font->drawString(out, location + Common::Point(string->x, string->y), string->text, string->flags, _area.width());
+            XEENgame.drawString(out, location + Common::Point(string->x, string->y), string->text, string->flags, _area.width());
         }
         else
         {
             _stringBuffer[0] = 0;
             produceString(string->stringID);
-            font->drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags, _area.width());
+            XEENgame.drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags, _area.width());
         }
     }
 }

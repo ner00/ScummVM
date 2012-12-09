@@ -77,11 +77,11 @@ namespace XEEN
             void draw(ImageBuffer& out);
         
             FilePtr getFile(CCFileId id, bool fromSave = false);
+            void drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0) const;
 
             Valid<SpriteManager> getSpriteManager() { return _spriteManager; }
             Valid<MapManager> getMapManager() { return _mapManager; }
             Valid<Party> getParty() { return _party; }
-            Valid<Font> getFont() { return _font; }
 
             Character* getActiveCharacter();
             unsigned getActiveCharacterSlot() const { return _activeCharacterSlot; }

@@ -24,15 +24,16 @@
 #define XEEN_FONT_H
 
 #include "xeen/utility.h"
+#include "xeen/archive/file.h"
 
 namespace XEEN
 {
     class Game;
     class ImageBuffer;
 
-    class Font : public Validateable
+    // Only accessible by Game
+    class Font : public Validateable, public Common::NonCopyable
     {
-        static const unsigned CHARACTER_COUNT = 256;
         friend class Game;
     
         public:
@@ -43,21 +44,11 @@ namespace XEEN
         private:
             Font();
 
-        public:
-            void drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags = 0, unsigned width = 0) const;
-
-        private:
-            unsigned measureString(const char* text, uint32 flags) const;
+            void drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0) const;
+            uint32 measureString(const char* text, uint32 flags) const;
             
         private:
-            struct Glyph
-            {
-                byte pixels[8 * 8];
-                uint8 spacing;
-                uint8 verticalOffset;
-            };
-            
-            Glyph _glyphs[CHARACTER_COUNT];
+            FilePtr _data;
     };
 }
 
