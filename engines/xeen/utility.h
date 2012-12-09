@@ -27,6 +27,10 @@
 #include "common/scummsys.h"
 #include "common/rect.h"
 #include "common/ptr.h"
+#include "common/file.h"
+#include "common/array.h"
+#include "common/stream.h"
+#include "common/memstream.h"
 
 namespace XEEN
 {

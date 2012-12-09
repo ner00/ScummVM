@@ -24,7 +24,6 @@
 #include "xeen/game.h"
 #include "xeen/utility.h"
 
-#include "xeen/archive/archive.h"
 #include "xeen/maze/mazeobjects.h"
 
 ///

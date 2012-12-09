@@ -22,7 +22,6 @@
 
 #include "xeen/game.h"
 
-#include "xeen/archive/archive.h"
 #include "xeen/maze/mazetext.h"
 
 ///

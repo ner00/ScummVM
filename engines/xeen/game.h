@@ -34,7 +34,6 @@
 #include "xeen/party.h"
 
 #include "xeen/archive/file.h"
-#include "xeen/archive/archive.h"
 
 #include "xeen/ui/window.h"
 #include "xeen/ui/characteraction.h"
@@ -47,6 +46,8 @@
 
 namespace XEEN
 {
+    class Archive;
+
     class ImageBuffer;
     class SpriteManager;
     class MapManager;

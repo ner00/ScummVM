@@ -23,9 +23,6 @@
 #ifndef XEEN_ARCHIVE_TOC_H
 #define XEEN_ARCHIVE_TOC_H
 
-#include "common/scummsys.h"
-#include "common/stream.h"
-
 #include "xeen/utility.h"
 
 namespace XEEN

@@ -25,8 +25,6 @@
 #include "xeen/game.h"
 #include "xeen/utility.h"
 
-#include "xeen/archive/archive.h"
-
 #include "xeen/graphics/font.h"
 #include "xeen/graphics/imagebuffer.h"
 

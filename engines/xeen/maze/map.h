@@ -23,7 +23,7 @@
 #ifndef XEEN_MAP_H
 #define XEEN_MAP_H
 
-#include "common/scummsys.h"
+#include "xeen/utility.h"
 
 namespace XEEN
 {

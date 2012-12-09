@@ -28,13 +28,16 @@
 #include "xeen/archive/file.h"
 #include "xeen/archive/toc.h"
 
-#include "common/file.h"
-
 namespace XEEN
 {
+    // Only accessible from Game
+    class Game;
+
     class Archive : public Validateable
     {
-        public:
+        friend class Game;
+
+        private:
             Archive(const char* name);
             virtual ~Archive();
             

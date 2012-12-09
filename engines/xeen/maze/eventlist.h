@@ -25,9 +25,6 @@
 
 #include "xeen/utility.h"
 
-#include "common/scummsys.h"
-#include "common/array.h"
-
 namespace XEEN
 {
     class EventList : public Validateable_Cleanable

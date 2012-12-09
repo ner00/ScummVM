@@ -23,7 +23,7 @@
 #ifndef XEEN_MAZETEXT_H
 #define XEEN_MAZETEXT_H
 
-#include "common/scummsys.h"
+#include "xeen/utility.h"
 
 namespace XEEN
 {

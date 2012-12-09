@@ -23,7 +23,7 @@
 #ifndef XEEN_FONT_H
 #define XEEN_FONT_H
 
-#include "common/scummsys.h"
+#include "xeen/utility.h"
 
 namespace XEEN
 {

@@ -25,8 +25,6 @@
 
 #include "xeen/utility.h"
 
-#include "common/scummsys.h"
-
 namespace XEEN
 {
     class MazeObjects : public Validateable_Cleanable

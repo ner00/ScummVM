@@ -25,7 +25,7 @@
 #include "xeen/characters.h"
 #include "xeen/utility.h"
 
-#include "xeen/archive/archive.h"
+#include "xeen/archive/file.h"
 #include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
 

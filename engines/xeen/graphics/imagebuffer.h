@@ -23,10 +23,6 @@
 #ifndef XEEN_IMAGEBUFFER_H
 #define XEEN_IMAGEBUFFER_H
 
-#include "common/scummsys.h"
-#include "common/rect.h"
-#include "common/stream.h"
-
 #include "xeen/utility.h"
 
 namespace XEEN

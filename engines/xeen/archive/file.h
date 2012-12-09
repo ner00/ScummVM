@@ -23,12 +23,7 @@
 #ifndef XEEN_ARCHIVE_FILE_H
 #define XEEN_ARCHIVE_FILE_H
 
-#include "common/scummsys.h"
-#include "common/memstream.h"
-#include "common/ptr.h"
-
 #include "xeen/utility.h"
-#include "xeen/archive/toc.h"
 
 namespace XEEN
 {
