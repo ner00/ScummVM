@@ -29,72 +29,58 @@
 ///
 /// EventList
 ///
-XEEN::EventList::EventList(uint16 mapNumber)
+XEEN::EventList::EventList(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true))
 {
-    FilePtr reader(XEENgame.getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true));
-    
-    if(reader)
+    memset(_eventOffset, 0xFF, sizeof(_eventOffset));
+
+    if(_data)
     {
-        while(!reader->eos())
+        uint8 lastX = 255;
+        uint8 lastY = 255;
+
+        while(!_data->eos())
         {
-            Line line;
-            line.length = reader->readByte();
-            
-            if(line.length == 0)
+            uint8 length = _data->readByte();
+
+            if(length < 5)
             {
+                debug("Map event line too short.");
                 break;
             }
-            
-            // Sanity
-            if(line.length < 5)
-            {
-                markInvalidAndClean("EventList: Line too short.");
-                return;
-            }
 
-            if(line.length > sizeof(line.arguments) + 5)
+            uint8 x = _data->readByte();
+            uint8 y = _data->readByte();
+
+            if(x != lastX || y != lastY)
             {
-                markInvalidAndClean("EventList: Line too long.");
-                return;
+                lastX = x;
+                lastY = y;
+
+                _eventOffset[y * MAX_MAP_WIDTH + x] = _data->pos() - 3;
             }
            
-            // Read line data
-            line.x = reader->readByte();
-            line.y = reader->readByte();
-            line.facing = reader->readByte();
-            line.lineNumber = reader->readByte();
-            line.opcode = reader->readByte();
-            reader->read(line.arguments, line.length - 5);
-                        
-            // Start a new event
-            if(line.lineNumber == 0)
-            {
-                Event event;
-                event.x = line.x;
-                event.y = line.y;
-                event.lines.push_back(line);
-                _events.push_back(event);
-            }
-            // Append an old one
-            else
-            {
-                if(line.lineNumber != _events.back().lines.back().lineNumber + 1)
-                {
-                    markInvalidAndClean("EventList: Line misnumbered.");
-                    return;
-                }
-            
-                _events.back().lines.push_back(line);
-            }
+            _data->seek(_data->pos() + length - 2);
         }
     }
     else
     {
+        _data.reset();
         markInvalid();
     }
 }
 
-void XEEN::EventList::cleanse()
+void XEEN::EventList::runEventAt(uint8 x, uint8 y, uint32 facing)
 {
-    _events.clear();
+    XEEN_VALID();
+
+    if(_eventOffset[y * MAX_MAP_WIDTH + x] >= 0)
+    {
+        const int32 off = _eventOffset[y * MAX_MAP_WIDTH + x];
+
+        debug("GOT EVENT");
+    }
+    else
+    {
+        debug("NO EVENT");
+    }
 }

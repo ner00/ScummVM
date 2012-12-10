@@ -20,30 +20,41 @@
  *
  */
 
-#ifndef XEEN_MAZETEXT_H
-#define XEEN_MAZETEXT_H
+#ifndef XEEN_MAZE_SEGMENT_H
+#define XEEN_MAZE_SEGMENT_H
 
 #include "xeen/utility.h"
+#include "xeen/archive/file.h"
 
 namespace XEEN
 {
-    class Map;
+    class MazeObjects;
 
-    // Only accessible from Map
-    class MazeText : public Validateable
+    // Only accessible by MapManager and Map
+    class Segment : public Validateable
     {
+        friend class MapManager;
         friend class Map;
-
-        static const unsigned MAX_STRINGS = 256;
     
         private:
-            MazeText(uint32 mapNumber);
-            const char* getString(uint32 id) const;
-            
-        private:
+            Segment(uint16 mapNumber);
+            virtual ~Segment() { }
+
+            uint16 getWall(uint8 x, uint8 y) const;
+            uint8 getCellFlags(uint8 x, uint8 y) const;
+            uint8 lookupSurface(uint8 id) const;
+
+            Segment* getNorth() { return _north; }
+            Segment* getEast() { return _east; }
+
+        protected:
             FilePtr _data;
-            uint32 _stringOffsets[MAX_STRINGS];
+
+            Segment* _north;
+            Segment* _east;
+            
+            MazeObjects* _objects;
     };
 }
 
-#endif // XEEN_MAZETEXT_H
+#endif // XEEN_MAZE_SEGMENT_H

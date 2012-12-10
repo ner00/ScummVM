@@ -20,30 +20,29 @@
  *
  */
 
-#ifndef XEEN_MAZETEXT_H
-#define XEEN_MAZETEXT_H
+#ifndef XEEN_MAZE_MAPMANAGER_H
+#define XEEN_MAZE_MAPMANAGER_H
 
 #include "xeen/utility.h"
 
 namespace XEEN
 {
-    class Map;
-
-    // Only accessible from Map
-    class MazeText : public Validateable
+    class MapManager : public Validateable
     {
-        friend class Map;
-
-        static const unsigned MAX_STRINGS = 256;
+        friend class Game;
     
         private:
-            MazeText(uint32 mapNumber);
-            const char* getString(uint32 id) const;
+            MapManager();
+            ~MapManager();
+            
+        public:
+            Map* getMap(uint16 id);
+            Segment* getSegment(uint16 id);
             
         private:
-            FilePtr _data;
-            uint32 _stringOffsets[MAX_STRINGS];
+            Map* _maps[256]; // TODO: <Use a hash table!
+            Segment* _segments[256];
     };
 }
 
-#endif // XEEN_MAZETEXT_H
+#endif // XEEN_MAZE_MAPMANAGER_H

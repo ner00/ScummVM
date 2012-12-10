@@ -32,129 +32,26 @@
 #include "xeen/maze/eventlist.h"
 #include "xeen/maze/map.h"
 #include "xeen/maze/mazetext.h"
-#include "xeen/maze/mazeobjects.h"
-
-///
-/// MapManager
-///
-XEEN::MapManager::MapManager()
-{
-    memset(_maps, 0, sizeof(_maps));
-    memset(_segments, 0, sizeof(_segments));
-}
-
-XEEN::MapManager::~MapManager()
-{
-    for(int i = 0; i != 256; i ++)
-    {
-        delete _maps[i];
-        delete _segments[i];
-    }
-}
-
-XEEN::Map* XEEN::MapManager::getMap(uint16 id)
-{
-    if(!_maps[id])
-    {
-        _maps[id] = new Map(id);
-    }
-    
-    return _maps[id];
-}
-
-XEEN::MazeSegment* XEEN::MapManager::getSegment(uint16 id)
-{
-    if(!_segments[id])
-    {
-        _segments[id] = new MazeSegment(id);
-    }
-    
-    return _segments[id];
-}
-
-///
-/// MazeSegment
-///
-XEEN::MazeSegment::MazeSegment(uint16 mapNumber) : _north(0), _east(0), _objects(0)
-{
-    FilePtr data = XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true);
-    assert(data->size() && "Failed to open maze segment chunk");
-
-    // Parse data
-    for(int i = 0; i != 16 * 16; i ++)
-    {
-        _wallData[i] = data->readUint16LE();
-    }
-        
-    data->read(_cellFlags, 16 * 16);
-    
-    _mazeNumber = data->readUint16LE();
-    
-    for(int i = 0; i != 4; i ++)
-    {
-        _mazeExtensions[i] = data->readUint16LE();
-    }
-    
-    _mazeFlags[0] = data->readUint16LE();
-    _mazeFlags[1] = data->readUint16LE();
-    
-    data->read(_wallMap, 16);
-    data->read(_surfaceMap, 16);
-    
-    _floorType = data->readByte();
-    _runX = data->readByte();
-    _wallNoPass = data->readByte();
-    _surfNoPass = data->readByte();
-    _unlockDoor = data->readByte();
-    _unlockBox = data->readByte();
-    _bashDoor = data->readByte();
-    _bashGrate = data->readByte();
-    _bashWall = data->readByte();
-    _changeToRun = data->readByte();
-    _runY = data->readByte();
-    _trapDamage = data->readByte();
-    _wallKind = data->readByte();
-    _tavernType = data->readByte();
-    
-    data->read(_seenTiles, 32);
-    data->read(_steppedTiles, 32);
-    
-    // Load extensions
-    if(_mazeExtensions[0])
-    {
-        assert(_mazeExtensions[0] >= 100 && "Indoor map extension index issue.");
-        _north = XEENgame.getMapManager()->getSegment(_mazeExtensions[0]);
-    }
-    
-    if(_mazeExtensions[1])
-    {
-        assert(_mazeExtensions[1] >= 100 && "Indoor map extension index issue.");    
-        _east = XEENgame.getMapManager()->getSegment(_mazeExtensions[1]);
-    }
-    
-    // Load objects
-    _objects = new MazeObjects(mapNumber);
-}
-
+#include "xeen/maze/segment.h"
 
 ///
 /// Map
 ///
-XEEN::Map::Map(uint16 mapNumber) : MazeSegment(mapNumber), _text(0), _width(0), _height(0)
+XEEN::Map::Map(uint16 mapNumber) : _base(0), _text(0), _width(0), _height(0)
 {
-    assert(mapNumber < 100 && "Loading map from extended maze segment.");
+    _base = XEENgame.getMapManager()->getSegment(mapNumber);
  
     // Load Maze Data
     _text = new MazeText(mapNumber);
     _events = new EventList(mapNumber);
     
     // Calculate size
-    for(MazeSegment* tag = this; tag; tag = tag->getEast())
+    for(Segment* tag = _base; tag; tag = tag->getEast())
     {
         _width += 16;
     }
     
-    for(MazeSegment* tag = this; tag; tag = tag->getNorth())
+    for(Segment* tag = _base; tag; tag = tag->getNorth())
     {
         _height += 16;
     }
@@ -163,11 +60,28 @@ XEEN::Map::Map(uint16 mapNumber) : MazeSegment(mapNumber), _text(0), _width(0), 
 XEEN::Map::~Map()
 {
     delete _text;
+    delete _events;
+}
+
+const char* XEEN::Map::getString(uint32 id) const
+{
+    XEEN_VALID_RET("");
+    return valid(_text) ? _text->getString(id) : "";
+}
+
+void XEEN::Map::runEventAt(uint8 x, uint8 y, uint32 facing)
+{
+    XEEN_VALID();
+
+    if(valid(_events))
+    {
+        _events->runEventAt(x, y, facing);
+    }
 }
 
 uint16 XEEN::Map::getTile(Common::Point position, uint32 direction)
 {
-    MazeSegment* seg = resolveSegment(position);
+    Segment* seg = resolveSegment(position);
     
     if(position.x < 0 || position.y < 0 || !seg)
     {
@@ -175,7 +89,7 @@ uint16 XEEN::Map::getTile(Common::Point position, uint32 direction)
     }
     else
     {
-        uint16 result = seg->_wallData[position.y * 16 + position.x];
+        uint16 result = seg->getWall(position.x, position.y);
     
         switch(direction)
         {
@@ -191,7 +105,7 @@ uint16 XEEN::Map::getTile(Common::Point position, uint32 direction)
 
 uint16 XEEN::Map::getSurface(Common::Point position)
 {
-    MazeSegment* seg = resolveSegment(position);
+    Segment* seg = resolveSegment(position);
 
     if(position.x < 0 || position.y < 0 || !seg)
     {
@@ -199,7 +113,7 @@ uint16 XEEN::Map::getSurface(Common::Point position)
     }
     else
     {
-        return _surfaceMap[seg->_cellFlags[position.y * 16 + position.x] & 0x7];
+        return _base->lookupSurface(seg->getCellFlags(position.x, position.y) & 7);
     }
 }
 
@@ -328,10 +242,10 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
     }
     
     // OBJECTS
-    MazeObjects::Entry t;
-    indoorDrawIndex[OBJ_HERE]->sprite = _objects->getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+//    MazeObjects::Entry t;
+//    indoorDrawIndex[OBJ_HERE]->sprite = _objects->getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
 //    indoorDrawIndex[OBJ_1_1L]->sprite = _objects->getObjectAt(translatePoint(position, -1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_1_CEN]->sprite = _objects->getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+//    indoorDrawIndex[OBJ_1_CEN]->sprite = _objects->getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
 //    indoorDrawIndex[OBJ_1_1R]->sprite = _objects->getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);        
 }
 
@@ -359,9 +273,9 @@ void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)
     }
 }
 
-XEEN::MazeSegment* XEEN::Map::resolveSegment(Common::Point& position)
+XEEN::Segment* XEEN::Map::resolveSegment(Common::Point& position)
 {
-    MazeSegment* activeSegment = this;
+    Segment* activeSegment = _base;
     
     for(; activeSegment && position.x >= 16; position.x -= 16)
     {

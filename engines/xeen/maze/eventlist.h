@@ -24,39 +24,27 @@
 #define XEEN_MAZE_EVENTLIST_H
 
 #include "xeen/utility.h"
+#include "xeen/archive/file.h"
 
 namespace XEEN
 {
-    class EventList : public Validateable_Cleanable
-    {
-        public:        
-            struct Line
-            {
-                uint8 length;
-                uint8 x;
-                uint8 y;
-                uint8 facing;
-                uint8 lineNumber;
-                uint8 opcode;
-                uint8 arguments[32];
-            };
-            
-            struct Event
-            {
-                uint8 x;
-                uint8 y;
-                
-                Common::Array<Line> lines;
-            };
+    const uint32 MAX_MAP_WIDTH = 256;
+    const uint32 MAX_MAP_HEIGHT = 256;
 
-        public:
-            EventList(uint16 mapNumber);
-            
-        protected:
-            void cleanse();
+    class Map;
+
+    // Only accessible by Map
+    class EventList : public Validateable
+    {
+        friend class Map;
 
         private:
-            Common::Array<Event> _events;
+            EventList(uint16 mapNumber);
+            void runEventAt(uint8 x, uint8 y, uint32 facing);
+
+        private:
+            FilePtr _data;
+            int32 _eventOffset[MAX_MAP_WIDTH * MAX_MAP_HEIGHT];
     };
 }
 

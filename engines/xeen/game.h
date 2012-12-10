@@ -23,15 +23,15 @@
 #ifndef XEEN_GAME_H
 #define XEEN_GAME_H
 
-#include "common/scummsys.h"
-#include "common/keyboard.h"
-
 #include "xeen/utility.h"
+
+#include "xeen/party.h"
 
 #include "xeen/graphics/font.h"
 #include "xeen/graphics/spritemanager.h"
+
 #include "xeen/maze/map.h"
-#include "xeen/party.h"
+#include "xeen/maze/mapmanager.h"
 
 #include "xeen/archive/file.h"
 
@@ -86,8 +86,6 @@ namespace XEEN
             Character* getActiveCharacter();
             unsigned getActiveCharacterSlot() const { return _activeCharacterSlot; }
             void selectCharacter(unsigned slot) { _activeCharacterSlot = slot; }
-
-            void movePartyTo(uint16 map, int16 x, int16 y, uint32 direction);
                 
         private:
             WindowID _windowID;

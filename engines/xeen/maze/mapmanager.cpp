@@ -20,30 +20,46 @@
  *
  */
 
-#ifndef XEEN_MAZETEXT_H
-#define XEEN_MAZETEXT_H
-
 #include "xeen/utility.h"
 
-namespace XEEN
+#include "xeen/maze/map.h"
+#include "xeen/maze/mapmanager.h"
+#include "xeen/maze/segment.h"
+
+///
+/// MapManager
+///
+XEEN::MapManager::MapManager()
 {
-    class Map;
-
-    // Only accessible from Map
-    class MazeText : public Validateable
-    {
-        friend class Map;
-
-        static const unsigned MAX_STRINGS = 256;
-    
-        private:
-            MazeText(uint32 mapNumber);
-            const char* getString(uint32 id) const;
-            
-        private:
-            FilePtr _data;
-            uint32 _stringOffsets[MAX_STRINGS];
-    };
+    memset(_maps, 0, sizeof(_maps));
+    memset(_segments, 0, sizeof(_segments));
 }
 
-#endif // XEEN_MAZETEXT_H
+XEEN::MapManager::~MapManager()
+{
+    for(int i = 0; i != 256; i ++)
+    {
+        delete _maps[i];
+        delete _segments[i];
+    }
+}
+
+XEEN::Map* XEEN::MapManager::getMap(uint16 id)
+{
+    if(!_maps[id])
+    {
+        _maps[id] = new Map(id);
+    }
+    
+    return _maps[id];
+}
+
+XEEN::Segment* XEEN::MapManager::getSegment(uint16 id)
+{
+    if(!_segments[id])
+    {
+        _segments[id] = new Segment(id);
+    }
+    
+    return _segments[id];
+}

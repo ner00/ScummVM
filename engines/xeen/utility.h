@@ -95,8 +95,8 @@ namespace XEEN
         return a && a->isValid();
     }
     
-    #define XEEN_VALID() if(!isValid()) return;
-    #define XEEN_VALID_RET(X) if(!isValid()) return X;
+    #define XEEN_VALID() if(!enforce(isValid())) return;
+    #define XEEN_VALID_RET(X) if(!enforce(isValid())) return X;
     
     template <typename T>
     void DELETE(T*& v)

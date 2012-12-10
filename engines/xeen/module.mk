@@ -13,8 +13,10 @@ MODULE_OBJS := \
     graphics/spritemanager.o \
     maze/eventlist.o \
     maze/map.o \
+    maze/mapmanager.o \
     maze/mazeobjects.o \
     maze/mazetext.o \
+    maze/segment.o \
     ui/window.o \
     ui/castwindow.o \
     ui/characteraction.o \

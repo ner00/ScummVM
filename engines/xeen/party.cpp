@@ -250,6 +250,7 @@ void XEEN::Party::moveTo(uint8 maze, const Common::Point& position, uint8 facing
     moveTo(position, facing);
 }
 
+#include "xeen/maze/eventlist.h"
 void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
 {
     XEEN_VALID();
@@ -257,6 +258,12 @@ void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
     SET8(OFF_MAZE_X, position.x);
     SET8(OFF_MAZE_Y, position.y);
     SET8(OFF_MAZE_FACING, facing < 3 ? facing : GET8(OFF_MAZE_FACING));
+
+    Map* const map = getMap();
+    if(valid(map))
+    {
+        map->runEventAt(position.x, position.y, facing);
+    }
 }
 
 void XEEN::Party::moveRelative(const Common::Point& delta)

@@ -32,69 +32,25 @@ namespace XEEN
     class Map;
     class ImageBuffer;
     class SpriteManager;
+    class Segment;
 
     class MazeText;
-    class MazeObjects;
     class EventList;
 
-    class MazeSegment : public Validateable
+    // Only constructible by MapManager
+    class Map : public Validateable
     {
         friend class MapManager;
-        friend class Map;
-    
-        private:
-            MazeSegment(uint16 mapNumber);
-            virtual ~MazeSegment() { }
-
-        public:
-            MazeSegment* getNorth() { return _north; }
-            MazeSegment* getEast() { return _east; }
-               
-        protected:        
-            MazeSegment* _north;
-            MazeSegment* _east;
-            
-            MazeObjects* _objects;
-        
-            uint16 _wallData[16 * 16];
-            uint8 _cellFlags[16 * 16];
-            
-            uint16 _mazeNumber;
-            uint16 _mazeExtensions[4];
-            uint16 _mazeFlags[2];
-            
-            uint8 _wallMap[16];
-            uint8 _surfaceMap[16];
-            
-            uint8 _floorType;
-            uint8 _runX;
-            uint8 _wallNoPass;
-            uint8 _surfNoPass;
-            uint8 _unlockDoor;
-            uint8 _unlockBox;
-            uint8 _bashDoor;
-            uint8 _bashGrate;
-            uint8 _bashWall;
-            uint8 _changeToRun;
-            uint8 _runY;
-            uint8 _trapDamage;
-            uint8 _wallKind;
-            uint8 _tavernType;
-            
-            uint8 _seenTiles[32];
-            uint8 _steppedTiles[32];
-    };
-    
-    class Map : public MazeSegment
-    {
-        friend class MapManager;
-        friend class MazeSegment;
+        friend class Segment;
     
         private:
             Map(uint16 mapNumber);
             ~Map();
 
         public:
+            const char* getString(uint32 id) const;
+            void runEventAt(uint8 x, uint8 y, uint32 facing);
+
             uint16 getTile(Common::Point position, uint32 direction = 0);
             uint16 getSurface(Common::Point position);
                 
@@ -102,34 +58,18 @@ namespace XEEN
             void draw(ImageBuffer& out, SpriteManager& sprite);
                         
         private:
-            MazeSegment* resolveSegment(Common::Point& position);
+            Segment* resolveSegment(Common::Point& position);
 
         public:
             static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);
 
         private:
+            Segment* _base;
             MazeText* _text;
             EventList* _events;            
             
             uint32 _width;
             uint32 _height;
-    };
-    
-    class MapManager : public Validateable
-    {
-        friend class Game;
-    
-        private:
-            MapManager();
-            ~MapManager();
-            
-        public:
-            Map* getMap(uint16 id);
-            MazeSegment* getSegment(uint16 id);
-            
-        private:
-            Map* _maps[256]; // TODO: <Use a hash table!
-            MazeSegment* _segments[256];
     };
 }
 
