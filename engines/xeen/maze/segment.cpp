@@ -96,3 +96,15 @@ uint8 XEEN::Segment::lookupSurface(uint8 id) const
 
     return 0;    
 }
+
+bool XEEN::Segment::getObjectAt(uint8 x, uint8 y, MazeObjects::Entry& data) const
+{
+    XEEN_VALID_RET(false);
+
+    if(valid(_objects))
+    {
+        return _objects->getObjectAt(x, y, data);
+    }
+
+    return false;
+}

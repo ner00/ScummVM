@@ -58,7 +58,15 @@ namespace XEEN
     
         protected:
             void markValid() { _valid = true; }
-            void markInvalid() { _valid = false; }
+            void markInvalid(const char* msg = 0)
+            {
+                if(msg)
+                {
+                    debug("%s", msg);
+                }
+
+                _valid = false;
+            }
 
         private:
             bool _valid;
@@ -72,12 +80,7 @@ namespace XEEN
         public:
             void markInvalidAndClean(const char* msg = 0)
             {
-                if(msg)
-                {
-                    debug("%s", msg);
-                }
-            
-                markInvalid();
+                markInvalid(msg);
                 cleanse();
             }
     

@@ -55,8 +55,12 @@ XEEN::MazeObjects::MazeObjects(uint16 mapNumber) : _data(XEENgame.getFile(CCFile
             else
             {
                 _counts[onList] ++;
-                
-                // TODO: Assert object entry validity: id < 16, facing < 4 ?
+
+                if(_data->getByteAt(dataPos + 2) >= 16 || _data->getByteAt(dataPos + 3) >= 4)
+                {
+                    markInvalidAndClean("Maze object ID or Facing invalid?");
+                    return;
+                }
             }
         }
         
@@ -67,13 +71,8 @@ XEEN::MazeObjects::MazeObjects(uint16 mapNumber) : _data(XEENgame.getFile(CCFile
     }
     else
     {
-        markInvalid();
+        markInvalidAndClean("MAZEXXXX.MOB not found.");
     }
-}
-
-XEEN::MazeObjects::~MazeObjects()
-{
-    // TODO: Store the values back into the save game
 }
 
 void XEEN::MazeObjects::cleanse()
@@ -82,22 +81,19 @@ void XEEN::MazeObjects::cleanse()
     memset(_counts, 0xFF, sizeof(_counts));
 }
 
-bool XEEN::MazeObjects::getObjectAt(const Common::Point& position, Entry& data)
+bool XEEN::MazeObjects::getObjectAt(uint8 x, uint8 y, Entry& data) const
 {
     XEEN_VALID_RET(false);
 
     for(unsigned i = 0; i != _counts[0]; i ++)
     {
-        const uint8 x = _data->getByteAt(_offsets[0] + (i * 4));
-        const uint8 y = _data->getByteAt(_offsets[0] + (i * 4) + 1);
-        const uint8 type = _data->getByteAt(_offsets[0] + (i * 4) + 2);    
-        const uint8 facing = _data->getByteAt(_offsets[0] + (i * 4) + 3);
+        const uint8 ox = _data->getByteAt(_offsets[0] + (i * 4));
+        const uint8 oy = _data->getByteAt(_offsets[0] + (i * 4) + 1);
     
-        if(x == position.x && y == position.y)
+        if(ox == x && oy == y)
         {
-            data.position = Common::Point(x, y);
-            data.facing = facing;
-            data.id = _data->getByteAt(0 + type);
+            data.id = _data->getByteAt(_data->getByteAt(_offsets[0] + (i * 4) + 2));
+            data.facing = _data->getByteAt(_offsets[0] + (i * 4) + 3);
             
             return true;
         }

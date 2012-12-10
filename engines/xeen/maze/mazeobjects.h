@@ -27,21 +27,24 @@
 
 namespace XEEN
 {
+    class Segment;
+
+    // Only accessible by Segment
     class MazeObjects : public Validateable_Cleanable
     {
+        friend class Segment;
+
         public:
             struct Entry
             {
-                Common::Point position;
                 uint8 id;
                 uint8 facing;
             };    
     
-        public:
+        private:
             MazeObjects(uint16 mapNumber);
-            ~MazeObjects();
             
-            bool getObjectAt(const Common::Point& position, Entry& data);
+            bool getObjectAt(uint8 x, uint8 y, Entry& data) const;
             
         protected:
             void cleanse();

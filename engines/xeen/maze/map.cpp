@@ -43,7 +43,7 @@ XEEN::Map::Map(uint16 mapNumber) : _base(0), _text(0), _width(0), _height(0)
  
     // Load Maze Data
     _text = new MazeText(mapNumber);
-    _events = new EventList(mapNumber);
+    _events = new EventList(this, mapNumber);
     
     // Calculate size
     for(Segment* tag = _base; tag; tag = tag->getEast())
@@ -242,11 +242,11 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
     }
     
     // OBJECTS
-//    MazeObjects::Entry t;
-//    indoorDrawIndex[OBJ_HERE]->sprite = _objects->getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-//    indoorDrawIndex[OBJ_1_1L]->sprite = _objects->getObjectAt(translatePoint(position, -1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-//    indoorDrawIndex[OBJ_1_CEN]->sprite = _objects->getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-//    indoorDrawIndex[OBJ_1_1R]->sprite = _objects->getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);        
+    //MazeObjects::Entry t;
+    //indoorDrawIndex[OBJ_HERE]->sprite = _objects->getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    //indoorDrawIndex[OBJ_1_1L]->sprite = _objects->getObjectAt(translatePoint(position, -1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    //indoorDrawIndex[OBJ_1_CEN]->sprite = _objects->getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    //indoorDrawIndex[OBJ_1_1R]->sprite = _objects->getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);        
 }
 
 void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)

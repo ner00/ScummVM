@@ -29,7 +29,7 @@
 ///
 /// EventList
 ///
-XEEN::EventList::EventList(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true))
+XEEN::EventList::EventList(Map* parent, uint16 mapNumber) : _parent(parent), _data(XEENgame.getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true))
 {
     memset(_eventOffset, 0xFF, sizeof(_eventOffset));
 
@@ -44,7 +44,6 @@ XEEN::EventList::EventList(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("
 
             if(length < 5)
             {
-                debug("Map event line too short.");
                 break;
             }
 
@@ -76,11 +75,30 @@ void XEEN::EventList::runEventAt(uint8 x, uint8 y, uint32 facing)
     if(_eventOffset[y * MAX_MAP_WIDTH + x] >= 0)
     {
         const int32 off = _eventOffset[y * MAX_MAP_WIDTH + x];
-
-        debug("GOT EVENT");
+        if(off)
+        {
+            runEventLine(off);
+        }
     }
-    else
+}
+
+uint8 XEEN::EventList::runEventLine(int32 off)
+{
+    XEEN_VALID_RET(255);
+
+    if(valid(_parent))
     {
-        debug("NO EVENT");
+        _data->seek(off);
+    
+        uint8 length = _data->readByte();
+        _data->seek(4, SEEK_CUR);
+    
+        uint8 opcode = _data->readByte();
+        switch(opcode)
+        {
+            case 0x00: return 0;
+            case 0x01: return 0;
+            case 0x02: debug("%s", _parent->getString(_data->readByte())); return 0;
+        }
     }
 }

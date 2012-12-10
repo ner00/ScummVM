@@ -25,16 +25,18 @@
 
 #include "xeen/utility.h"
 #include "xeen/archive/file.h"
+#include "xeen/maze/mazeobjects.h"
 
 namespace XEEN
 {
-    class MazeObjects;
+    class Map;
+    class MapManager;
 
     // Only accessible by MapManager and Map
     class Segment : public Validateable
     {
-        friend class MapManager;
         friend class Map;
+        friend class MapManager;
     
         private:
             Segment(uint16 mapNumber);
@@ -43,6 +45,8 @@ namespace XEEN
             uint16 getWall(uint8 x, uint8 y) const;
             uint8 getCellFlags(uint8 x, uint8 y) const;
             uint8 lookupSurface(uint8 id) const;
+
+            bool getObjectAt(uint8 x, uint8 y, MazeObjects::Entry& data) const;
 
             Segment* getNorth() { return _north; }
             Segment* getEast() { return _east; }
