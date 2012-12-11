@@ -20,44 +20,43 @@
  *
  */
 
-#include "xeen/game.h"
+#ifndef XEEN_MAZE_EVENTLIST_H
+#define XEEN_MAZE_EVENTLIST_H
 
-#include "xeen/maze/mazetext.h"
+#ifndef XEEN_MAZE_SOURCE
+# error "Private header included"
+#endif
 
-///
-/// MazeText
-///
-XEEN::MazeText::MazeText(uint32 mapNumber) : _data(XEENgame.getFile(CCFileId("AAZE%04d.TXT", mapNumber)))
+#include "xeen/utility.h"
+#include "xeen/archive/file.h"
+
+namespace XEEN
 {
-    memset(_stringOffsets, 0xFF, sizeof(_stringOffsets));
-
-    if(_data)
-    {    
-        uint32 foundStrings = 1;
-        _stringOffsets[0] = 0;
-        
-        for(int32 offset = 1; offset < _data->size() - 1; offset ++)
-        {
-            if(_data->getData()[offset] == 0)
-            {
-                _stringOffsets[foundStrings ++] = offset + 1;
-            }
-        }
-    }
-    else
+    namespace Maze
     {
-        markInvalid();
-    }
-}
-
-const char* XEEN::MazeText::getString(uint32 id) const
-{
-    XEEN_VALID_RET("");
-
-    if(enforce(id < MAX_STRINGS))
-    {
-        return (_stringOffsets[id] != 0xFFFF) ? (const char*)(&_data->getData()[_stringOffsets[id]]) : "";
-    }
+        const uint32 MAX_MAP_WIDTH = 256;
+        const uint32 MAX_MAP_HEIGHT = 256;
     
-    return "";
+        class Map;
+    
+        // Only accessible by Map
+        class EventList : public Validateable
+        {
+            friend class Map;
+    
+            private:
+                EventList(Map* parent, uint16 mapNumber);
+                void runEventAt(uint8 x, uint8 y, uint32 facing);
+    
+            private:
+                uint8 runEventLine(int32 off);
+    
+            private:
+                Map* _parent;
+                FilePtr _data;
+                int32 _eventOffset[MAX_MAP_WIDTH * MAX_MAP_HEIGHT];
+        };
+    }
 }
+
+#endif // XEEN_MAZE_EVENTLIST_H

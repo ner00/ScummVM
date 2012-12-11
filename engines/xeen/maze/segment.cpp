@@ -19,11 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+#define XEEN_MAZE_SOURCE
 
 #include "xeen/game.h"
 
-#include "xeen/maze/mazeobjects.h"
-#include "xeen/maze/segment.h"
+#include "xeen/maze/objects_.h"
+#include "xeen/maze/segment_.h"
 
 static const uint32 OFF_WALLS         = 0x000;
 static const uint32 OFF_CELL_FLAGS    = 0x200;
@@ -31,10 +32,7 @@ static const uint32 OFF_SURR_MAZES    = 0x302;
 static const uint32 OFF_WALL_TYPES    = 0x30E;
 static const uint32 OFF_SURFACE_TYPES = 0x31E;
 
-///
-/// Segment
-///
-XEEN::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true)), _north(0), _east(0), _objects(0)
+XEEN::Maze::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true)), _north(0), _east(0), _objects(0)
 {    
     if(_data)
     {
@@ -58,10 +56,10 @@ XEEN::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE
     }
     
     // Load objects
-    _objects = new MazeObjects(mapNumber);
+    _objects = new Objects(mapNumber);
 }
 
-uint16 XEEN::Segment::getWall(uint8 x, uint8 y) const
+uint16 XEEN::Maze::Segment::getWall(uint8 x, uint8 y) const
 {
     XEEN_VALID_RET(0);
 
@@ -73,7 +71,7 @@ uint16 XEEN::Segment::getWall(uint8 x, uint8 y) const
     return 0;
 }
 
-uint8 XEEN::Segment::getCellFlags(uint8 x, uint8 y) const
+uint8 XEEN::Maze::Segment::getCellFlags(uint8 x, uint8 y) const
 {
     XEEN_VALID_RET(0);
 
@@ -85,7 +83,7 @@ uint8 XEEN::Segment::getCellFlags(uint8 x, uint8 y) const
     return 0;    
 }
 
-uint8 XEEN::Segment::lookupSurface(uint8 id) const
+uint8 XEEN::Maze::Segment::lookupSurface(uint8 id) const
 {
     XEEN_VALID_RET(0);
 
@@ -97,7 +95,7 @@ uint8 XEEN::Segment::lookupSurface(uint8 id) const
     return 0;    
 }
 
-bool XEEN::Segment::getObjectAt(uint8 x, uint8 y, MazeObjects::Entry& data) const
+bool XEEN::Maze::Segment::getObjectAt(uint8 x, uint8 y, Objects::Entry& data) const
 {
     XEEN_VALID_RET(false);
 

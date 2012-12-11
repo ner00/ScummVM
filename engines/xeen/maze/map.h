@@ -27,50 +27,49 @@
 
 namespace XEEN
 {
-    class Game;
-    class MapManager;
-    class Map;
     class ImageBuffer;
     class SpriteManager;
-    class Segment;
 
-    class MazeText;
-    class EventList;
-
-    // Only constructible by MapManager
-    class Map : public Validateable
+    namespace Maze
     {
-        friend class MapManager;
-        friend class Segment;
+        class Segment;
+        class Text;
+        class EventList;
     
-        private:
-            Map(uint16 mapNumber);
-            ~Map();
-
-        public:
-            const char* getString(uint32 id) const;
-            void runEventAt(uint8 x, uint8 y, uint32 facing);
-
-            uint16 getTile(Common::Point position, uint32 direction = 0);
-            uint16 getSurface(Common::Point position);
+        // Only constructible by MapManager
+        class Map : public Validateable
+        {
+            friend class Manager;
+        
+            private:
+                Map(uint16 mapNumber);
+                ~Map();
+    
+            public:
+                const char* getString(uint32 id) const;
+                void runEventAt(uint8 x, uint8 y, uint32 facing);
+    
+                uint16 getTile(Common::Point position, uint32 direction = 0);
+                uint16 getSurface(Common::Point position);
+                    
+                void fillDrawStruct(Common::Point position, uint16 direction);
+                void draw(ImageBuffer& out, SpriteManager& sprite);
+                            
+            private:
+                Segment* resolveSegment(Common::Point& position);
+    
+            public:
+                static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);
+    
+            private:
+                Segment* _base;
+                Text* _text;
+                EventList* _events;            
                 
-            void fillDrawStruct(Common::Point position, uint16 direction);
-            void draw(ImageBuffer& out, SpriteManager& sprite);
-                        
-        private:
-            Segment* resolveSegment(Common::Point& position);
-
-        public:
-            static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);
-
-        private:
-            Segment* _base;
-            MazeText* _text;
-            EventList* _events;            
-            
-            uint32 _width;
-            uint32 _height;
-    };
+                uint32 _width;
+                uint32 _height;
+        };
+    }
 }
 
 #endif // XEEN_MAP_H

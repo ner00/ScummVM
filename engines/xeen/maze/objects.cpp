@@ -19,17 +19,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-
+#define XEEN_MAZE_SOURCE
 
 #include "xeen/game.h"
 #include "xeen/utility.h"
 
-#include "xeen/maze/mazeobjects.h"
+#include "xeen/maze/objects_.h"
 
-///
-/// MazeObjects
-///
-XEEN::MazeObjects::MazeObjects(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber), true))
+XEEN::Maze::Objects::Objects(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber), true))
 {
     memset(_offsets, 0xFF, sizeof(_offsets));
     memset(_counts, 0xFF, sizeof(_counts));
@@ -75,13 +72,13 @@ XEEN::MazeObjects::MazeObjects(uint16 mapNumber) : _data(XEENgame.getFile(CCFile
     }
 }
 
-void XEEN::MazeObjects::cleanse()
+void XEEN::Maze::Objects::cleanse()
 {
     memset(_offsets, 0xFF, sizeof(_offsets));
     memset(_counts, 0xFF, sizeof(_counts));
 }
 
-bool XEEN::MazeObjects::getObjectAt(uint8 x, uint8 y, Entry& data) const
+bool XEEN::Maze::Objects::getObjectAt(uint8 x, uint8 y, Entry& data) const
 {
     XEEN_VALID_RET(false);
 

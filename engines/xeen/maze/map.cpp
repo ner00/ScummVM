@@ -19,6 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+#define XEEN_MAZE_SOURCE
 
 #include "xeen/game.h"
 
@@ -28,21 +29,18 @@
 #include "xeen/graphics/spritemanager.h"
 #include "xeen/graphics/sprite.h"
 
-#include "xeen/maze/drawlist.h"
-#include "xeen/maze/eventlist.h"
 #include "xeen/maze/map.h"
-#include "xeen/maze/mazetext.h"
-#include "xeen/maze/segment.h"
+#include "xeen/maze/drawlist_.h"
+#include "xeen/maze/eventlist_.h"
+#include "xeen/maze/text_.h"
+#include "xeen/maze/segment_.h"
 
-///
-/// Map
-///
-XEEN::Map::Map(uint16 mapNumber) : _base(0), _text(0), _width(0), _height(0)
+XEEN::Maze::Map::Map(uint16 mapNumber) : _base(0), _text(0), _width(0), _height(0)
 {
     _base = XEENgame.getMapManager()->getSegment(mapNumber);
  
     // Load Maze Data
-    _text = new MazeText(mapNumber);
+    _text = new Text(mapNumber);
     _events = new EventList(this, mapNumber);
     
     // Calculate size
@@ -57,19 +55,19 @@ XEEN::Map::Map(uint16 mapNumber) : _base(0), _text(0), _width(0), _height(0)
     }
 }
 
-XEEN::Map::~Map()
+XEEN::Maze::Map::~Map()
 {
     delete _text;
     delete _events;
 }
 
-const char* XEEN::Map::getString(uint32 id) const
+const char* XEEN::Maze::Map::getString(uint32 id) const
 {
     XEEN_VALID_RET("");
     return valid(_text) ? _text->getString(id) : "";
 }
 
-void XEEN::Map::runEventAt(uint8 x, uint8 y, uint32 facing)
+void XEEN::Maze::Map::runEventAt(uint8 x, uint8 y, uint32 facing)
 {
     XEEN_VALID();
 
@@ -79,7 +77,7 @@ void XEEN::Map::runEventAt(uint8 x, uint8 y, uint32 facing)
     }
 }
 
-uint16 XEEN::Map::getTile(Common::Point position, uint32 direction)
+uint16 XEEN::Maze::Map::getTile(Common::Point position, uint32 direction)
 {
     Segment* seg = resolveSegment(position);
     
@@ -103,7 +101,7 @@ uint16 XEEN::Map::getTile(Common::Point position, uint32 direction)
     }
 }
 
-uint16 XEEN::Map::getSurface(Common::Point position)
+uint16 XEEN::Maze::Map::getSurface(Common::Point position)
 {
     Segment* seg = resolveSegment(position);
 
@@ -117,7 +115,7 @@ uint16 XEEN::Map::getSurface(Common::Point position)
     }
 }
 
-void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
+void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
 {
     buildDrawIndex();
 
@@ -249,7 +247,7 @@ void XEEN::Map::fillDrawStruct(Common::Point position, uint16 direction)
     //indoorDrawIndex[OBJ_1_1R]->sprite = _objects->getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);        
 }
 
-void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)
+void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)
 {
     bool drewLastSprite = false;
 
@@ -273,7 +271,7 @@ void XEEN::Map::draw(ImageBuffer& out, SpriteManager& sprites)
     }
 }
 
-XEEN::Segment* XEEN::Map::resolveSegment(Common::Point& position)
+XEEN::Maze::Segment* XEEN::Maze::Map::resolveSegment(Common::Point& position)
 {
     Segment* activeSegment = _base;
     
@@ -290,7 +288,7 @@ XEEN::Segment* XEEN::Map::resolveSegment(Common::Point& position)
     return activeSegment;
 }
 
-Common::Point XEEN::Map::translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction)
+Common::Point XEEN::Maze::Map::translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction)
 {
     switch(direction)
     {

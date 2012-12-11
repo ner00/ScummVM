@@ -30,10 +30,9 @@
 #include "xeen/graphics/font.h"
 #include "xeen/graphics/spritemanager.h"
 
-#include "xeen/maze/map.h"
-#include "xeen/maze/mapmanager.h"
-
 #include "xeen/archive/file.h"
+
+#include "xeen/maze/manager.h"
 
 #include "xeen/ui/window.h"
 #include "xeen/ui/characteraction.h"
@@ -47,10 +46,8 @@
 namespace XEEN
 {
     class Archive;
-
     class ImageBuffer;
     class SpriteManager;
-    class MapManager;
     class Party;
     class Character;
     class Font;
@@ -80,7 +77,7 @@ namespace XEEN
             void drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0) const;
 
             Valid<SpriteManager> getSpriteManager() { return _spriteManager; }
-            Valid<MapManager> getMapManager() { return _mapManager; }
+            Valid<Maze::Manager> getMapManager() { return _mapManager; }
             Valid<Party> getParty() { return _party; }
 
             Character* getActiveCharacter();
@@ -96,7 +93,7 @@ namespace XEEN
             Archive* _assets;
 
             SpriteManager* _spriteManager;
-            MapManager* _mapManager;
+            Maze::Manager* _mapManager;
             Party* _party;
             Font* _font;
 

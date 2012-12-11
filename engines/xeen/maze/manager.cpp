@@ -19,46 +19,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-
-#ifndef XEEN_MAZE_SEGMENT_H
-#define XEEN_MAZE_SEGMENT_H
+#define XEEN_MAZE_SOURCE
 
 #include "xeen/utility.h"
-#include "xeen/archive/file.h"
-#include "xeen/maze/mazeobjects.h"
 
-namespace XEEN
+#include "xeen/maze/map.h"
+#include "xeen/maze/manager.h"
+#include "xeen/maze/segment_.h"
+
+XEEN::Maze::Manager::Manager()
 {
-    class Map;
-    class MapManager;
-
-    // Only accessible by MapManager and Map
-    class Segment : public Validateable
-    {
-        friend class Map;
-        friend class MapManager;
-    
-        private:
-            Segment(uint16 mapNumber);
-            virtual ~Segment() { }
-
-            uint16 getWall(uint8 x, uint8 y) const;
-            uint8 getCellFlags(uint8 x, uint8 y) const;
-            uint8 lookupSurface(uint8 id) const;
-
-            bool getObjectAt(uint8 x, uint8 y, MazeObjects::Entry& data) const;
-
-            Segment* getNorth() { return _north; }
-            Segment* getEast() { return _east; }
-
-        protected:
-            FilePtr _data;
-
-            Segment* _north;
-            Segment* _east;
-            
-            MazeObjects* _objects;
-    };
+    memset(_maps, 0, sizeof(_maps));
+    memset(_segments, 0, sizeof(_segments));
 }
 
-#endif // XEEN_MAZE_SEGMENT_H
+XEEN::Maze::Manager::~Manager()
+{
+    for(int i = 0; i != 256; i ++)
+    {
+        delete _maps[i];
+        delete _segments[i];
+    }
+}
+
+XEEN::Maze::Map* XEEN::Maze::Manager::getMap(uint16 id)
+{
+    if(!_maps[id])
+    {
+        _maps[id] = new Map(id);
+    }
+    
+    return _maps[id];
+}
+
+XEEN::Maze::Segment* XEEN::Maze::Manager::getSegment(uint16 id)
+{
+    if(!_segments[id])
+    {
+        _segments[id] = new Segment(id);
+    }
+    
+    return _segments[id];
+}

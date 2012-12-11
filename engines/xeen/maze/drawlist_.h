@@ -1,3 +1,7 @@
+#ifndef XEEN_MAZE_SOURCE
+# error "Private header included"
+#endif
+
 enum DRAWID
 {
     SKY_TOP, SKY_BOTTOM, GROUND,

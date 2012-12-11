@@ -19,30 +19,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+#define XEEN_MAZE_SOURCE
 
-#ifndef XEEN_MAZE_MAPMANAGER_H
-#define XEEN_MAZE_MAPMANAGER_H
+#include "xeen/game.h"
+#include "xeen/maze/text_.h"
 
-#include "xeen/utility.h"
-
-namespace XEEN
+XEEN::Maze::Text::Text(uint32 mapNumber) : _data(XEENgame.getFile(CCFileId("AAZE%04d.TXT", mapNumber)))
 {
-    class MapManager : public Validateable
+    memset(_stringOffsets, 0xFF, sizeof(_stringOffsets));
+
+    if(_data)
+    {    
+        uint32 foundStrings = 1;
+        _stringOffsets[0] = 0;
+        
+        for(int32 offset = 1; offset < _data->size() - 1; offset ++)
+        {
+            if(_data->getData()[offset] == 0)
+            {
+                _stringOffsets[foundStrings ++] = offset + 1;
+            }
+        }
+    }
+    else
     {
-        friend class Game;
-    
-        private:
-            MapManager();
-            ~MapManager();
-            
-        public:
-            Map* getMap(uint16 id);
-            Segment* getSegment(uint16 id);
-            
-        private:
-            Map* _maps[256]; // TODO: <Use a hash table!
-            Segment* _segments[256];
-    };
+        markInvalid();
+    }
 }
 
-#endif // XEEN_MAZE_MAPMANAGER_H
+const char* XEEN::Maze::Text::getString(uint32 id) const
+{
+    XEEN_VALID_RET("");
+
+    if(enforce(id < MAX_STRINGS))
+    {
+        return (_stringOffsets[id] != 0xFFFF) ? (const char*)(&_data->getData()[_stringOffsets[id]]) : "";
+    }
+    
+    return "";
+}

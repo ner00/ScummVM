@@ -19,17 +19,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-
+#define XEEN_MAZE_SOURCE
 
 #include "xeen/game.h"
 #include "xeen/utility.h"
 
-#include "xeen/maze/eventlist.h"
+#include "xeen/maze/eventlist_.h"
+#include "xeen/maze/map.h"
 
-///
-/// EventList
-///
-XEEN::EventList::EventList(Map* parent, uint16 mapNumber) : _parent(parent), _data(XEENgame.getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true))
+XEEN::Maze::EventList::EventList(Map* parent, uint16 mapNumber) : _parent(parent), _data(XEENgame.getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true))
 {
     memset(_eventOffset, 0xFF, sizeof(_eventOffset));
 
@@ -68,7 +66,7 @@ XEEN::EventList::EventList(Map* parent, uint16 mapNumber) : _parent(parent), _da
     }
 }
 
-void XEEN::EventList::runEventAt(uint8 x, uint8 y, uint32 facing)
+void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, uint32 facing)
 {
     XEEN_VALID();
 
@@ -82,7 +80,7 @@ void XEEN::EventList::runEventAt(uint8 x, uint8 y, uint32 facing)
     }
 }
 
-uint8 XEEN::EventList::runEventLine(int32 off)
+uint8 XEEN::Maze::EventList::runEventLine(int32 off)
 {
     XEEN_VALID_RET(255);
 

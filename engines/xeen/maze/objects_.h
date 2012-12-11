@@ -20,30 +20,48 @@
  *
  */
 
-#ifndef XEEN_MAZETEXT_H
-#define XEEN_MAZETEXT_H
+#ifndef XEEN_MAZE_OBJECTS_H
+#define XEEN_MAZE_OBJECTS_H
+
+#ifndef XEEN_MAZE_SOURCE
+# error "Private header included"
+#endif
 
 #include "xeen/utility.h"
 
 namespace XEEN
 {
-    class Map;
-
-    // Only accessible from Map
-    class MazeText : public Validateable
+    namespace Maze
     {
-        friend class Map;
-
-        static const unsigned MAX_STRINGS = 256;
+        class Segment;
     
-        private:
-            MazeText(uint32 mapNumber);
-            const char* getString(uint32 id) const;
+        // Only accessible by Segment
+        class Objects : public Validateable_Cleanable
+        {
+            friend class Segment;
+    
+            public:
+                struct Entry
+                {
+                    uint8 id;
+                    uint8 facing;
+                };    
+        
+            private:
+                Objects(uint16 mapNumber);
+                
+                bool getObjectAt(uint8 x, uint8 y, Entry& data) const;
+                
+            protected:
+                void cleanse();
+                
+            private:
+                FilePtr _data;
             
-        private:
-            FilePtr _data;
-            uint32 _stringOffsets[MAX_STRINGS];
-    };
+                uint16 _offsets[3];
+                uint16 _counts[3];
+        };
+    }
 }
 
-#endif // XEEN_MAZETEXT_H
+#endif // XEEN_MAZE_OBJECTS_H

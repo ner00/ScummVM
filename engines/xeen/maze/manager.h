@@ -20,36 +20,37 @@
  *
  */
 
-#ifndef XEEN_MAZE_EVENTLIST_H
-#define XEEN_MAZE_EVENTLIST_H
+#ifndef XEEN_MAZE_MANAGER_H
+#define XEEN_MAZE_MANAGER_H
 
 #include "xeen/utility.h"
-#include "xeen/archive/file.h"
 
 namespace XEEN
 {
-    const uint32 MAX_MAP_WIDTH = 256;
-    const uint32 MAX_MAP_HEIGHT = 256;
+    class Game;
 
-    class Map;
-
-    // Only accessible by Map
-    class EventList : public Validateable
+    namespace Maze
     {
-        friend class Map;
+        class Map;
+        class Segment;
 
-        private:
-            EventList(Map* parent, uint16 mapNumber);
-            void runEventAt(uint8 x, uint8 y, uint32 facing);
-
-        private:
-            uint8 runEventLine(int32 off);
-
-        private:
-            Map* _parent;
-            FilePtr _data;
-            int32 _eventOffset[MAX_MAP_WIDTH * MAX_MAP_HEIGHT];
-    };
+        class Manager : public Validateable
+        {
+            friend class XEEN::Game;
+        
+            private:
+                Manager();
+                ~Manager();
+                
+            public:
+                Map* getMap(uint16 id);
+                Segment* getSegment(uint16 id);
+                
+            private:
+                Map* _maps[256]; // TODO: <Use a hash table!
+                Segment* _segments[256];
+        };
+    }
 }
 
-#endif // XEEN_MAZE_EVENTLIST_H
+#endif // XEEN_MAZE_MANAGER_H

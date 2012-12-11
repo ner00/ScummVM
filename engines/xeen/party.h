@@ -30,7 +30,11 @@ namespace XEEN
 {
     class Game;
     class Character;
-    class Map;
+
+    namespace Maze
+    {
+        class Map;
+    }
 
     class Party : public Validateable
     {
@@ -65,7 +69,7 @@ namespace XEEN
             void exchangeMember(unsigned slot1, unsigned slot2);
             
             // Manager Maze
-            Map* getMap() const;
+            Maze::Map* getMap() const;
             
             void moveTo(uint8 maze, const Common::Point& position, uint8 facing);
             void moveTo(const Common::Point& position, uint8 facing = 255);

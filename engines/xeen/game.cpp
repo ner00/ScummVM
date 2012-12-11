@@ -61,7 +61,7 @@ void XEEN::Game::load()
 {
     _assets = new Archive("XEEN.CC");
     _spriteManager = new SpriteManager();
-    _mapManager = new MapManager();
+    _mapManager = new Maze::Manager();
     _party = new Party();
     _font = new Font();
     
@@ -178,7 +178,7 @@ void XEEN::Game::draw(ImageBuffer& out)
     {
         out.setClipArea(Common::Rect(8, 8, 224, 140));    
         
-        Map* m = _party->getMap();
+        Maze::Map* m = _party->getMap();
         
         if(valid(m))
         {
