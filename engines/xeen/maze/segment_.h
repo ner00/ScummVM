@@ -52,8 +52,6 @@ namespace XEEN
                 uint8 getCellFlags(uint8 x, uint8 y) const;
                 uint8 lookupSurface(uint8 id) const;
     
-                bool getObjectAt(uint8 x, uint8 y, Objects::Entry& data) const;
-    
                 Segment* getNorth() { return _north; }
                 Segment* getEast() { return _east; }
     
@@ -62,8 +60,6 @@ namespace XEEN
     
                 Segment* _north;
                 Segment* _east;
-                
-                Objects* _objects;
         };
     }
 }

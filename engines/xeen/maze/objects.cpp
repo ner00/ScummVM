@@ -24,6 +24,7 @@
 #include "xeen/game.h"
 #include "xeen/utility.h"
 
+#include "xeen/maze/map.h"
 #include "xeen/maze/objects_.h"
 
 XEEN::Maze::Objects::Objects(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber), true))
@@ -78,7 +79,7 @@ void XEEN::Maze::Objects::cleanse()
     memset(_counts, 0xFF, sizeof(_counts));
 }
 
-bool XEEN::Maze::Objects::getObjectAt(uint8 x, uint8 y, Entry& data) const
+bool XEEN::Maze::Objects::getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const
 {
     XEEN_VALID_RET(false);
 

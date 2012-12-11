@@ -32,7 +32,7 @@ static const uint32 OFF_SURR_MAZES    = 0x302;
 static const uint32 OFF_WALL_TYPES    = 0x30E;
 static const uint32 OFF_SURFACE_TYPES = 0x31E;
 
-XEEN::Maze::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true)), _north(0), _east(0), _objects(0)
+XEEN::Maze::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true)), _north(0), _east(0)
 {    
     if(_data)
     {
@@ -54,9 +54,6 @@ XEEN::Maze::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId
         _data.reset();
         markInvalid();
     }
-    
-    // Load objects
-    _objects = new Objects(mapNumber);
 }
 
 uint16 XEEN::Maze::Segment::getWall(uint8 x, uint8 y) const
@@ -93,16 +90,4 @@ uint8 XEEN::Maze::Segment::lookupSurface(uint8 id) const
     }
 
     return 0;    
-}
-
-bool XEEN::Maze::Segment::getObjectAt(uint8 x, uint8 y, Objects::Entry& data) const
-{
-    XEEN_VALID_RET(false);
-
-    if(valid(_objects))
-    {
-        return _objects->getObjectAt(x, y, data);
-    }
-
-    return false;
 }

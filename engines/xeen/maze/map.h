@@ -35,12 +35,19 @@ namespace XEEN
         class Segment;
         class Text;
         class EventList;
+        class Objects;
     
+        struct ObjectEntry
+        {
+            uint8 id;
+            uint8 facing;
+        };    
+
         // Only constructible by MapManager
         class Map : public Validateable
         {
             friend class Manager;
-        
+
             private:
                 Map(uint16 mapNumber);
                 ~Map();
@@ -51,10 +58,11 @@ namespace XEEN
     
                 uint16 getTile(Common::Point position, uint32 direction = 0);
                 uint16 getSurface(Common::Point position);
+                bool getObjectAt(const Common::Point& position, ObjectEntry& data) const;
                     
                 void fillDrawStruct(Common::Point position, uint16 direction);
                 void draw(ImageBuffer& out, SpriteManager& sprite);
-                            
+
             private:
                 Segment* resolveSegment(Common::Point& position);
     
@@ -64,10 +72,8 @@ namespace XEEN
             private:
                 Segment* _base;
                 Text* _text;
-                EventList* _events;            
-                
-                uint32 _width;
-                uint32 _height;
+                EventList* _events;
+                Objects* _objects;
         };
     }
 }

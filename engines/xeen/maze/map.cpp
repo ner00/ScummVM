@@ -35,23 +35,20 @@
 #include "xeen/maze/text_.h"
 #include "xeen/maze/segment_.h"
 
-XEEN::Maze::Map::Map(uint16 mapNumber) : _base(0), _text(0), _width(0), _height(0)
+XEEN::Maze::Map::Map(uint16 mapNumber) : _base(0), _text(0)
 {
     _base = XEENgame.getMapManager()->getSegment(mapNumber);
  
-    // Load Maze Data
-    _text = new Text(mapNumber);
-    _events = new EventList(this, mapNumber);
-    
-    // Calculate size
-    for(Segment* tag = _base; tag; tag = tag->getEast())
+    if(_base)
     {
-        _width += 16;
+        // Load Maze Data
+        _text = new Text(mapNumber);
+        _events = new EventList(this, mapNumber);
+        _objects = new Objects(mapNumber);
     }
-    
-    for(Segment* tag = _base; tag; tag = tag->getNorth())
+    else
     {
-        _height += 16;
+        markInvalid("Failed to open map file");
     }
 }
 
@@ -59,6 +56,7 @@ XEEN::Maze::Map::~Map()
 {
     delete _text;
     delete _events;
+    delete _objects;
 }
 
 const char* XEEN::Maze::Map::getString(uint32 id) const
@@ -114,6 +112,19 @@ uint16 XEEN::Maze::Map::getSurface(Common::Point position)
         return _base->lookupSurface(seg->getCellFlags(position.x, position.y) & 7);
     }
 }
+
+bool XEEN::Maze::Map::getObjectAt(const Common::Point& position, ObjectEntry& data) const
+{
+    XEEN_VALID_RET(false);
+
+    if(valid(_objects))
+    {
+        return _objects->getObjectAt(position.x, position.y, data);
+    }
+
+    return false;
+}
+
 
 void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
 {
@@ -240,11 +251,11 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
     }
     
     // OBJECTS
-    //MazeObjects::Entry t;
-    //indoorDrawIndex[OBJ_HERE]->sprite = _objects->getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    //indoorDrawIndex[OBJ_1_1L]->sprite = _objects->getObjectAt(translatePoint(position, -1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    //indoorDrawIndex[OBJ_1_CEN]->sprite = _objects->getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    //indoorDrawIndex[OBJ_1_1R]->sprite = _objects->getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);        
+    ObjectEntry t;
+    indoorDrawIndex[OBJ_HERE]->sprite = getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_1_1L]->sprite = getObjectAt(translatePoint(position, -1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_1_CEN]->sprite = getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_1_1R]->sprite = getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);        
 }
 
 void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)

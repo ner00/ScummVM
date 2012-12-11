@@ -34,23 +34,17 @@ namespace XEEN
     namespace Maze
     {
         class Segment;
+        struct ObjectEntry;
     
-        // Only accessible by Segment
+        // Only accessible by Map
         class Objects : public Validateable_Cleanable
         {
-            friend class Segment;
-    
-            public:
-                struct Entry
-                {
-                    uint8 id;
-                    uint8 facing;
-                };    
+            friend class Map;
         
             private:
                 Objects(uint16 mapNumber);
                 
-                bool getObjectAt(uint8 x, uint8 y, Entry& data) const;
+                bool getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const;
                 
             protected:
                 void cleanse();
