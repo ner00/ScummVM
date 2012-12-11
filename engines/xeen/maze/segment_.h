@@ -46,20 +46,18 @@ namespace XEEN
         
             private:
                 Segment(uint16 mapNumber);
-                virtual ~Segment() { }
+                void loadSurrounding();
     
                 uint16 getWall(uint8 x, uint8 y) const;
                 uint8 getCellFlags(uint8 x, uint8 y) const;
                 uint8 lookupSurface(uint8 id) const;
-    
-                Segment* getNorth() { return _north; }
-                Segment* getEast() { return _east; }
+
+                Segment* resolveSegment(Common::Point& position);
     
             protected:
                 FilePtr _data;
     
-                Segment* _north;
-                Segment* _east;
+                Segment* _surrMazes[4];
         };
     }
 }

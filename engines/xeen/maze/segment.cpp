@@ -32,27 +32,28 @@ static const uint32 OFF_SURR_MAZES    = 0x302;
 static const uint32 OFF_WALL_TYPES    = 0x30E;
 static const uint32 OFF_SURFACE_TYPES = 0x31E;
 
-XEEN::Maze::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true)), _north(0), _east(0)
-{    
-    if(_data)
-    {
-        const uint16 northMaze = _data->getU16At(OFF_SURR_MAZES + 0);
-        const uint16 eastMaze = _data->getU16At(OFF_SURR_MAZES + 2);
+XEEN::Maze::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true))
+{
+    memset(_surrMazes, 0, sizeof(_surrMazes));
 
-        if(northMaze)
-        {
-            _north = XEENgame.getMapManager()->getSegment(northMaze);
-        }
-
-        if(eastMaze)
-        {
-            _east = XEENgame.getMapManager()->getSegment(eastMaze);
-        }
-    }
-    else
+    if(!_data)
     {
         _data.reset();
         markInvalid();
+    }
+}
+
+void XEEN::Maze::Segment::loadSurrounding()
+{
+    XEEN_VALID();
+
+    for(int i = 0; i != 4; i ++)
+    {
+        const uint16 segID = _data->getU16At(OFF_SURR_MAZES + i * 2);
+        if(segID)
+        {
+            _surrMazes[i] = XEENgame.getMapManager()->getSegment(segID);
+        }
     }
 }
 
@@ -90,4 +91,33 @@ uint8 XEEN::Maze::Segment::lookupSurface(uint8 id) const
     }
 
     return 0;    
+}
+
+XEEN::Maze::Segment* XEEN::Maze::Segment::resolveSegment(Common::Point& position)
+{
+    XEEN_VALID_RET(0);
+
+    Segment* activeSegment = this;
+
+    for(; valid(activeSegment) && position.y >= 16; position.y -= 16)
+    {
+        activeSegment = activeSegment->_surrMazes[0];
+    }
+
+    for(; valid(activeSegment) && position.x >= 16; position.x -= 16)
+    {
+        activeSegment = activeSegment->_surrMazes[1];
+    }
+
+    for(; valid(activeSegment) && position.y < 0; position.y += 16)
+    {
+        activeSegment = activeSegment->_surrMazes[2];
+    }
+    
+    for(; valid(activeSegment) && position.x < 0; position.x += 16)
+    {
+        activeSegment = activeSegment->_surrMazes[3];
+    }
+
+    return activeSegment;
 }

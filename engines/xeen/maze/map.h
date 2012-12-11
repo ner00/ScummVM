@@ -62,9 +62,6 @@ namespace XEEN
                     
                 void fillDrawStruct(Common::Point position, uint16 direction);
                 void draw(ImageBuffer& out, SpriteManager& sprite);
-
-            private:
-                Segment* resolveSegment(Common::Point& position);
     
             public:
                 static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);

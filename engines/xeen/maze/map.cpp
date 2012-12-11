@@ -35,16 +35,24 @@
 #include "xeen/maze/text_.h"
 #include "xeen/maze/segment_.h"
 
-XEEN::Maze::Map::Map(uint16 mapNumber) : _base(0), _text(0)
+XEEN::Maze::Map::Map(uint16 mapNumber) : _base(0), _text(0), _events(0), _objects(0)
 {
     _base = XEENgame.getMapManager()->getSegment(mapNumber);
  
-    if(_base)
+    if(valid(_base))
     {
         // Load Maze Data
         _text = new Text(mapNumber);
         _events = new EventList(this, mapNumber);
         _objects = new Objects(mapNumber);
+
+        if(!(valid(_text) && valid(_events) && valid(_objects)))
+        {
+            markInvalid("Failed to open maps required objects.");
+            delete _text;
+            delete _events;
+            delete _objects;
+        }
     }
     else
     {
@@ -77,7 +85,7 @@ void XEEN::Maze::Map::runEventAt(uint8 x, uint8 y, uint32 facing)
 
 uint16 XEEN::Maze::Map::getTile(Common::Point position, uint32 direction)
 {
-    Segment* seg = resolveSegment(position);
+    Segment* seg = _base->resolveSegment(position);
     
     if(position.x < 0 || position.y < 0 || !seg)
     {
@@ -101,7 +109,7 @@ uint16 XEEN::Maze::Map::getTile(Common::Point position, uint32 direction)
 
 uint16 XEEN::Maze::Map::getSurface(Common::Point position)
 {
-    Segment* seg = resolveSegment(position);
+    Segment* seg = _base->resolveSegment(position);
 
     if(position.x < 0 || position.y < 0 || !seg)
     {
@@ -260,43 +268,14 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
 
 void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)
 {
-    bool drewLastSprite = false;
-
     for(int i = 0; i != sizeof(indoorDrawList) / sizeof(indoorDrawList[0]); i ++)
     {
         if(indoorDrawList[i].sprite != 0xFFFF)
         {
-            if(!indoorDrawList[i].obscureable() || !drewLastSprite)
-            {
-                Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
-            
-                sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000);
-            }
-                                
-            drewLastSprite = true;
-        }
-        else
-        {
-            drewLastSprite = false;
+            Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
+            sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000);
         }
     }
-}
-
-XEEN::Maze::Segment* XEEN::Maze::Map::resolveSegment(Common::Point& position)
-{
-    Segment* activeSegment = _base;
-    
-    for(; activeSegment && position.x >= 16; position.x -= 16)
-    {
-        activeSegment = activeSegment->_east;
-    }
-
-    for(; activeSegment && position.y >= 16; position.y -= 16)
-    {
-        activeSegment = activeSegment->_north;
-    }
-
-    return activeSegment;
 }
 
 Common::Point XEEN::Maze::Map::translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction)

@@ -57,6 +57,7 @@ XEEN::Maze::Segment* XEEN::Maze::Manager::getSegment(uint16 id)
     if(!_segments[id])
     {
         _segments[id] = new Segment(id);
+        _segments[id]->loadSurrounding(); //< Can't be done is Segment's constructor
     }
     
     return _segments[id];
