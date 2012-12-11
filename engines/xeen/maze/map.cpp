@@ -207,7 +207,6 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
     
     // TODO: Distant wall?
 
-
     // SIDE WALLS: 0 Steps forward
     static const int swl0_xoffset[2] = {0, 0};
     static const int swl0_shift[2] = {0, 8};
@@ -258,6 +257,19 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
         indoorDrawIndex[swl3_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);    
     }
     
+    // SIDE WALLS: 4 Steps forward
+    static const int swl4_xoffset[8] = {-3, -2, -1, 0, 0, 1, 2, 3};
+    static const int swl4_shift[8] = {0, 0, 0, 0, 8, 8, 8, 8};
+    static const int swl4_id[8] = {SWALL_4_4L, SWALL_4_3L, SWALL_4_2L, SWALL_4_1L, 
+                                   SWALL_4_1R, SWALL_4_2R, SWALL_4_3R, SWALL_4_4R};
+    for(int i = 0; i != 8; i ++)
+    {
+        Common::Point cell = translatePoint(position, swl4_xoffset[i], 4, direction);
+        uint16 wallData = (getTile(cell, direction) >> swl4_shift[i]) & 0xF;
+        indoorDrawIndex[swl4_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);    
+    }
+
+
     // OBJECTS
     ObjectEntry t;
     indoorDrawIndex[OBJ_HERE]->sprite = getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);

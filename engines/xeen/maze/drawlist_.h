@@ -98,7 +98,7 @@ DrawListItem indoorDrawList[] =
     {SURF24,         0xFFFF,     1,  8,      109,    0,     0x0000}, //Surface tile player is currently on
     
     //
-    {FWALL_DISTANT,        0xFFFF,     7,  8,      64,     0,     0x0000}, //Far distant wall
+    {FWALL_DISTANT,  0xFFFF, 7,  8,      64,     0,     0x0000}, //Far distant wall
     
     // DISTANCE: 4
     {SWALL_4_4L, 0xFFFF,     22, 32,     60,     0,     0x0000}, //Side wall for tile 4 steps forward, 4 steps left
