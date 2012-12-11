@@ -171,27 +171,28 @@ namespace XEEN
         public:        
             CCFileId() : _id(0)
             {
-            }        
+                memset(_name, 0, sizeof(_name));
+            }
         
             CCFileId(uint16 id) : _id(id)
             {
+                memset(_name, 0, sizeof(_name));
             }
                         
             CCFileId(const char* format, ...) : _id(0)
-            {
-                char buf[256];
-                
+            {                
                 va_list args;
                 va_start(args, format);
-                vsnprintf(buf, 256, format, args);
+                vsnprintf(_name, 16, format, args);
                 va_end(args);
                 
-                buf[255] = 0;
+                _name[15] = 0;
                 
-                _id = fromString(buf);
+                _id = fromString(_name);
             }
             
             operator uint16() const { return _id; }
+            operator const char*() const { return _name; }
         
         public:
             static uint16 fromString(const char* name)
@@ -208,6 +209,7 @@ namespace XEEN
             }
         
             uint16 _id;
+            char _name[16];
     };
 
     struct CCFileData;

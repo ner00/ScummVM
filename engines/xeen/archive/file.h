@@ -35,14 +35,16 @@ namespace XEEN
             
             uint32 getSize()               { return _size; }
             byte* getData()                { return _data; }
-            
+    
+            const CCFileId& getID( )       { return _id; }
+        
             byte getByteAt(uint16 loc)     { return (enforce(loc < _size)) ? _data[loc] : 0; }
             byte* getBytePtrAt(uint16 loc) { return (enforce(loc < _size)) ? &_data[loc] : 0; }
             uint16 getU16At(uint16 loc)    { return getByteAt(loc) | (getByteAt(loc + 1) << 8); }
             uint32 getU32At(uint16 loc)    { return getByteAt(loc) | (getByteAt(loc + 1) << 8) | (getByteAt(loc + 2) << 16) | (getByteAt(loc + 3) << 24); }
     
         private:
-            uint16 _id;
+            CCFileId _id;
     
             uint32 _size;
             byte* _data;
