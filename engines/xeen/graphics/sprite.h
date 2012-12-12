@@ -34,27 +34,35 @@ namespace XEEN
     class Sprite : public Validateable_Cleanable
     {
         friend class SpriteManager;
-    
+        struct Cell;    
+
         private:
             Sprite(FilePtr file);
             ~Sprite();
             
         public:
-            void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false);
+            void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
 
         protected:
             void cleanse();
             
         private:
-            void drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip);
-            uint32 drawLine(ImageBuffer& out);
+            void cacheCell(Cell& cell, uint16 offset1, uint16 offset2);
+            void cacheFrame(Cell& out, uint16 offset);
+            uint32 cacheLine(Cell& out, uint16 line, uint16 offX);
             
         private:
             FilePtr _file;
 
             struct Cell
             {
-                uint16 offset[2];
+                Cell() : width(0), height(0), pixels(0) {}
+                ~Cell() { delete[] pixels; }
+
+                uint16 width;
+                uint16 height;
+
+                byte* pixels;
             };
             
             uint32 _cellCount;

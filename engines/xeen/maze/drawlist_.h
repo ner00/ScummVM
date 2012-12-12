@@ -26,6 +26,7 @@ enum DRAWID
     
     // OBJECTS
     OBJ_1_1L, OBJ_1_CEN, OBJ_1_1R,
+    OBJ_2_2L, OBJ_2_1L, OBJ_2_CEN, OBJ_2_1R, OBJ_2_2R,
     OBJ_HERE,
     
     XXX
@@ -167,11 +168,11 @@ DrawListItem indoorDrawList[] =
     {FWALL_3_CEN,0xFFFF,     7,  88,     52,     0,     0x0000}, //Facing wall for tile directly 3 steps forward
     {FWALL_3_1R, 0xFFFF,     0,  144,    52,     0,     0x0000}, //Facing wall for tile 3 steps forward, 1 step right
     {FWALL_3_2R, 0xFFFF,     0,  200,    52,     0,     0x2000}, //Facing wall for tile 3 steps forward, 2 steps right
-    {XXX,        0xFFFF,     0,  -79,    52,     11,    0x2000},    
-    {XXX,        0xFFFF,     0,  -27,    52,     11,    0x0000},    
-    {XXX,        0xFFFF,     0,  32,     52,     11,    0x0000},    
-    {XXX,        0xFFFF,     0,  89,     52,     11,    0x0000},    
-    {XXX,        0xFFFF,     0,  145,    52,     11,    0x2000},    
+    {OBJ_2_2L,   0xFFFF,     0,  -79,    52,     11,    0x2000},    
+    {OBJ_2_1L,   0xFFFF,     0,  -27,    52,     11,    0x0000},    
+    {OBJ_2_CEN,  0xFFFF,     0,  32,     52,     11,    0x0000},    
+    {OBJ_2_1R,   0xFFFF,     0,  89,     52,     11,    0x0000},    
+    {OBJ_2_2R,   0xFFFF,     0,  145,    52,     11,    0x2000},    
     {XXX,        0xFFFF,     0,  -8,     50,     12,    0x0000},    
     {XXX,        0xFFFF,     0,  -65,    50,     12,    0x0000},    
     {XXX,        0xFFFF,     0,  49,     50,     12,    0x0000},    
@@ -202,9 +203,12 @@ DrawListItem indoorDrawList[] =
     {XXX,        0xFFFF,     0,  -72,    40,     6,     0x2000},    
     {XXX,        0xFFFF,     0,  32,     40,     6,     0x0000},    
     {XXX,        0xFFFF,     0,  137,    40,     6,     0x2000},    
-    {OBJ_1_CEN,  0xFFFF,     0,  -7,     25,     7,     0x0000},    
-    {OBJ_1_1L,   0xFFFF,     0,  -112,   25,     7,     0x2000},    
-    {OBJ_1_1R,   0xFFFF,     0,  98,     25,     7,     0x2000},    
+//  {OBJ_1_CEN,  0xFFFF,     0,  -7,     25,     7,     0x0000}, // X is actually 47 if not flipped 31 if!
+//  {OBJ_1_1L,   0xFFFF,     0,  -112,   25,     7,     0x2000},    
+//  {OBJ_1_1R,   0xFFFF,     0,  98,     25,     7,     0x2000},    
+    {OBJ_1_CEN,  0xFFFF,     0,  47,     25,     7,     0x0000}, // X is actually 47 if not flipped 31 if!
+    {OBJ_1_1L,   0xFFFF,     0,  -112 + 50,   25,     7,     0x2000},    
+    {OBJ_1_1R,   0xFFFF,     0,  98 + 50,     25,     7,     0x2000},    
     {XXX,        0xFFFF,     0,  -112,   29,     8,     0x2000},    
     {XXX,        0xFFFF,     0,  98,     29,     8,     0x2000},    
     {XXX,        0xFFFF,     0,  -38,    29,     8,     0x0000},    

@@ -285,7 +285,7 @@ void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)
         if(indoorDrawList[i].sprite != 0xFFFF)
         {
             Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
-            sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000);
+            sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000, indoorDrawList[i].scale);
         }
     }
 }
