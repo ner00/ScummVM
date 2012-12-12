@@ -167,6 +167,9 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
         }
     }
 
+    // DISTANT WALL
+    indoorDrawIndex[FWALL_DISTANT]->sprite = CCFileId("FTOWN1.FWL");
+
     // FACING WALLS
     static const unsigned wallmap[16] = {32, 9, 17, 11, 8, 0, 15, 16, 0, 10, 14, 6, 1, 8, 12, 13};
     static const int wall1[3] = {FWALL_1_1L, FWALL_1_CEN, FWALL_1_1R};
@@ -205,8 +208,6 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
         }
     }
     
-    // TODO: Distant wall?
-
     // SIDE WALLS: 0 Steps forward
     static const int swl0_xoffset[2] = {0, 0};
     static const int swl0_shift[2] = {0, 8};
