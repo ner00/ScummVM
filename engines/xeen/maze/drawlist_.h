@@ -26,7 +26,9 @@ enum DRAWID
     
     // OBJECTS
     OBJ_1_1L, OBJ_1_CEN, OBJ_1_1R,
-    OBJ_2_2L, OBJ_2_1L, OBJ_2_CEN, OBJ_2_1R, OBJ_2_2R,
+    OBJ_2_1L, OBJ_2_CEN, OBJ_2_1R,
+    OBJ_3_2L, OBJ_3_1L, OBJ_3_CEN, OBJ_3_1R, OBJ_3_2R,
+
     OBJ_HERE,
     
     XXX
@@ -129,11 +131,11 @@ DrawListItem indoorDrawList[] =
     {XXX,        0xFFFF,     0,  80,     61,     14,    0x0000},    
     {XXX,        0xFFFF,     0,  104,    61,     14,    0x0000},    
     {XXX,        0xFFFF,     0,  128,    61,     14,    0x0000},    
-    {XXX,        0xFFFF,     0,  -9,     58,     14,    0x0000},    
-    {XXX,        0xFFFF,     0,  -34,    58,     14,    0x0000},    
-    {XXX,        0xFFFF,     0,  16,     58,     14,    0x0000},    
-    {XXX,        0xFFFF,     0,  -58,    58,     14,    0x0000},    
-    {XXX,        0xFFFF,     0,  40,     58,     14,    0x0000},    
+    {OBJ_3_CEN,  0xFFFF,     0,  -9 + 109,     58,     14,    0x0000},    
+    {OBJ_3_1L,   0xFFFF,     0,  -34 + 109,    58,     14,    0x0000},    
+    {OBJ_3_1R,   0xFFFF,     0,  16 + 109,     58,     14,    0x0000},    
+    {OBJ_3_2L,   0xFFFF,     0,  -58 + 109,    58,     14,    0x0000},    
+    {OBJ_3_2R,   0xFFFF,     0,  40 + 109,     58,     14,    0x0000},    
     {XXX,        0xFFFF,     0,  -41,    58,     14,    0x0000},    
     {XXX,        0xFFFF,     0,  -26,    58,     14,    0x0000},    
     {XXX,        0xFFFF,     0,  -34,    58,     14,    0x0000},    
@@ -168,14 +170,14 @@ DrawListItem indoorDrawList[] =
     {FWALL_3_CEN,0xFFFF,     7,  88,     52,     0,     0x0000}, //Facing wall for tile directly 3 steps forward
     {FWALL_3_1R, 0xFFFF,     0,  144,    52,     0,     0x0000}, //Facing wall for tile 3 steps forward, 1 step right
     {FWALL_3_2R, 0xFFFF,     0,  200,    52,     0,     0x2000}, //Facing wall for tile 3 steps forward, 2 steps right
-    {OBJ_2_2L,   0xFFFF,     0,  -79,    52,     11,    0x2000},    
-    {OBJ_2_1L,   0xFFFF,     0,  -27,    52,     11,    0x0000},    
-    {OBJ_2_CEN,  0xFFFF,     0,  32,     52,     11,    0x0000},    
-    {OBJ_2_1R,   0xFFFF,     0,  89,     52,     11,    0x0000},    
-    {OBJ_2_2R,   0xFFFF,     0,  145,    52,     11,    0x2000},    
-    {XXX,        0xFFFF,     0,  -8,     50,     12,    0x0000},    
-    {XXX,        0xFFFF,     0,  -65,    50,     12,    0x0000},    
-    {XXX,        0xFFFF,     0,  49,     50,     12,    0x0000},    
+    {XXX,        0xFFFF,     0,  -79,    52,     11,    0x2000},    
+    {XXX,        0xFFFF,     0,  -27,    52,     11,    0x0000},    
+    {XXX,        0xFFFF,     0,  32,     52,     11,    0x0000},    
+    {XXX,        0xFFFF,     0,  89,     52,     11,    0x0000},    
+    {XXX,        0xFFFF,     0,  145,    52,     11,    0x2000},    
+    {OBJ_2_CEN,  0xFFFF,     0,  -8 + 93,     50,     12,    0x0000},    
+    {OBJ_2_1L,   0xFFFF,     0,  -65 + 93,    50,     12,    0x0000},    
+    {OBJ_2_1R,   0xFFFF,     0,  49 + 93,     50,     12,    0x0000},    
     {XXX,        0xFFFF,     0,  -65,    50,     12,    0x0000},    
     {XXX,        0xFFFF,     0,  -81,    50,     12,    0x0000},    
     {XXX,        0xFFFF,     0,  49,     50,     12,    0x0000},    

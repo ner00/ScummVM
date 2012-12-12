@@ -275,7 +275,18 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
     indoorDrawIndex[OBJ_HERE]->sprite = getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
     indoorDrawIndex[OBJ_1_1L]->sprite = getObjectAt(translatePoint(position, -1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
     indoorDrawIndex[OBJ_1_CEN]->sprite = getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_1_1R]->sprite = getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);        
+    indoorDrawIndex[OBJ_1_1R]->sprite = getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+
+    indoorDrawIndex[OBJ_2_1L]->sprite = getObjectAt(translatePoint(position, -1, 2, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_2_CEN]->sprite = getObjectAt(translatePoint(position, 0, 2, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_2_1R]->sprite = getObjectAt(translatePoint(position, 1, 2, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+
+    indoorDrawIndex[OBJ_3_2L]->sprite = getObjectAt(translatePoint(position, -2, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_3_1L]->sprite = getObjectAt(translatePoint(position, -1, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_3_CEN]->sprite = getObjectAt(translatePoint(position, 0, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_3_1R]->sprite = getObjectAt(translatePoint(position, 1, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    indoorDrawIndex[OBJ_3_2R]->sprite = getObjectAt(translatePoint(position, 2, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+
 }
 
 void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)

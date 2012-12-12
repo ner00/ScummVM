@@ -102,16 +102,17 @@ void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 f
         }
         else
         {
-            uint32 yAccum = 0;
+            float fscale = ((float)(16 - scale)) / 16.0f;
+            float yAccum = 0;
             uint32 online = 0;
 
             for(int i = 0; i != cell.height; i ++)
-            {
-                yAccum += 4;
+            { 
+                yAccum += fscale;
 
-                while(yAccum > scale)
+                while(yAccum >= 1.0f)
                 {
-                    yAccum -= scale;
+                    yAccum -= 1.0f;
                     const byte* line = &cell.pixels[i * cell.width];
         
                     if(flip)
@@ -125,14 +126,14 @@ void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 f
                         out.setPenOffset(Common::Point(1, 0));
                     }
 
-                    uint32 accum = 0;
+                    float accum = 0;
                     for(int j = 0; j != cell.width; j ++, line ++)
                     {
-                        accum += 4;
+                        accum += fscale;
     
-                        while(accum > scale)
+                        while(accum >= 1.0f)
                         {
-                            accum -= scale;
+                            accum -= 1.0f;
                             if(*line)
                             {
                                 out.putPixel(*line);
