@@ -33,6 +33,7 @@ namespace XEEN
     {
         class Map;
         class Segment;
+        class ObjectData;
 
         class Manager : public Validateable
         {
@@ -45,10 +46,14 @@ namespace XEEN
             public:
                 Map* getMap(uint16 id);
                 Segment* getSegment(uint16 id);
+
+                const ObjectData* getObjectData() const { return _objectData; }
                 
             private:
                 Map* _maps[256]; // TODO: <Use a hash table!
                 Segment* _segments[256];
+
+                ObjectData* _objectData;
         };
     }
 }

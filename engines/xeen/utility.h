@@ -97,6 +97,12 @@ namespace XEEN
     {
         return a && a->isValid();
     }
+
+    template <typename T>
+    inline bool valid(const Common::SharedPtr<T>& a)
+    {
+        return a && a->isValid();
+    }
     
     #define XEEN_VALID() if(!enforce(isValid())) return;
     #define XEEN_VALID_RET(X) if(!enforce(isValid())) return X;
@@ -123,7 +129,7 @@ namespace XEEN
     {
         public:
             NonNull(T* _value) : value(check(_value)) { }
-            operator T() { return check(value); }
+            operator T*() { return check(value); }
             T* operator->() { return check(value); }
 
             T* check(T* _value) const { assert(_value); return _value; }

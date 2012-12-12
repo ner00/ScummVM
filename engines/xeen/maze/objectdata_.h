@@ -19,51 +19,41 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#define XEEN_MAZE_SOURCE
+
+#ifndef XEEN_MAZE_OBJECTDATA_H
+#define XEEN_MAZE_OBJECTSDATA_H
+
+#ifndef XEEN_MAZE_SOURCE
+# error "Private header included"
+#endif
 
 #include "xeen/utility.h"
 
-#include "xeen/maze/map.h"
-#include "xeen/maze/manager.h"
-#include "xeen/maze/segment_.h"
-#include "xeen/maze/objectdata_.h"
-
-XEEN::Maze::Manager::Manager()
+namespace XEEN
 {
-    memset(_maps, 0, sizeof(_maps));
-    memset(_segments, 0, sizeof(_segments));
-
-    _objectData = new ObjectData();
-}
-
-XEEN::Maze::Manager::~Manager()
-{
-    for(int i = 0; i != 256; i ++)
+    namespace Maze
     {
-        delete _maps[i];
-        delete _segments[i];
-    }
+        class Manager;
+        class Map;
 
-    delete _objectData;
+        // Only accessible by Map and Manager
+        class ObjectData : public Validateable
+        {
+            friend class Manager;
+            friend class Map;
+
+            static const uint32 MAX_OBJECTS = 121;
+        
+            private:
+                ObjectData();
+                
+                const uint8* getDataForObject(uint32 id) const;
+
+            private:
+                FilePtr _cloudsDAT;
+                FilePtr _darkDAT;
+        };
+    }
 }
 
-XEEN::Maze::Map* XEEN::Maze::Manager::getMap(uint16 id)
-{
-    if(!_maps[id])
-    {
-        _maps[id] = new Map(id);
-    }
-    
-    return _maps[id];
-}
-
-XEEN::Maze::Segment* XEEN::Maze::Manager::getSegment(uint16 id)
-{
-    if(!_segments[id])
-    {
-        _segments[id] = new Segment(id);
-        _segments[id]->loadSurrounding(); //< Can't be done is Segment's constructor
-    }
-    
-    return _segments[id];
-}
+#endif // XEEN_MAZE_OBJECTDATA_H

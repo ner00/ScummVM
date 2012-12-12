@@ -272,22 +272,27 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
 
 
     // OBJECTS
-    ObjectEntry t;
-    indoorDrawIndex[OBJ_HERE]->sprite = getObjectAt(position, t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_1_1L]->sprite = getObjectAt(translatePoint(position, -1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_1_CEN]->sprite = getObjectAt(translatePoint(position, 0, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_1_1R]->sprite = getObjectAt(translatePoint(position, 1, 1, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    const ObjectData* const od = XEENgame.getMapManager()->getObjectData();
 
-    indoorDrawIndex[OBJ_2_1L]->sprite = getObjectAt(translatePoint(position, -1, 2, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_2_CEN]->sprite = getObjectAt(translatePoint(position, 0, 2, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_2_1R]->sprite = getObjectAt(translatePoint(position, 1, 2, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
+    static const struct {uint32 id; int32 xOff; int32 yOff; } objOffsets[12] =
+    {
+        {OBJ_HERE, 0, 0}, {OBJ_1_1L, -1, 1}, {OBJ_1_CEN, 0, 1}, {OBJ_1_1R, 1, 1},
+        {OBJ_2_1L, -1, 2}, {OBJ_2_CEN, 0, 2}, {OBJ_2_1R, 1, 2}, {OBJ_3_2L, -2, 3},
+        {OBJ_3_1L, -1, 3}, {OBJ_3_CEN, 0, 3}, {OBJ_3_1R, 1, 3}, {OBJ_3_2R, 2, 3}
+    };
 
-    indoorDrawIndex[OBJ_3_2L]->sprite = getObjectAt(translatePoint(position, -2, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_3_1L]->sprite = getObjectAt(translatePoint(position, -1, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_3_CEN]->sprite = getObjectAt(translatePoint(position, 0, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_3_1R]->sprite = getObjectAt(translatePoint(position, 1, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-    indoorDrawIndex[OBJ_3_2R]->sprite = getObjectAt(translatePoint(position, 2, 3, direction), t) ? CCFileId("%03d.OBJ", t.id) : CCFileId(0xFFFF);
-
+    for(int i = 0; i != 12; i ++)
+    {
+        ObjectEntry t;
+        if(getObjectAt(translatePoint(position, objOffsets[i].xOff, objOffsets[i].yOff, direction), t))
+        {
+            indoorDrawIndex[objOffsets[i].id]->sprite = CCFileId("%03d.OBJ", t.id);
+        }
+        else
+        {
+            indoorDrawIndex[objOffsets[i].id]->sprite = CCFileId(0xFFFF);
+        }
+    }
 }
 
 void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)

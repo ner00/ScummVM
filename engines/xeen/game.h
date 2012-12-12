@@ -56,6 +56,7 @@ namespace XEEN
     {
         public:
             enum WindowID { NONE, STATUS, QUICKREF, CASTSPELL, SELECTSPELL, GAMEINFO, CHARACTION, MAX_WINDOW_ID };
+            enum Type { CLOUDS, DARKSIDE, WORLD };
     
         public:
             Game();
@@ -66,6 +67,7 @@ namespace XEEN
             
         public:
             void load();
+            Type getGameType() const { return CLOUDS; }
         
             void showWindow(WindowID id);
         
