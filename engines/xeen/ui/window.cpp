@@ -95,7 +95,6 @@ void XEEN::Window::heartbeat()
 
 bool XEEN::Window::click(const Common::Point& point)
 {
-
     XEEN_VALID_RET(false);
 
     Common::Point target = point - Common::Point(_area.left, _area.top);
@@ -109,6 +108,29 @@ bool XEEN::Window::click(const Common::Point& point)
         {
             _pressedButton = button;
             _pressedTime = g_system->getMillis() + BUTTON_DELAY;
+            return true;
+        }
+    }
+    
+    if(_clickToClose && valid(XEENgame))
+    {
+        XEENgame.showWindow(Game::NONE);
+        return true;
+    }
+    
+    return false;
+}
+
+bool XEEN::Window::key(Common::KeyCode key)
+{
+    XEEN_VALID_RET(false);
+
+    // Check buttons
+    for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)
+    {
+        if(key == button->key)
+        {
+            handleAction(button->actionID);
             return true;
         }
     }

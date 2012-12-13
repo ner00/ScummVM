@@ -150,6 +150,17 @@ void XEEN::Game::click(const Common::Point& location)
 void XEEN::Game::key(Common::KeyCode keycode)
 {
     XEEN_VALID();
+
+    if(_currentWindow)
+    {
+        _currentWindow->key(keycode);
+        // TODO: Portraits if needed!
+    }
+    else
+    {
+        _portraitWnd.key(keycode);
+        _mainWnd.key(keycode);
+    }
 }
 
 void XEEN::Game::draw(ImageBuffer& out)
