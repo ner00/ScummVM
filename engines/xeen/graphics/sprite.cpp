@@ -19,11 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+#define XEEN_GRAPHICS_SOURCE
 
 #include "xeen/game.h"
 
 #include "xeen/graphics/imagebuffer.h"
-#include "xeen/graphics/sprite.h"
+#include "xeen/graphics/sprite_.h"
 
 XEEN::Sprite::Sprite(FilePtr file) : _file(file), _cellCount(0), _cells(0)
 {

@@ -19,11 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+#define XEEN_GRAPHICS_SOURCE
 
 #include "xeen/game.h"
 
 #include "xeen/graphics/imagebuffer.h"
-#include "xeen/graphics/sprite.h"
+#include "xeen/graphics/sprite_.h"
 #include "xeen/graphics/spritemanager.h"
 
 XEEN::SpriteManager::SpriteManager()
@@ -39,12 +40,17 @@ XEEN::SpriteManager::~SpriteManager()
     }
 }
 
-XEEN::Sprite* XEEN::SpriteManager::getSprite(CCFileId id)
+void XEEN::SpriteManager::draw(const CCFileId& id, ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
 {
+    XEEN_VALID();
+
     if(!_sprites[id])
     {
         _sprites[id] = new Sprite(XEENgame.getFile(id));
     }
-    
-    return _sprites[id];
+
+    if(valid(_sprites[id]))
+    {
+        _sprites[id]->drawCell(out, pen, frame, flip, scale);
+    }
 }

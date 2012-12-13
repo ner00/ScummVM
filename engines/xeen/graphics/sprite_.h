@@ -23,6 +23,10 @@
 #ifndef XEEN_GRAPHICS_SPRITE_H
 #define XEEN_GRAPHICS_SPRITE_H
 
+#ifndef XEEN_GRAPHICS_SOURCE
+# error "Private header included"
+#endif
+
 #include "xeen/utility.h"
 
 namespace XEEN
@@ -38,14 +42,12 @@ namespace XEEN
         private:
             Sprite(FilePtr file);
             ~Sprite();
-            
-        public:
-            void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
 
         protected:
             void cleanse();
             
         private:
+            void drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
             void drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip, uint32 scale);
             uint32 drawLine(ImageBuffer& out);
             

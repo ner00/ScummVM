@@ -31,7 +31,6 @@
 
 #include "xeen/graphics/font.h"
 #include "xeen/graphics/imagebuffer.h"
-#include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
 
 #include "xeen/maze/map.h"
@@ -99,8 +98,7 @@ void XEEN::Game::load()
         ImageBuffer mouseBuffer;
         byte mouseImage[16*16];
 
-        Sprite* cursor = _spriteManager->getSprite("MOUSE.ICN");        
-        cursor->drawCell(mouseBuffer.clear(0), Common::Point(0, 0), 0);
+        _spriteManager->draw("MOUSE.ICN", mouseBuffer.clear(0), Common::Point(0, 0), 0);
         
         for(int i = 0; i != 16; i ++)
         {

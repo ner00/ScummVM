@@ -27,7 +27,6 @@
 
 #include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/spritemanager.h"
-#include "xeen/graphics/sprite.h"
 
 #include "xeen/maze/map.h"
 #include "xeen/maze/drawlist_.h"
@@ -301,8 +300,7 @@ void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)
     {
         if(indoorDrawList[i].sprite != 0xFFFF)
         {
-            Sprite* const sprite = sprites.getSprite(indoorDrawList[i].sprite);
-            sprite->drawCell(out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000, indoorDrawList[i].scale);
+            sprites.draw(indoorDrawList[i].sprite, out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000, indoorDrawList[i].scale);
         }
     }
 }

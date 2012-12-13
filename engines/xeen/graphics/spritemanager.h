@@ -41,7 +41,7 @@ namespace XEEN
             ~SpriteManager();
             
         public:
-            Sprite* getSprite(CCFileId id);
+            void draw(const CCFileId& id, ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
             
         private:
             Sprite* _sprites[MAX_SPRITES]; // TODO: <Use a hash table!

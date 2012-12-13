@@ -27,7 +27,6 @@
 #include "xeen/characters.h"
 
 #include "xeen/graphics/imagebuffer.h"
-#include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
 
 #include "xeen/ui/window.h"
@@ -62,13 +61,8 @@ void XEEN::Window::draw(ImageBuffer& out)
     {
         if(button->sprite)
         {
-            Sprite* const icon = sprites->getSprite(button->sprite);
-        
-            if(valid(icon))
-            {
-                const uint32 frame = (button == _pressedButton) ? button->pressedFrame : button->normalFrame;
-                icon->drawCell(out, location + button->area, frame);
-            }
+            const uint32 frame = (button == _pressedButton) ? button->pressedFrame : button->normalFrame;
+            sprites->draw(button->sprite, out, location + button->area, frame);
         }
     }
     

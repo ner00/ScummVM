@@ -29,7 +29,6 @@
 namespace XEEN
 {
     class Game;
-    class Sprite;
     class Party;
 
     enum Sex {MALE, FEMALE};
@@ -102,7 +101,7 @@ namespace XEEN
         
     
         private:
-            Character(FilePtr data, uint8 index, Sprite* faceSprite);
+            Character(FilePtr data, uint8 index, CCFileId faceSprite);
         
         public:
             uint32 getValue(Value val) const;
@@ -121,7 +120,7 @@ namespace XEEN
             FilePtr _data;
             uint8 _index;
         
-            Sprite* face;
+            CCFileId face;
     };
 }
 

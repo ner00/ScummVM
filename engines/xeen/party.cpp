@@ -26,7 +26,6 @@
 #include "xeen/utility.h"
 
 #include "xeen/archive/file.h"
-#include "xeen/graphics/sprite.h"
 #include "xeen/graphics/spritemanager.h"
 
 #include "xeen/maze/map.h"
@@ -90,9 +89,8 @@ XEEN::Party::Party()
         // Read each character
         for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
         {
-            // Only accept a character that has a matching face image
-            Sprite* faceSprite = XEENgame.getSpriteManager()->getSprite(CCFileId("CHAR%02d.FAC", i + 1));
-            _characters[i] = valid(faceSprite) ? new Character(_mazeCHR, i, faceSprite) : 0;
+            // TODO: Only accept a character that has a matching face image
+            _characters[i] = new Character(_mazeCHR, i, CCFileId("CHAR%02d.FAC", i + 1));
         }
     }
     else

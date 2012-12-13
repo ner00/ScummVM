@@ -25,9 +25,6 @@
 #include "xeen/party.h"
 #include "xeen/utility.h"
 
-#include "xeen/graphics/spritemanager.h"
-#include "xeen/graphics/sprite.h"
-
 static const int OFF_SEX        = 0x010;
 static const int OFF_RACE       = 0x011;
 static const int OFF_CLASS      = 0x012;
@@ -55,7 +52,7 @@ static const int divineSpells[MAX_SPELLS] = {0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 
 ///
 /// Character
 ///
-XEEN::Character::Character(FilePtr data, uint8 index, Sprite* faceSprite) : _data(data), _index(index), face(0)
+XEEN::Character::Character(FilePtr data, uint8 index, CCFileId faceSprite) : _data(data), _index(index), face(faceSprite)
 {
     if(enforce(index < Party::MAX_CHARACTERS))
     {
