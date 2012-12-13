@@ -38,6 +38,7 @@ namespace XEEN
             ImageBuffer& setPen(const Common::Point& pen)
             {
                 _pen = pen;
+                _xaccum = 0;
                 return *this;
             }
             
@@ -45,6 +46,7 @@ namespace XEEN
             {
                 _pen.x = _pen.x + (_penOffset.x * pen.x);
                 _pen.y = _pen.y + (_penOffset.y * pen.y);
+                _xaccum = 0;
                 return *this;
             }
             
@@ -69,6 +71,12 @@ namespace XEEN
             ImageBuffer& resetClipArea()
             {
                 _clip = Common::Rect(0, 0, 320, 200);
+                return *this;
+            }
+
+            ImageBuffer& setScale(uint32 scale)
+            {
+                _scale = 16 - scale;
                 return *this;
             }
 
@@ -121,7 +129,16 @@ namespace XEEN
                     buffer[_pen.y * 320 + _pen.x] = color;
                 }
                 
-                _pen += _penOffset;
+                advancePen(1);
+            }
+
+            void advancePen(uint32 amount)
+            {
+                _xaccum += _scale * amount;
+                for(; _xaccum >= 16; _xaccum -= 16)
+                {
+                    _pen += _penOffset;
+                }
             }
             
         public:    
@@ -132,6 +149,9 @@ namespace XEEN
             Common::Point _penOffset;
             
             Common::Rect _clip;
+
+            uint32 _scale;
+            uint32 _xaccum;
     };
 }
 

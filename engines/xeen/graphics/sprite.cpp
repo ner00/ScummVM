@@ -39,10 +39,8 @@ XEEN::Sprite::Sprite(FilePtr file) : _file(file), _cellCount(0), _cells(0)
             {  
                 for(unsigned i = 0; i != _cellCount; i ++)
                 {
-                    _file->seek(2 + i * 4);
-                    uint16 off1 = _file->readUint16LE();
-                    uint16 off2 = _file->readUint16LE();
-                    cacheCell(_cells[i], off1, off2);
+                    _cells[i].offset[0] = _file->readUint16LE();
+                    _cells[i].offset[1] = _file->readUint16LE();
                 }
                 
                 return;
@@ -66,142 +64,67 @@ void XEEN::Sprite::cleanse()
 
 void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
 {
+    XEEN_VALID();
+
     if(enforce(frame < _cellCount))
     {
-        Cell& cell = _cells[frame];
+        const Cell& cell = _cells[frame];
 
-        if(scale == 0)
+        for(int i = 0; i != 2; i ++)
         {
-            for(int i = 0; i != cell.height; i ++)
+            if(cell.offset[i])
             {
-                const byte* line = &cell.pixels[i * cell.width];
-    
-                if(flip)
-                {
-                    out.setPen(pen + Common::Point(cell.width, i));
-                    out.setPenOffset(Common::Point(-1, 0));
-                }
-                else
-                {
-                    out.setPen(pen + Common::Point(0, i));
-                    out.setPenOffset(Common::Point(1, 0));
-                }
-    
-                for(int j = 0; j != cell.width; j ++, line ++)
-                {
-                    if(*line)
-                    {
-                        out.putPixel(*line);
-                    }
-                    else
-                    {
-                        out.movePen(Common::Point(1, 0));
-                    }
-                }
-            }
-        }
-        else
-        {
-            float fscale = ((float)(16 - scale)) / 16.0f;
-            float yAccum = 0;
-            uint32 online = 0;
-
-            for(int i = 0; i != cell.height; i ++)
-            { 
-                yAccum += fscale;
-
-                while(yAccum >= 1.0f)
-                {
-                    yAccum -= 1.0f;
-                    const byte* line = &cell.pixels[i * cell.width];
-        
-                    if(flip)
-                    {
-                        out.setPen(pen + Common::Point(cell.width, online++));
-                        out.setPenOffset(Common::Point(-1, 0));
-                    }
-                    else
-                    {
-                        out.setPen(pen + Common::Point(0, online++));
-                        out.setPenOffset(Common::Point(1, 0));
-                    }
-
-                    float accum = 0;
-                    for(int j = 0; j != cell.width; j ++, line ++)
-                    {
-                        accum += fscale;
-    
-                        while(accum >= 1.0f)
-                        {
-                            accum -= 1.0f;
-                            if(*line)
-                            {
-                                out.putPixel(*line);
-                            }
-                            else
-                            {
-                                out.movePen(Common::Point(1, 0));
-                            }                        
-                        }
-                    }
-                }
+                _file->seek(cell.offset[i]);
+                drawFrame(out, pen, flip, scale);
             }
         }
     }
-
-    out.setPenOffset(Common::Point(1, 0));
 }
 
-
-void XEEN::Sprite::cacheCell(Cell& cell, uint16 offset1, uint16 offset2)
+void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip, uint32 scale)
 {
     XEEN_VALID();
-
-    if(offset1)
-    {
-        cacheFrame(cell, offset1);
-    }
-
-    if(offset2)
-    {
-        cacheFrame(cell, offset2);
-    }
-}
-
-void XEEN::Sprite::cacheFrame(Cell& out, uint16 offset)
-{
-    XEEN_VALID();
-
-    _file->seek(offset);
 
     // Read the frame header
-    const int16 offX = _file->readSint16LE();
-    const uint16 width = _file->readUint16LE();
-    const int16 offY = _file->readSint16LE();
-    const uint16 height = _file->readUint16LE();
+    const int16 penX = _file->readSint16LE();
+    const uint16 frameWidth = _file->readUint16LE();
+    const int16 penY = _file->readSint16LE();
+    const uint16 frameHeight = _file->readUint16LE();
 
-    if(out.pixels == 0)
-    {
-        out.width = offX + width;
-        out.height = offY + height;
-        out.pixels = new byte[out.width * out.height];
-        memset(out.pixels, 0, out.width * out.height);
-    }
+    uint16 yscale = 16 - scale;
+    uint32 yaccum = yscale * penY;
+    uint32 yoff = 0;
+
+    Common::Point origin = pen + Common::Point((flip ? penX + frameWidth - 1 : 0), 0);
+    out.setPenOffset(Common::Point(flip ? -1 : 1, 0));
 
     // Draw the lines
-    for(uint32 onLine = 0; onLine < height; )
+    for(uint32 onLine = 0; onLine != frameHeight; )
     {
-        const uint32 linesDrawn = cacheLine(out, offY + onLine, offX);
+        for(; yaccum >= 16; yaccum -= 16)
+        {
+            yoff ++;
+        }
+
+        out.setPen(origin + Common::Point(0, yoff));
+        out.advancePen(penX);
+        out.setScale(scale);
+
+        const uint32 linesDrawn = drawLine(out);
         onLine += linesDrawn;
+
+        yaccum += yscale * linesDrawn;
 
         // Check sanity: At least one line must have been drawn, and No more than 
         // frameHeight lines may have been drawn.
-        assert((linesDrawn > 0) && (onLine <= height));
+        assert((linesDrawn > 0) && (onLine <= frameHeight));
     }
 }
 
-uint32 XEEN::Sprite::cacheLine(Cell& out, uint16 line, uint16 offX)
+uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
 {
+    XEEN_VALID_RET(1);
+
     uint8 bytes = _file->readByte();
     int16 x = _file->readByte();
     
@@ -212,15 +135,11 @@ uint32 XEEN::Sprite::cacheLine(Cell& out, uint16 line, uint16 offX)
     }
     
     // Draw
-    byte* const pixels = &out.pixels[line * out.width];
-    offX += x;
+    out.advancePen(x);
     int32 end = (_file->pos() - 1) + bytes;
     
     while(_file->pos() != end)
     {
-        // Sanity: Exactly the specified number of bytes must be used.
-        assert(_file->pos() <= end);
-
         // Decode operation
         const uint8 controlByte = _file->readByte();
         const uint8 opcode = controlByte >> 5;
@@ -230,14 +149,7 @@ uint32 XEEN::Sprite::cacheLine(Cell& out, uint16 line, uint16 offX)
         {
             case 0: case 1:
             {
-                for(int i = 0; i != (controlByte & 0x3F) + 1; i ++)
-                {
-                    if((offX < out.width))
-                    {
-                        pixels[offX ++] = _file->readByte();
-                    }
-                    else _file->readByte();
-                }
+                out.readPixels(*_file, (controlByte & 0x3F) + 1);
                 break;
             }
             
@@ -247,10 +159,7 @@ uint32 XEEN::Sprite::cacheLine(Cell& out, uint16 line, uint16 offX)
                 
                 for(int i = 0; i != length + 3; i ++)
                 {
-                    if((offX < out.width))
-                    {
-                        pixels[offX ++] = color;
-                    }
+                    out.putPixel(color);
                 }
                 
                 break;
@@ -262,16 +171,7 @@ uint32 XEEN::Sprite::cacheLine(Cell& out, uint16 line, uint16 offX)
                 const int32 streamPos = _file->pos();
                 
                 _file->seek(_file->pos() - backTrack);
-
-                for(int i = 0; i != length + 4; i ++)
-                {
-                    if((offX < out.width))
-                    {
-                        pixels[offX ++] = _file->readByte();
-                    }
-                    else _file->readByte();
-                }
-
+                out.readPixels(*_file, length + 4);
                 _file->seek(streamPos);
                 break;
             }
@@ -283,15 +183,8 @@ uint32 XEEN::Sprite::cacheLine(Cell& out, uint16 line, uint16 offX)
                 
                 for(int i = 0; i != length + 2; i ++)
                 {
-                    if((offX < out.width))
-                    {
-                        pixels[offX ++] = color1;
-                    }
-
-                    if((offX < out.width))
-                    {
-                        pixels[offX ++] = color2;
-                    }
+                    out.putPixel(color1);
+                    out.putPixel(color2);
                 }
                 
                 break;
@@ -299,7 +192,7 @@ uint32 XEEN::Sprite::cacheLine(Cell& out, uint16 line, uint16 offX)
             
             case 5:
             {
-                offX += length + 1;
+                out.advancePen(length + 1);
                 break;
             }
             
@@ -309,15 +202,15 @@ uint32 XEEN::Sprite::cacheLine(Cell& out, uint16 line, uint16 offX)
                 const uint8 color = _file->readByte();
                 for(int i = 0; i != (controlByte & 0x7) + 3; i ++)
                 {
-                    if((offX < out.width))
-                    {
-                        pixels[offX ++] = color;
-                    }
+                    out.putPixel(color);
                 }
                 
                 break;
             }
         }
+        
+        // Sanity: Exactly the specified number of bytes must be used.
+        assert(_file->pos() <= end);
     }
     
     return 1;
