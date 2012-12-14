@@ -64,7 +64,14 @@ Common::Error XEEN::XeenEngine::run()
             switch(event.type)
             {
                 case Common::EVENT_LBUTTONDOWN: XEENgame.click(event.mouse); break;
-                case Common::EVENT_KEYDOWN: XEENgame.key(event.kbd.keycode); break;
+                case Common::EVENT_KEYDOWN:
+                {
+                    if(event.kbd.keycode != Common::KEYCODE_INVALID)
+                    {
+                        XEENgame.key(event.kbd.keycode);
+                    }
+                    break;
+                }
                 default: break;
             }
         }

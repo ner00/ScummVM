@@ -39,16 +39,16 @@ const XEEN::Button* XEEN::GameWindow::getButtons() const
 
     static const Button buttons[] = 
     {
-        {"MAIN.ICN",  0,  1, {235,  75, 24, 20}, 0}, {"MAIN.ICN", 16, 17, {286, 117, 24, 20}, 8}, 
-        {"MAIN.ICN",  2,  3, {260,  75, 24, 20}, 1}, {"MAIN.ICN", 18, 19, {109, 137, 24, 20}, 9}, //TODO: SIZE?
-        {"MAIN.ICN",  4,  5, {286,  75, 24, 20}, 2}, {"MAIN.ICN", 20, 21, {235, 148, 24, 20}, 10, Common::KEYCODE_LEFT}, 
-        {"MAIN.ICN",  6,  7, {235,  96, 24, 20}, 3}, {"MAIN.ICN", 22, 23, {260, 148, 24, 20}, 11, Common::KEYCODE_UP}, 
-        {"MAIN.ICN",  8,  9, {260,  96, 24, 20}, 4}, {"MAIN.ICN", 24, 25, {286, 148, 24, 20}, 12, Common::KEYCODE_RIGHT}, 
-        {"MAIN.ICN", 10, 11, {286,  96, 24, 20}, 5}, {"MAIN.ICN", 26, 27, {235, 169, 24, 20}, 13}, 
-        {"MAIN.ICN", 12, 13, {235, 117, 24, 20}, 6}, {"MAIN.ICN", 28, 29, {260, 169, 24, 20}, 14, Common::KEYCODE_DOWN}, 
-        {"MAIN.ICN", 14, 15, {260, 117, 24, 20}, 7}, {"MAIN.ICN", 30, 31, {286, 169, 24, 20}, 15}, 
+        {"MAIN.ICN",  0,  1, {235,  75, 24, 20}, 0, Common::KEYCODE_s}, {"MAIN.ICN", 16, 17, {286, 117, 24, 20}, 8, Common::KEYCODE_q}, 
+        {"MAIN.ICN",  2,  3, {260,  75, 24, 20}, 1, Common::KEYCODE_c}, {"MAIN.ICN", 18, 19, {109, 137, 24, 20}, 9, Common::KEYCODE_TAB}, //TODO: SIZE?
+        {"MAIN.ICN",  4,  5, {286,  75, 24, 20}, 2, Common::KEYCODE_r}, {"MAIN.ICN", 20, 21, {235, 148, 24, 20}, 10, Common::KEYCODE_LEFT}, 
+        {"MAIN.ICN",  6,  7, {235,  96, 24, 20}, 3, Common::KEYCODE_b}, {"MAIN.ICN", 22, 23, {260, 148, 24, 20}, 11, Common::KEYCODE_UP}, 
+        {"MAIN.ICN",  8,  9, {260,  96, 24, 20}, 4, Common::KEYCODE_d}, {"MAIN.ICN", 24, 25, {286, 148, 24, 20}, 12, Common::KEYCODE_RIGHT}, 
+        {"MAIN.ICN", 10, 11, {286,  96, 24, 20}, 5, Common::KEYCODE_v}, {"MAIN.ICN", 26, 27, {235, 169, 24, 20}, 13, Common::KEYCODE_INVALID}, //TODO: Direct left 
+        {"MAIN.ICN", 12, 13, {235, 117, 24, 20}, 6, Common::KEYCODE_m}, {"MAIN.ICN", 28, 29, {260, 169, 24, 20}, 14, Common::KEYCODE_DOWN}, 
+        {"MAIN.ICN", 14, 15, {260, 117, 24, 20}, 7, Common::KEYCODE_i}, {"MAIN.ICN", 30, 31, {286, 169, 24, 20}, 15, Common::KEYCODE_INVALID}, //TODO: Direct right
 
-        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
+        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
     
     return buttons;

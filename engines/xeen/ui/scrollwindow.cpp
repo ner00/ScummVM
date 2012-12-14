@@ -38,12 +38,13 @@ const XEEN::Button* XEEN::ScrollWindow::getButtons() const
 
     static Button buttons[] = 
     {
-        {"SCROLL.ICN", 0, 1, {160,  20,  11,  10}, 0},
-        {"SCROLL.ICN", 2, 3, {160, 105,  11,  10}, 4},
-        {"SCROLL.ICN", 4, 4, { 12,  20, 100, 100}, 3},
-        {"SCROLL.ICN", 5, 5, {105, 117,  36,  10}, 1},
-        {(uint16)0,    0, 0, {147, 117,  24,  10}, 2},
-        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
+        // TODO: Add keycodes
+        {"SCROLL.ICN", 0, 1, {160,  20,  11,  10}, 0, Common::KEYCODE_INVALID},
+        {"SCROLL.ICN", 2, 3, {160, 105,  11,  10}, 4, Common::KEYCODE_INVALID},
+        {"SCROLL.ICN", 4, 4, { 12,  20, 100, 100}, 3, Common::KEYCODE_INVALID},
+        {"SCROLL.ICN", 5, 5, {105, 117,  36,  10}, 1, Common::KEYCODE_INVALID},
+        {(uint16)0,    0, 0, {147, 117,  24,  10}, 2, Common::KEYCODE_INVALID},
+        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
     
     return buttons;

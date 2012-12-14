@@ -46,7 +46,6 @@ namespace XEEN
         uint32 actionID;
         Common::KeyCode key;
     };
-    #define END_BUTTONS {(uint16)0xFFFF, 0, 0, {0, 0, 0, 0}, 0};
     
     struct String
     {
@@ -81,7 +80,7 @@ namespace XEEN
             void heartbeat();
             void draw(ImageBuffer& out);
             bool click(const Common::Point& point);
-            bool key(Common::KeyCode key);
+            bool key(Common::KeyCode code);
 
         private:
             char _stringBuffer[128];

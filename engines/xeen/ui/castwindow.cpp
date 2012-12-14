@@ -38,11 +38,11 @@ const XEEN::Button* XEEN::CastWindow::getButtons() const
 
     static const Button buttons[] = 
     {
-        {"CAST.ICN",  0,  1, { 8, 108, 24, 20}, 0},
-        {"CAST.ICN",  2,  3, {35, 108, 24, 20}, 1},
-        {"CAST.ICN",  4,  5, {62, 108, 24, 20}, 2},
+        {"CAST.ICN",  0,  1, { 8, 108, 24, 20}, 0, Common::KEYCODE_c},
+        {"CAST.ICN",  2,  3, {35, 108, 24, 20}, 1, Common::KEYCODE_n},
+        {"CAST.ICN",  4,  5, {62, 108, 24, 20}, 2, Common::KEYCODE_ESCAPE},
 
-        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
+        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
     
     return buttons;

@@ -32,14 +32,14 @@ XEEN::CharacterWindow::CharacterWindow() : Window(Common::Rect(0, 0, 0, 0))
     static const Button buttons[] = 
     {
         // TODO: Fill proper values; check HP bar size
-        {"CHAR01.FAC",  0,  0, { 10, 150, 32, 32},  0}, {"HPBARS.ICN", 0, 0, { 14, 182, 23, 8}, X},
-        {"CHAR02.FAC",  0,  0, { 45, 150, 32, 32},  1}, {"HPBARS.ICN", 0, 0, { 50, 182, 23, 8}, X},
-        {"CHAR03.FAC",  0,  0, { 81, 150, 32, 32},  2}, {"HPBARS.ICN", 0, 0, { 87, 182, 23, 8}, X},
-        {"CHAR04.FAC",  0,  0, {117, 150, 32, 32},  3}, {"HPBARS.ICN", 0, 0, {122, 182, 23, 8}, X},
-        {"CHAR05.FAC",  0,  0, {153, 150, 32, 32},  4}, {"HPBARS.ICN", 0, 0, {159, 182, 23, 8}, X},
-        {"CHAR06.FAC",  0,  0, {189, 150, 32, 32},  5}, {"HPBARS.ICN", 0, 0, {195, 182, 23, 8}, X},
+        {"CHAR01.FAC",  0,  0, { 10, 150, 32, 32},  0, Common::KEYCODE_F1}, {"HPBARS.ICN", 0, 0, { 14, 182, 23, 8}, X, Common::KEYCODE_INVALID},
+        {"CHAR02.FAC",  0,  0, { 45, 150, 32, 32},  1, Common::KEYCODE_F2}, {"HPBARS.ICN", 0, 0, { 50, 182, 23, 8}, X, Common::KEYCODE_INVALID},
+        {"CHAR03.FAC",  0,  0, { 81, 150, 32, 32},  2, Common::KEYCODE_F3}, {"HPBARS.ICN", 0, 0, { 87, 182, 23, 8}, X, Common::KEYCODE_INVALID},
+        {"CHAR04.FAC",  0,  0, {117, 150, 32, 32},  3, Common::KEYCODE_F4}, {"HPBARS.ICN", 0, 0, {122, 182, 23, 8}, X, Common::KEYCODE_INVALID},
+        {"CHAR05.FAC",  0,  0, {153, 150, 32, 32},  4, Common::KEYCODE_F5}, {"HPBARS.ICN", 0, 0, {159, 182, 23, 8}, X, Common::KEYCODE_INVALID},
+        {"CHAR06.FAC",  0,  0, {189, 150, 32, 32},  5, Common::KEYCODE_F6}, {"HPBARS.ICN", 0, 0, {195, 182, 23, 8}, X, Common::KEYCODE_INVALID},
 
-        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0}
+        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
 
     memcpy(_buttons, buttons, sizeof(_buttons));
