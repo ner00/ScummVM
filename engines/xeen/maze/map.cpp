@@ -35,6 +35,38 @@
 #include "xeen/maze/segment_.h"
 #include "xeen/maze/objectdata_.h"
 
+namespace XEEN
+{
+    namespace Maze
+    {
+        static void processSideWallList(Valid<Map> map, const Common::Point& position, uint32 facing, uint32 distance, uint32 count, NonNull<const int32> ids)
+        {
+            uint32 midcount = count / 2;
+    
+            for(uint32 i = 0; i != count; i ++)
+            {
+                const int32 offset = (i < midcount) ? (0 - midcount) + i + 1 : i - midcount; // For count = 8: -3, -2, -1, 0, 0, 1, 2, 3
+
+                const Common::Point cell = Map::translatePoint(position, offset, distance, facing);
+                const uint16 wallData = (map->getTile(cell, facing) >> ((i >= midcount) ? 8 : 0)) & 0xF;
+    
+                indoorDrawIndex[ids[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
+                
+                // TODO: Frame should alternate between odd-even tiles
+                if(wallData == 2 && indoorDrawIndex[ids[i]]->frame < 24)
+                {
+                    indoorDrawIndex[ids[i]]->frame += 24;
+                }
+                else if(wallData != 2 && indoorDrawIndex[ids[i]]->frame >= 24)
+                {
+                    indoorDrawIndex[ids[i]]->frame -= 24;
+                }
+            }
+        }
+    }
+}
+
+
 XEEN::Maze::Map::Map(uint16 mapNumber) : _base(0), _text(0), _events(0), _objects(0)
 {
     _base = XEENgame.getMapManager()->getSegment(mapNumber);
@@ -214,68 +246,20 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
         }
     }
     
-    // SIDE WALLS: 0 Steps forward
-    static const int swl0_xoffset[2] = {0, 0};
-    static const int swl0_shift[2] = {0, 8};
+    // SIDE WALLS
     static const int swl0_id[2] = {SWALL_0_1L, SWALL_0_1R};
-    
-    for(int i = 0; i != 2; i ++)
-    {
-        Common::Point cell = translatePoint(position, swl0_xoffset[i], 0, direction);
-        uint16 wallData = (getTile(cell, direction) >> swl0_shift[i]) & 0xF;
-        indoorDrawIndex[swl0_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
-    }
-
-
-    // SIDE WALLS: 1 Steps forward
-    static const int swl1_xoffset[2] = {0, 0};
-    static const int swl1_shift[2] = {0, 8};
     static const int swl1_id[2] = {SWALL_1_1L, SWALL_1_1R};
-    
-    for(int i = 0; i != 2; i ++)
-    {
-        Common::Point cell = translatePoint(position, swl1_xoffset[i], 1, direction);
-        uint16 wallData = (getTile(cell, direction) >> swl1_shift[i]) & 0xF;
-        indoorDrawIndex[swl1_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
-    }
-
-
-    // SIDE WALLS: 2 Steps forward
-    static const int swl2_xoffset[4] = {-1, 0, 0, 1};
-    static const int swl2_shift[4] = {0, 0, 8, 8};
     static const int swl2_id[4] = {SWALL_2_2L, SWALL_2_1L, SWALL_2_1R, SWALL_2_2R};
-    
-    for(int i = 0; i != 4; i ++)
-    {
-        Common::Point cell = translatePoint(position, swl2_xoffset[i], 2, direction);
-        uint16 wallData = (getTile(cell, direction) >> swl2_shift[i]) & 0xF;
-        indoorDrawIndex[swl2_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
-    }
-
-    // SIDE WALLS: 3 Steps forward
-    static const int swl3_xoffset[8] = {-3, -2, -1, 0, 0, 1, 2, 3};
-    static const int swl3_shift[8] = {0, 0, 0, 0, 8, 8, 8, 8};
     static const int swl3_id[8] = {SWALL_3_4L, SWALL_3_3L, SWALL_3_2L, SWALL_3_1L, 
                                    SWALL_3_1R, SWALL_3_2R, SWALL_3_3R, SWALL_3_4R};
-    for(int i = 0; i != 8; i ++)
-    {
-        Common::Point cell = translatePoint(position, swl3_xoffset[i], 3, direction);
-        uint16 wallData = (getTile(cell, direction) >> swl3_shift[i]) & 0xF;
-        indoorDrawIndex[swl3_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);    
-    }
-    
-    // SIDE WALLS: 4 Steps forward
-    static const int swl4_xoffset[8] = {-3, -2, -1, 0, 0, 1, 2, 3};
-    static const int swl4_shift[8] = {0, 0, 0, 0, 8, 8, 8, 8};
     static const int swl4_id[8] = {SWALL_4_4L, SWALL_4_3L, SWALL_4_2L, SWALL_4_1L, 
                                    SWALL_4_1R, SWALL_4_2R, SWALL_4_3R, SWALL_4_4R};
-    for(int i = 0; i != 8; i ++)
-    {
-        Common::Point cell = translatePoint(position, swl4_xoffset[i], 4, direction);
-        uint16 wallData = (getTile(cell, direction) >> swl4_shift[i]) & 0xF;
-        indoorDrawIndex[swl4_id[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);    
-    }
 
+    processSideWallList(this, position, direction, 0, 2, swl0_id);
+    processSideWallList(this, position, direction, 1, 2, swl1_id);
+    processSideWallList(this, position, direction, 2, 4, swl2_id);
+    processSideWallList(this, position, direction, 3, 8, swl3_id);
+    processSideWallList(this, position, direction, 4, 8, swl4_id);
 
     // OBJECTS
     const ObjectData* const od = XEENgame.getMapManager()->getObjectData();
