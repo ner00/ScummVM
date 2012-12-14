@@ -96,9 +96,6 @@ void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool fl
     uint32 yaccum = yscale * penY;
     uint32 yoff = 0;
 
-    Common::Point origin = pen + Common::Point((flip ? penX + frameWidth - 1 : 0), 0);
-    out.setPenOffset(Common::Point(flip ? -1 : 1, 0));
-
     // Draw the lines
     for(uint32 onLine = 0; onLine != frameHeight; )
     {
@@ -107,9 +104,17 @@ void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool fl
             yoff ++;
         }
 
-        out.setPen(origin + Common::Point(0, yoff));
-        out.advancePen(penX);
+        out.setPen(pen + Common::Point(0, yoff));
+        out.setPenOffset(Common::Point(1, 0));
         out.setScale(scale);
+
+        if(flip)
+        {
+            out.advancePen(penX + frameWidth);
+            out.setPenOffset(Common::Point(-1, 0));
+        }
+
+        out.advancePen(penX);
 
         const uint32 linesDrawn = drawLine(out);
         onLine += linesDrawn;

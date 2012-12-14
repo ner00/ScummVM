@@ -39,25 +39,10 @@ struct DrawListItem
     DRAWID id;
     uint16 sprite;      //< The CCFileId of the sprite to draw
     uint8 frame;        //< Sprite cell index to draw
-    const int16 x;      //< X position to draw at
-    const int16 y;      //< Y position to draw at
+    int16 x;            //< X position to draw at
+    int16 y;            //< Y position to draw at
     uint8 scale;        //< ?
-    const uint16 flags; //< ?
-    
-    // TODO: Check Assumption
-    // It seems this flag is used by the engine to minimize overdraw.
-    // If an object will always be obscured if a second one is drawn, the front object
-    // is drawn first then the back object. If the front object has a sprite attached
-    // the second object is never drawn.
-    //
-    // For example the two objects:
-    // {SWALL_0_1R, 0xFFFF,     0,  200,    12,     0,     0x8000}, //Side wall for tile directly 1 step right    
-    // {FWALL_1_1R, 0xFFFF,     0,  200,    24,     0,     0x2000}, //Facing wall for tile 1 step forward, 1 step right    
-    // While SWALL_0_1R is always drawn on top of FWALL_1_1R, they are reversed and the
-    // flag is set so that time won't be spent drawing FWALL_1_1R if SWALL_0_1R is present.
-    // If this flag isn't respected FWALL_1_1R would end up displaying over SWALL_0_1R even
-    // though it shouldn't.
-    bool obscureable() const { return flags & 0x2000; }
+    uint16 flags;       //< ?
     
     // The purpose of this flag is unknown. It only seems to be set along with obscureable.
     bool unknown_flag() const {return flags & 0x4000; }
@@ -205,10 +190,7 @@ DrawListItem indoorDrawList[] =
     {XXX,        0xFFFF,     0,  -72,    40,     6,     0x2000},    
     {XXX,        0xFFFF,     0,  32,     40,     6,     0x0000},    
     {XXX,        0xFFFF,     0,  137,    40,     6,     0x2000},    
-//  {OBJ_1_CEN,  0xFFFF,     0,  -7,     25,     7,     0x0000}, // X is actually 47 if not flipped 31 if!
-//  {OBJ_1_1L,   0xFFFF,     0,  -112,   25,     7,     0x2000},    
-//  {OBJ_1_1R,   0xFFFF,     0,  98,     25,     7,     0x2000},    
-    {OBJ_1_CEN,  0xFFFF,     0,  47,     25,     7,     0x0000}, // X is actually 47 if not flipped 31 if!
+    {OBJ_1_CEN,  0xFFFF,     0,  -7 + 50,     25,     7,     0x0000},
     {OBJ_1_1L,   0xFFFF,     0,  -112 + 50,   25,     7,     0x2000},    
     {OBJ_1_1R,   0xFFFF,     0,  98 + 50,     25,     7,     0x2000},    
     {XXX,        0xFFFF,     0,  -112,   29,     8,     0x2000},    

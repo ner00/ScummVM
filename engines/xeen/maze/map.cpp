@@ -33,6 +33,7 @@
 #include "xeen/maze/eventlist_.h"
 #include "xeen/maze/text_.h"
 #include "xeen/maze/segment_.h"
+#include "xeen/maze/objectdata_.h"
 
 XEEN::Maze::Map::Map(uint16 mapNumber) : _base(0), _text(0), _events(0), _objects(0)
 {
@@ -286,6 +287,20 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
         if(getObjectAt(translatePoint(position, objOffsets[i].xOff, objOffsets[i].yOff, direction), t))
         {
             indoorDrawIndex[objOffsets[i].id]->sprite = CCFileId("%03d.OBJ", t.id);
+            const uint8* const data = od->getDataForObject(t.id);
+
+            uint32 dir = (t.facing - direction) & 3;
+            if(dir & 1)
+            {
+                dir ^= 2;
+            }
+
+            if(enforce(data))
+            {
+                indoorDrawIndex[objOffsets[i].id]->frame = data[dir];
+                indoorDrawIndex[objOffsets[i].id]->flags &= ~0x8000;
+                indoorDrawIndex[objOffsets[i].id]->flags |= data[4 + dir] ? 0x8000 : 0;
+            }
         }
         else
         {
