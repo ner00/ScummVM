@@ -59,7 +59,7 @@ XEEN::Sprite::~Sprite()
 
 void XEEN::Sprite::cleanse()
 {
-    DELETE_ARRAY(_cells);
+    XEEN_DELETE_ARRAY(_cells);
     _cellCount = 0;
 }
 
@@ -129,7 +129,7 @@ void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool fl
 
 uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
 {
-    XEEN_VALID_RET(1);
+    XEEN_VALID();
 
     uint8 bytes = _file->readByte();
     int16 x = _file->readByte();

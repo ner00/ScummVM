@@ -71,7 +71,7 @@ XEEN::Archive::~Archive()
 
 XEEN::FilePtr XEEN::Archive::getFile(CCFileId id, bool inSave)
 {
-    XEEN_VALID_RET(FilePtr((File*)0));
+    XEEN_VALID();
 
     Toc& usedToc = (inSave) ? _saveToc : _mainToc;
     Common::SeekableReadStream& usedStream = (inSave) ? (Common::SeekableReadStream&)(*_save) : (Common::SeekableReadStream&)_file;

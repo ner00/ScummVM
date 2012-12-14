@@ -81,7 +81,7 @@ void XEEN::Maze::Objects::cleanse()
 
 bool XEEN::Maze::Objects::getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const
 {
-    XEEN_VALID_RET(false);
+    XEEN_VALID();
 
     for(unsigned i = 0; i != _counts[0]; i ++)
     {

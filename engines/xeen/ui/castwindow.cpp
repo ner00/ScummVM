@@ -34,7 +34,7 @@ XEEN::CastWindow::CastWindow() : Window(Common::Rect(226, 0, 226 + 94, 146), fal
 
 const XEEN::Button* XEEN::CastWindow::getButtons() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static const Button buttons[] = 
     {
@@ -61,7 +61,7 @@ void XEEN::CastWindow::handleAction(unsigned id)
 
 const XEEN::String* XEEN::CastWindow::getStrings() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static const String strings[] = 
     {

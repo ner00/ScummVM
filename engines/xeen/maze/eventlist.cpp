@@ -82,7 +82,7 @@ void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, uint32 facing)
 
 uint8 XEEN::Maze::EventList::runEventLine(int32 off)
 {
-    XEEN_VALID_RET(255);
+    XEEN_VALID();
 
     if(valid(_parent))
     {
@@ -99,4 +99,6 @@ uint8 XEEN::Maze::EventList::runEventLine(int32 off)
             case 0x02: debug("%s", _parent->getString(_data->readByte())); return 0;
         }
     }
+
+    return 0;
 }

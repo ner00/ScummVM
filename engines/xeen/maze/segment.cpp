@@ -59,7 +59,7 @@ void XEEN::Maze::Segment::loadSurrounding()
 
 uint16 XEEN::Maze::Segment::getWall(uint8 x, uint8 y) const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     if(enforce(x < 16 && y < 16))
     {
@@ -71,7 +71,7 @@ uint16 XEEN::Maze::Segment::getWall(uint8 x, uint8 y) const
 
 uint8 XEEN::Maze::Segment::getCellFlags(uint8 x, uint8 y) const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     if(enforce(x < 16 && y < 16))
     {
@@ -83,7 +83,7 @@ uint8 XEEN::Maze::Segment::getCellFlags(uint8 x, uint8 y) const
 
 uint8 XEEN::Maze::Segment::lookupSurface(uint8 id) const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     if(enforce(id < 16))
     {
@@ -95,7 +95,7 @@ uint8 XEEN::Maze::Segment::lookupSurface(uint8 id) const
 
 XEEN::Maze::Segment* XEEN::Maze::Segment::resolveSegment(Common::Point& position)
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     Segment* activeSegment = this;
 

@@ -35,7 +35,7 @@ XEEN::GameWindow::GameWindow() : Window(Common::Rect(0, 0, 0, 0))
 
 const XEEN::Button* XEEN::GameWindow::getButtons() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static const Button buttons[] = 
     {

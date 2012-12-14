@@ -90,7 +90,7 @@ void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* tex
 
 unsigned XEEN::Font::measureString(const char* text, uint32 flags) const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     const byte* btext = (const byte*)text;
     uint32 result = 0;

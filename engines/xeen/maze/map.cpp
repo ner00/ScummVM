@@ -69,7 +69,7 @@ XEEN::Maze::Map::~Map()
 
 const char* XEEN::Maze::Map::getString(uint32 id) const
 {
-    XEEN_VALID_RET("");
+    XEEN_VALID();
     return valid(_text) ? _text->getString(id) : "";
 }
 
@@ -85,6 +85,8 @@ void XEEN::Maze::Map::runEventAt(uint8 x, uint8 y, uint32 facing)
 
 uint16 XEEN::Maze::Map::getTile(Common::Point position, uint32 direction)
 {
+    XEEN_VALID();
+
     Segment* seg = _base->resolveSegment(position);
     
     if(position.x < 0 || position.y < 0 || !seg)
@@ -109,6 +111,8 @@ uint16 XEEN::Maze::Map::getTile(Common::Point position, uint32 direction)
 
 uint16 XEEN::Maze::Map::getSurface(Common::Point position)
 {
+    XEEN_VALID();
+
     Segment* seg = _base->resolveSegment(position);
 
     if(position.x < 0 || position.y < 0 || !seg)
@@ -123,7 +127,7 @@ uint16 XEEN::Maze::Map::getSurface(Common::Point position)
 
 bool XEEN::Maze::Map::getObjectAt(const Common::Point& position, ObjectEntry& data) const
 {
-    XEEN_VALID_RET(false);
+    XEEN_VALID();
 
     if(valid(_objects))
     {
@@ -136,6 +140,8 @@ bool XEEN::Maze::Map::getObjectAt(const Common::Point& position, ObjectEntry& da
 
 void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
 {
+    XEEN_VALID();
+
     buildDrawIndex();
 
     // ENVIRONMENT
@@ -311,6 +317,8 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
 
 void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)
 {
+    XEEN_VALID();
+
     for(int i = 0; i != sizeof(indoorDrawList) / sizeof(indoorDrawList[0]); i ++)
     {
         if(indoorDrawList[i].sprite != 0xFFFF)

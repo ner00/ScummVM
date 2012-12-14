@@ -49,7 +49,7 @@ XEEN::Maze::Text::Text(uint32 mapNumber) : _data(XEENgame.getFile(CCFileId("AAZE
 
 const char* XEEN::Maze::Text::getString(uint32 id) const
 {
-    XEEN_VALID_RET("");
+    XEEN_VALID();
 
     if(enforce(id < MAX_STRINGS))
     {

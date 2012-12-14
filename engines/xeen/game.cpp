@@ -213,7 +213,7 @@ void XEEN::Game::drawString(ImageBuffer& out, Common::Point pen, const char* tex
 
 XEEN::Character* XEEN::Game::getActiveCharacter()
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
     
     return valid(_party) ? _party->getMemberInSlot(_activeCharacterSlot) : 0;
 }

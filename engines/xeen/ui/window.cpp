@@ -95,7 +95,7 @@ void XEEN::Window::heartbeat()
 
 bool XEEN::Window::click(const Common::Point& point)
 {
-    XEEN_VALID_RET(false);
+    XEEN_VALID();
 
     Common::Point target = point - Common::Point(_area.left, _area.top);
 
@@ -123,7 +123,7 @@ bool XEEN::Window::click(const Common::Point& point)
 
 bool XEEN::Window::key(Common::KeyCode code)
 {
-    XEEN_VALID_RET(false);
+    XEEN_VALID();
 
     // Check buttons
     for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)

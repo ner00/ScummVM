@@ -66,7 +66,7 @@ XEEN::Character::Character(FilePtr data, uint8 index, CCFileId faceSprite) : _da
 
 uint32 XEEN::Character::getValue(Value val) const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static const struct
     {
@@ -101,17 +101,14 @@ uint32 XEEN::Character::getValue(Value val) const
 
 const char* XEEN::Character::getName() const
 {
-    XEEN_VALID_RET("");
+    XEEN_VALID();
     
     return (const char*)_data->getBytePtrAt((_index * 354));
 }
 
 XEEN::Statistic XEEN::Character::getStat(Stat stat) const
 {
-    static int8 errorStatP;
-    static const Statistic errorStat(&errorStatP, &errorStatP);
-
-    XEEN_VALID_RET(errorStat);
+    XEEN_VALID();
 
     if(enforce(stat < STAT_COUNT))
     {
@@ -127,36 +124,34 @@ XEEN::Statistic XEEN::Character::getStat(Stat stat) const
             int8* temp = (int8*)_data->getBytePtrAt((_index * 354) + OFF_LEVEL + 1);
             return Statistic(real, temp);            
         }
-        
-        return errorStat;
+
+        enforce(false);
     }
-    else
-    {
-        return errorStat;
-    }
+
+    return Statistic(0, 0);
 }
 
 XEEN::Sex XEEN::Character::getSex() const
 {
-    XEEN_VALID_RET(MALE);    
+    XEEN_VALID();    
     return (Sex)_data->getByteAt((_index * 354) + OFF_SEX);
 }
 
 XEEN::Class XEEN::Character::getClass() const
 {
-    XEEN_VALID_RET(KNIGHT);    
+    XEEN_VALID();    
     return (Class)_data->getByteAt((_index * 354) + OFF_CLASS);
 }
 
 XEEN::Race XEEN::Character::getRace() const
 {
-    XEEN_VALID_RET(HUMAN);
+    XEEN_VALID();
     return (Race)_data->getByteAt((_index * 354) + OFF_RACE);
 }
 
 bool XEEN::Character::hasSpell(uint32 id) const
 {
-    XEEN_VALID_RET(false);
+    XEEN_VALID();
 
     return (id < MAX_SPELLS) ? _data->getByteAt(OFF_SPELLS + id) : false;
 }

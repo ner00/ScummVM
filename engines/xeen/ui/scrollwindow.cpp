@@ -34,7 +34,7 @@ XEEN::ScrollWindow::ScrollWindow() : Window(Common::Rect(27, 6, 27 + 180, 6 + 13
 
 const XEEN::Button* XEEN::ScrollWindow::getButtons() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static Button buttons[] = 
     {
@@ -63,7 +63,7 @@ void XEEN::ScrollWindow::handleAction(unsigned id)
 
 const XEEN::String* XEEN::ScrollWindow::getStrings() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static const String strings[] = 
     {
@@ -113,7 +113,7 @@ XEEN::SpellSelectWindow::SpellSelectWindow()
 
 unsigned XEEN::SpellSelectWindow::itemCount() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
     return 3;
 }
 

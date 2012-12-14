@@ -168,8 +168,7 @@ XEEN::Maze::ObjectData::ObjectData() : _cloudsDAT(XEENgame.getFile("CLOUDS.DAT")
 
 const uint8* XEEN::Maze::ObjectData::getDataForObject(uint32 id) const
 {
-    static const uint8 fakeData[12] = {0};
-    XEEN_VALID_RET(fakeData);
+    XEEN_VALID();
 
     const Game::Type gt = XEENgame.getGameType();
 

@@ -34,6 +34,8 @@ XEEN::CharacterActionWindow::CharacterActionWindow() : Window(Common::Rect(50, 1
             
 const XEEN::Button* XEEN::CharacterActionWindow::getButtons() const
 {
+    XEEN_VALID();
+
     static const Button buttons[] = 
     {
         {"ESC.ICN",  0,  1, {175, 8, 24, 20}, 0, Common::KEYCODE_ESCAPE},
@@ -58,6 +60,8 @@ void XEEN::CharacterActionWindow::handleAction(unsigned id)
 
 const XEEN::String* XEEN::CharacterActionWindow::getStrings() const
 {
+    XEEN_VALID();
+
     static const String strings[] = 
     {
         {"Dismiss Whom?", 0, 18, 13, 0}, // TODO: Allow customization

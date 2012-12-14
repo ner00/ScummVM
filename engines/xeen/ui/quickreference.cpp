@@ -32,7 +32,7 @@ XEEN::QuickReferenceWindow::QuickReferenceWindow() : Window(Common::Rect(0, 0, 3
 
 const XEEN::String* XEEN::QuickReferenceWindow::getStrings() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static const String strings[] = 
     {

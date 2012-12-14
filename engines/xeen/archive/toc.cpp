@@ -87,7 +87,7 @@ void XEEN::Toc::read(Common::SeekableReadStream& data)
     }
     else
     {
-        DELETE_ARRAY(_entries);
+        XEEN_DELETE_ARRAY(_entries);
         markInvalid();
     }   
 }

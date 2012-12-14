@@ -47,6 +47,8 @@ XEEN::CharacterWindow::CharacterWindow() : Window(Common::Rect(0, 0, 0, 0))
 
 void XEEN::CharacterWindow::show()
 {
+    XEEN_VALID();
+
     // TODO: Update when needed
     if(valid(XEENgame))
     {
@@ -64,7 +66,7 @@ void XEEN::CharacterWindow::show()
 
 const XEEN::Button* XEEN::CharacterWindow::getButtons() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     return _buttons;
 }

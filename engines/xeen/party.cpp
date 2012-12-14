@@ -109,7 +109,7 @@ XEEN::Party::~Party()
 
 uint32 XEEN::Party::getValue(PartyValue val) const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static const struct
     {
@@ -153,14 +153,14 @@ uint32 XEEN::Party::getValue(PartyValue val) const
 
 Common::Point XEEN::Party::getPosition() const
 {
-    XEEN_VALID_RET(Common::Point(0, 0));
+    XEEN_VALID();
 
     return Common::Point(GET8(OFF_MAZE_X), GET8(OFF_MAZE_Y));
 }
 
 uint8 XEEN::Party::getMemberIdFromSlot(unsigned slot) const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
     return (enforce(slot < MAX_SLOTS)) ? GET8(OFF_MEMBERS + slot) : 0;
 }
 
@@ -169,13 +169,13 @@ uint8 XEEN::Party::getMemberIdFromSlot(unsigned slot) const
 
 XEEN::Character* XEEN::Party::getMember(uint16 id)
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
     return (enforce(id < MAX_CHARACTERS)) ? _characters[id] : 0;
 }
 
 XEEN::Character* XEEN::Party::getMemberInSlot(unsigned slot)
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
     return getMember(getMemberIdFromSlot(slot));
 }
 
@@ -229,7 +229,7 @@ void XEEN::Party::exchangeMember(unsigned slot1, unsigned slot2)
 
 XEEN::Maze::Map* XEEN::Party::getMap() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
     
     if(valid(XEENgame))
     {

@@ -34,20 +34,25 @@
 
 namespace XEEN
 {
+    // Inline error checking
+    inline void die()
+    {
+        assert(false);
+    }
+
+    // Like assert but returns true (and safe for side effects)
     inline bool enforce(bool cond)
     {
-        assert(cond);
-        return cond;
+        if(!cond)
+        {
+            die();
+        }
+
+        return true;
     }
-    
-    // notNull: Abort if argument is null, return argument.
-    template <typename T>
-    inline T notNull(T t)
-    {
-        assert(t);
-        return t;
-    }
-    
+
+    // Base classes for object validation. It is illegal to call any method on an invalid
+    // object.
     class Validateable
     {
         public:
@@ -87,7 +92,8 @@ namespace XEEN
         protected:
             virtual void cleanse() = 0;
     };
-        
+
+    // Return true is specified object is non-null and isValid returns true.
     inline bool valid(const Validateable& a)
     {
         return a.isValid();
@@ -103,27 +109,15 @@ namespace XEEN
     {
         return a && a->isValid();
     }
+
+    // Aborts is the current object is not valid
+    #define XEEN_VALID() enforce(valid(this))
     
-    #define XEEN_VALID() if(!enforce(isValid())) return;
-    #define XEEN_VALID_RET(X) if(!enforce(isValid())) return X;
-    
-    template <typename T>
-    void DELETE(T*& v)
-    {
-        delete v;
-        v = 0;
-    }
-    
-    template <typename T>
-    void DELETE_ARRAY(T*& v)
-    {
-        delete[] v;
-        v = 0;
-    }
-    
-    #define XEEN_DELETE(T) delete T; T = 0;
+    #define XEEN_DELETE(T) delete T; T = 0
+    #define XEEN_DELETE_ARRAY(T) delete[] T; T = 0
     
     // Type attributes
+    // Contract indicating a pointer that may not be null.
     template <typename T>
     class NonNull
     {
@@ -132,12 +126,13 @@ namespace XEEN
             operator T*() { return check(value); }
             T* operator->() { return check(value); }
 
-            T* check(T* _value) const { assert(_value); return _value; }
+            T* check(T* _value) const { enforce(_value); return _value; }
 
         private:
             T* value;
     };
 
+    // Contract indicating a pointer that must be valid.
     template <typename T>
     class Valid
     {
@@ -146,7 +141,7 @@ namespace XEEN
             operator T*() { return check(value); }
             T* operator->() { return check(value); }
 
-            T* check(T* _value) const { assert(valid(_value)); return _value; }
+            T* check(T* _value) const { enforce(valid(_value)); return _value; }
 
         private:
             T* value;

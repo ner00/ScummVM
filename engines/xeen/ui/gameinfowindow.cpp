@@ -33,7 +33,7 @@ XEEN::GameInfoWindow::GameInfoWindow() : Window(Common::Rect(88, 20, 88 + 160, 2
 
 const XEEN::String* XEEN::GameInfoWindow::getStrings() const
 {
-    XEEN_VALID_RET(0);
+    XEEN_VALID();
 
     static const String strings[] = 
     {
