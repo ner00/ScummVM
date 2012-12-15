@@ -117,35 +117,44 @@ namespace XEEN
     #define XEEN_DELETE_ARRAY(T) delete[] T; T = 0
     
     // Type attributes
+    template <typename T, class C>
+    class Contract
+    {
+        public:
+            Contract(T* _value) : value(contract(_value)) { }
+            operator T*() { return contract(value); }
+            T* operator->() { return contract(value); }
+
+            operator const T*() const { return contract(value); }
+            const T* operator->() const { return contract(value); }
+
+        private:
+            C contract;
+            T* value;
+    };
+
+    template<typename T>
+    class NonNull_Contract
+    {
+        public:
+            T* operator()(T* v) { enforce(v); return v; }
+            const T* operator()(T* v) const { enforce(v); return v; }
+    };
+
+    template<typename T>
+    class Valid_Contract
+    {
+        public:
+            T* operator()(T* v) { enforce(valid(v)); return v; }
+            const T* operator()(T* v) const { enforce(valid(v)); return v; }
+    };
+
     // Contract indicating a pointer that may not be null.
     template <typename T>
-    class NonNull
-    {
-        public:
-            NonNull(T* _value) : value(check(_value)) { }
-            operator T*() { return check(value); }
-            T* operator->() { return check(value); }
+    class NonNull : public Contract<T, NonNull_Contract<T> > { public: NonNull(T* v) : Contract<T, NonNull_Contract<T> >(v) { } };
 
-            T* check(T* _value) const { enforce(_value); return _value; }
-
-        private:
-            T* value;
-    };
-
-    // Contract indicating a pointer that must be valid.
     template <typename T>
-    class Valid
-    {
-        public:
-            Valid(T* _value) : value(check(_value)) { }
-            operator T*() { return check(value); }
-            T* operator->() { return check(value); }
-
-            T* check(T* _value) const { enforce(valid(_value)); return _value; }
-
-        private:
-            T* value;
-    };
+    class Valid : public Contract<T, Valid_Contract<T> > { public: Valid(T* v) : Contract<T, Valid_Contract<T> >(v) { }};
 
     // POD rect wrapper
     struct XRect

@@ -51,7 +51,7 @@ namespace XEEN
                 MAZE_X, MAZE_Y, MAZE_FACING, DAY, YEAR, MINUTES, PARTY_VALUE_MAX };
 
         private:
-            Party();
+            Party(Valid<Game> parent);
             ~Party();
 
         public:
@@ -70,13 +70,15 @@ namespace XEEN
             
             // Manager Maze
             Maze::Map* getMap() const;
+
+            void changeMap(uint8 id);
             
-            void moveTo(uint8 maze, const Common::Point& position, uint8 facing);
-            void moveTo(const Common::Point& position, uint8 facing = 255);
+            void moveTo(const Common::Point& position, uint8 facing);
             void moveRelative(const Common::Point& delta);
             void turn(bool left);
                 
         private:
+            Valid<Game> _parent;
             Character* _characters[MAX_CHARACTERS];
             
             FilePtr _mazePTY;

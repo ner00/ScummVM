@@ -74,9 +74,9 @@ namespace XEEN
         
             FilePtr getFile(CCFileId id, bool fromSave = false);
 
-            Valid<Graphics::Manager> getGraphicsManager() { return _graphicsManager; }
-            Valid<Maze::Manager> getMapManager() { return _mapManager; }
-            Valid<Party> getParty() { return _party; }
+            Valid<Graphics::Manager> getGraphicsManager() const { return _graphicsManager; }
+            Valid<Maze::Manager> getMapManager() const { return _mapManager; }
+            Valid<Party> getParty() const { return _party; }
 
             Character* getActiveCharacter();
             unsigned getActiveCharacterSlot() const { return _activeCharacterSlot; }

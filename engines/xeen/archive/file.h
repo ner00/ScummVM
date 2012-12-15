@@ -33,15 +33,18 @@ namespace XEEN
             File(CCFileId id, byte* data, uint32 datasize) : Common::MemoryReadStream(data, datasize), _id(id), _size(datasize), _data(data) { }
             ~File() { delete[] _data; }
             
-            uint32 getSize()               { return _size; }
-            byte* getData()                { return _data; }
+            uint32 getSize()                        { return _size; }
+            byte* getData()                         { return _data; }
     
-            const CCFileId& getID( )       { return _id; }
+            const CCFileId& getID( )                { return _id; }
         
-            byte getByteAt(uint16 loc)     { return (enforce(loc < _size)) ? _data[loc] : 0; }
-            byte* getBytePtrAt(uint16 loc) { return (enforce(loc < _size)) ? &_data[loc] : 0; }
-            uint16 getU16At(uint16 loc)    { return getByteAt(loc) | (getByteAt(loc + 1) << 8); }
-            uint32 getU32At(uint16 loc)    { return getByteAt(loc) | (getByteAt(loc + 1) << 8) | (getByteAt(loc + 2) << 16) | (getByteAt(loc + 3) << 24); }
+            byte getByteAt(uint16 loc)              { return (enforce(loc < _size)) ? _data[loc] : 0; }
+            void setByteAt(uint16 loc, byte val)    { if(enforce(loc < _size)) _data[loc] = val; }
+            byte* getBytePtrAt(uint16 loc)          { return (enforce(loc < _size)) ? &_data[loc] : 0; }
+            uint16 getU16At(uint16 loc)             { return getByteAt(loc) | (getByteAt(loc + 1) << 8); }
+            void setU16At(uint16 loc, uint16 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); }
+            uint32 getU32At(uint16 loc)             { return getByteAt(loc) | (getByteAt(loc + 1) << 8) | (getByteAt(loc + 2) << 16) | (getByteAt(loc + 3) << 24); }
+            void setU32At(uint16 loc, uint32 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); setByteAt(loc + 2, (val >> 16) & 0xFF); setByteAt(loc + 3, (val >> 24) & 0xFF); }
     
         private:
             CCFileId _id;

@@ -26,7 +26,6 @@
 #include "xeen/utility.h"
 
 #include "xeen/archive/file.h"
-#include "xeen/graphics/spritemanager.h"
 
 #include "xeen/maze/map.h"
 
@@ -46,41 +45,18 @@ static const int OFF_GEMS               = 0x282;
 static const int OFF_GOLD_BANK          = 0x286;
 static const int OFF_GEMS_BANK          = 0x28A;
 
-static inline byte getByteAt(XEEN::FilePtr file, uint32 pos)
+#define GET8(T)    _mazePTY->getByteAt(T)
+#define SET8(T, V) _mazePTY->setByteAt(T, V)
+
+#define GET16(T)   _mazePTY->getU16At(T)
+#define GET32(T)   _mazePTY->getU32At(T)
+
+
+
+XEEN::Party::Party(Valid<Game> parent) : _parent(parent)
 {
-    file->seek(pos);
-    return file->readByte();
-}
-
-static inline void setByteAt(XEEN::FilePtr file, uint32 pos, uint8 val)
-{
-    file->getData()[pos] = val;
-}
-
-static inline uint16 getWordAt(XEEN::FilePtr file, uint32 pos)
-{
-    file->seek(pos);
-    return file->readUint16LE();
-}
-
-static inline uint32 getDwordAt(XEEN::FilePtr file, uint32 pos)
-{
-    file->seek(pos);
-    return file->readUint32LE();
-}
-
-#define GET8(T)    getByteAt(_mazePTY, T)
-#define SET8(T, V) setByteAt(_mazePTY, T, V)
-
-#define GET16(T)   getWordAt(_mazePTY, T)
-#define GET32(T)   getDwordAt(_mazePTY, T)
-
-
-
-XEEN::Party::Party()
-{
-    _mazePTY = XEENgame.getFile("MAZE.PTY", true);
-    _mazeCHR = XEENgame.getFile("MAZE.CHR", true);
+    _mazePTY = _parent->getFile("MAZE.PTY", true);
+    _mazeCHR = _parent->getFile("MAZE.CHR", true);
 
     memset(_characters, 0, sizeof(_characters));
     
@@ -231,21 +207,14 @@ XEEN::Maze::Map* XEEN::Party::getMap() const
 {
     XEEN_VALID();
     
-    if(valid(XEENgame))
-    {
-        return XEENgame.getMapManager()->getMap(getValue(MAZE_ID));
-    }
-    
-    return 0;
+    return _parent->getMapManager()->getMap(getValue(MAZE_ID));
 }
 
-
-void XEEN::Party::moveTo(uint8 maze, const Common::Point& position, uint8 facing)
+void XEEN::Party::changeMap(uint8 id)
 {
     XEEN_VALID();
 
-    SET8(OFF_MAZE_ID, maze);
-    moveTo(position, facing);
+    SET8(OFF_MAZE_ID, id);
 }
 
 void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
@@ -254,7 +223,7 @@ void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
     
     SET8(OFF_MAZE_X, position.x);
     SET8(OFF_MAZE_Y, position.y);
-    SET8(OFF_MAZE_FACING, facing < 3 ? facing : GET8(OFF_MAZE_FACING));
+    SET8(OFF_MAZE_FACING, (facing <= 3) ? facing : GET8(OFF_MAZE_FACING));
 
     Maze::Map* const map = getMap();
     if(valid(map))
@@ -267,12 +236,12 @@ void XEEN::Party::moveRelative(const Common::Point& delta)
 {
     XEEN_VALID();
 
-    moveTo(Maze::Map::translatePoint(getPosition(), delta.x, delta.y, getValue(MAZE_FACING)));
+    const uint8 facing = getValue(MAZE_FACING);
+    moveTo(Maze::Map::translatePoint(getPosition(), delta.x, delta.y, facing), facing);
 }
 
 void XEEN::Party::turn(bool left)
 {
     XEEN_VALID();
-
-    SET8(OFF_MAZE_FACING, (getValue(MAZE_FACING) + (left ? -1 : 1)) & 3);
+    moveTo(getPosition(), (GET8(OFF_MAZE_FACING) + (left ? -1 : 1)) & 3);
 }

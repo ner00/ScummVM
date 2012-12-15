@@ -55,10 +55,12 @@ void XEEN::Game::cleanse()
 
 void XEEN::Game::load()
 {
+    markValid();
+
     _assets = new Archive("XEEN.CC");
     _graphicsManager = new Graphics::Manager();
     _mapManager = new Maze::Manager();
-    _party = new Party();
+    _party = new Party(this);
     
     _windowID = NONE;
     _currentWindow = 0;
@@ -68,8 +70,6 @@ void XEEN::Game::load()
         markInvalidAndClean();
         return;
     }
-    
-    markValid();
 
     //
     _mainWnd.show();
