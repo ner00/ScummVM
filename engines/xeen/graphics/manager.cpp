@@ -28,7 +28,7 @@
 #include "xeen/graphics/font_.h"
 #include "xeen/graphics/manager.h"
 
-XEEN::Graphics::Manager::Manager() : _screen(new ImageBuffer()), _font(new Font())
+XEEN::Graphics::Manager::Manager(Valid<Game> parent) : _parent(parent), _screen(new ImageBuffer()), _font(new Font(parent->getFile("FNT")))
 {
     memset(_sprites, 0, sizeof(_sprites));
 }
@@ -70,7 +70,7 @@ void XEEN::Graphics::Manager::draw(const CCFileId& id, const Common::Point& pen,
 
     if(!_sprites[id])
     {
-        _sprites[id] = new Sprite(XEENgame.getFile(id));
+        _sprites[id] = new Sprite(_parent->getFile(id));
     }
 
     if(valid(_sprites[id]))

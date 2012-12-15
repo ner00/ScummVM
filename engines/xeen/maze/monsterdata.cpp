@@ -25,12 +25,12 @@
 #include "xeen/archive/file.h"
 #include "xeen/maze/monsterdata_.h"
 
-XEEN::Maze::MonsterData::MonsterData()
+XEEN::Maze::MonsterData::MonsterData(Valid<Manager> parent) : _parent(parent)
 {
     memset(_xeenMON, 0, sizeof(_xeenMON));
     memset(_darkMON, 0, sizeof(_darkMON));
 
-    const Game::Type gt = XEENgame.getGameType();
+    const Game::Type gt = _parent->getGame()->getGameType();
 
     if(gt == Game::CLOUDS)
     {
@@ -55,7 +55,7 @@ XEEN::NonNull<const char> XEEN::Maze::MonsterData::getName(uint32 id) const
 {
     XEEN_VALID();
 
-    const Game::Type gt = XEENgame.getGameType();
+    const Game::Type gt = _parent->getGame()->getGameType();
 
     if(enforce(id < MAX_MONSTERS) && gt == Game::CLOUDS)
     {

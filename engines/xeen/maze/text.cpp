@@ -24,7 +24,7 @@
 #include "xeen/game.h"
 #include "xeen/maze/text_.h"
 
-XEEN::Maze::Text::Text(uint32 mapNumber) : _data(XEENgame.getFile(CCFileId("AAZE%04d.TXT", mapNumber)))
+XEEN::Maze::Text::Text(FilePtr data) : _data(data)
 {
     memset(_stringOffsets, 0xFF, sizeof(_stringOffsets));
 

@@ -27,7 +27,7 @@
 #include "xeen/maze/map.h"
 #include "xeen/maze/objects_.h"
 
-XEEN::Maze::Objects::Objects(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber), true))
+XEEN::Maze::Objects::Objects(FilePtr data) : _data(data)
 {
     memset(_offsets, 0xFF, sizeof(_offsets));
     memset(_counts, 0xFF, sizeof(_counts));

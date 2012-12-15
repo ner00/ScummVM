@@ -67,16 +67,16 @@ namespace XEEN
 }
 
 
-XEEN::Maze::Map::Map(uint16 mapNumber) : _base(0), _text(0), _events(0), _objects(0)
+XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : _parent(parent), _base(0), _text(0), _events(0), _objects(0)
 {
-    _base = XEENgame.getMapManager()->getSegment(mapNumber);
+    _base = _parent->getSegment(mapNumber);
  
     if(valid(_base))
     {
         // Load Maze Data
-        _text = new Text(mapNumber);
-        _events = new EventList(this, mapNumber);
-        _objects = new Objects(mapNumber);
+        _text = new Text(_parent->getGame()->getFile(CCFileId("AAZE%s%03d.TXT", (mapNumber < 100) ? "0" : "X", mapNumber), false));
+        _events = new EventList(this, _parent->getGame()->getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true));
+        _objects = new Objects(_parent->getGame()->getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber), true));
 
         if(!(valid(_text) && valid(_events) && valid(_objects)))
         {
@@ -278,7 +278,7 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
     processSideWallList(this, position, direction, 4, 8, swl4_id);
 
     // OBJECTS
-    const ObjectData* const od = XEENgame.getMapManager()->getObjectData();
+    const ObjectData* const od = _parent->getObjectData();
 
     static const struct {uint32 id; int32 xOff; int32 yOff; } objOffsets[12] =
     {

@@ -42,7 +42,7 @@ namespace XEEN
             friend class Map;
         
             private:
-                Objects(uint16 mapNumber);
+                Objects(FilePtr data);
                 
                 bool getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const;
 

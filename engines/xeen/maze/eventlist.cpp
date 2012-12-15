@@ -27,7 +27,7 @@
 #include "xeen/maze/eventlist_.h"
 #include "xeen/maze/map.h"
 
-XEEN::Maze::EventList::EventList(Map* parent, uint16 mapNumber) : _parent(parent), _data(XEENgame.getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true))
+XEEN::Maze::EventList::EventList(Map* parent, FilePtr data) : _parent(parent), _data(data)
 {
     memset(_eventOffset, 0xFF, sizeof(_eventOffset));
 

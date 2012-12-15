@@ -33,7 +33,6 @@ namespace XEEN
 {
     namespace Graphics
     {
-        class Game;
         class Manager;
         class ImageBuffer;
     

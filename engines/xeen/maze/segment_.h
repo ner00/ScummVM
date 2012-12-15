@@ -50,7 +50,7 @@ namespace XEEN
                 static const uint32 WATER       = 0x40;
         
             private:
-                Segment(uint16 mapNumber);
+                Segment(Valid<Manager> parent, FilePtr data);
                 void loadSurrounding();
     
                 uint16 getWall(uint8 x, uint8 y) const;
@@ -60,6 +60,7 @@ namespace XEEN
                 Segment* resolveSegment(Common::Point& position);
     
             protected:
+                Valid<Manager> _parent;
                 FilePtr _data;
     
                 Segment* _surrMazes[4];

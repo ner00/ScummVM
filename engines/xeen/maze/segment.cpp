@@ -25,6 +25,7 @@
 
 #include "xeen/maze/objects_.h"
 #include "xeen/maze/segment_.h"
+#include "xeen/maze/manager.h"
 
 static const uint32 OFF_WALLS         = 0x000;
 static const uint32 OFF_CELL_FLAGS    = 0x200;
@@ -32,7 +33,7 @@ static const uint32 OFF_SURR_MAZES    = 0x302;
 static const uint32 OFF_WALL_TYPES    = 0x30E;
 static const uint32 OFF_SURFACE_TYPES = 0x31E;
 
-XEEN::Maze::Segment::Segment(uint16 mapNumber) : _data(XEENgame.getFile(CCFileId("MAZE%s%03d.DAT", (mapNumber < 100) ? "0" : "X", mapNumber), true))
+XEEN::Maze::Segment::Segment(Valid<Manager> parent, FilePtr data) : _parent(parent), _data(data)
 {
     memset(_surrMazes, 0, sizeof(_surrMazes));
 
@@ -52,7 +53,7 @@ void XEEN::Maze::Segment::loadSurrounding()
         const uint16 segID = _data->getU16At(OFF_SURR_MAZES + i * 2);
         if(segID)
         {
-            _surrMazes[i] = XEENgame.getMapManager()->getSegment(segID);
+            _surrMazes[i] = _parent->getSegment(segID);
         }
     }
 }

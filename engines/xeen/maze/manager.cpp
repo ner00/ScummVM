@@ -22,6 +22,7 @@
 #define XEEN_MAZE_SOURCE
 
 #include "xeen/utility.h"
+#include "xeen/game.h"
 
 #include "xeen/maze/map.h"
 #include "xeen/maze/manager.h"
@@ -29,13 +30,13 @@
 #include "xeen/maze/objectdata_.h"
 #include "xeen/maze/monsterdata_.h"
 
-XEEN::Maze::Manager::Manager()
+XEEN::Maze::Manager::Manager(Valid<Game> parent) : _parent(parent)
 {
     memset(_maps, 0, sizeof(_maps));
     memset(_segments, 0, sizeof(_segments));
 
-    _objectData = new ObjectData();
-    _monsterData = new MonsterData();
+    _objectData = new ObjectData(this);
+    _monsterData = new MonsterData(this);
 }
 
 XEEN::Maze::Manager::~Manager()
@@ -54,7 +55,7 @@ XEEN::Maze::Map* XEEN::Maze::Manager::getMap(uint16 id)
 {
     if(!_maps[id])
     {
-        _maps[id] = new Map(id);
+        _maps[id] = new Map(this, id);
     }
     
     return _maps[id];
@@ -64,7 +65,9 @@ XEEN::Maze::Segment* XEEN::Maze::Manager::getSegment(uint16 id)
 {
     if(!_segments[id])
     {
-        _segments[id] = new Segment(id);
+        CCFileId mapID("MAZE%s%03d.DAT", (id < 100) ? "0" : "X", id);
+
+        _segments[id] = new Segment(this, _parent->getFile(mapID, true));
         _segments[id]->loadSurrounding(); //< Can't be done is Segment's constructor
     }
     

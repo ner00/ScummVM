@@ -34,9 +34,9 @@ static const unsigned SPACING_OFFSET = 0x1000;
 ///
 /// Font
 ///
-XEEN::Graphics::Font::Font() : _data(XEENgame.getFile("FNT"))
+XEEN::Graphics::Font::Font(FilePtr data) : _data(data)
 {
-    if(!_data)
+    if(!valid(_data))
     {
         _data.reset();
         markInvalid();

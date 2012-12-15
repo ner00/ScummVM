@@ -46,11 +46,13 @@ namespace XEEN
             static const uint32 DAT_SIZE = MAX_OBJECTS * 12;
         
             private:
-                ObjectData();
+                ObjectData(Valid<Manager> parent);
                 
                 const uint8* getDataForObject(uint32 id) const;
 
             private:
+                Valid<Manager> _parent;
+
                 byte _cloudsDAT[DAT_SIZE];
                 byte _darkDAT[DAT_SIZE];
         };

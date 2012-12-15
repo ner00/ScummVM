@@ -46,11 +46,13 @@ namespace XEEN
             static const uint32 DAT_SIZE = MAX_MONSTERS * 60;
         
             private:
-                MonsterData();
+                MonsterData(Valid<Manager> parent);
                 
                 NonNull<const char> getName(uint32 id) const;
 
             private:
+                Valid<Manager> _parent;
+
                 byte _xeenMON[DAT_SIZE];
                 byte _darkMON[DAT_SIZE];
         };

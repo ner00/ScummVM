@@ -41,7 +41,7 @@ namespace XEEN
             friend class XEEN::Game;
         
             private:
-                Manager();
+                Manager(Valid<Game> parent);
                 ~Manager();
                 
             public:
@@ -56,6 +56,8 @@ namespace XEEN
                 const byte* getScreenBitmap() const;
     
             private:
+                Valid<Game> _parent;
+
                 ImageBuffer* _screen;
                 Font* _font;
                 Sprite* _sprites[MAX_SPRITES]; // TODO: <Use a hash table!

@@ -33,8 +33,6 @@
 
 #include "xeen/maze/map.h"
 
-XEEN::Game XEENgame;
-
 XEEN::Game::Game() : _windowID(NONE), _currentWindow(0), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
                      _statusWnd(0), _portraitWnd(0), _charActionWnd(0), _mainWnd(0), _quickrefWnd(0), _castWnd(0), _gameInfoWnd(0), _spellSelectWnd(0)
 {
@@ -59,8 +57,8 @@ void XEEN::Game::load()
     markValid();
 
     _assets = new Archive("XEEN.CC");
-    _graphicsManager = new Graphics::Manager();
-    _mapManager = new Maze::Manager();
+    _graphicsManager = new Graphics::Manager(this);
+    _mapManager = new Maze::Manager(this);
     _party = new Party(this);
     
     _windowID = NONE;

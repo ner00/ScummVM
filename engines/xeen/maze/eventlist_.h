@@ -45,7 +45,7 @@ namespace XEEN
             friend class Map;
     
             private:
-                EventList(Map* parent, uint16 mapNumber);
+                EventList(Map* parent, FilePtr data);
                 void runEventAt(uint8 x, uint8 y, uint32 facing);
     
             private:

@@ -51,6 +51,7 @@ Common::Error XEEN::XeenEngine::run()
 
     //
 
+    Game XEENgame;
     XEENgame.load();
 
     while(!shouldQuit())

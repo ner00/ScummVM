@@ -48,7 +48,7 @@ namespace XEEN
                 static const uint32 ALIGN_RIGHT = 4;
     
             private:
-                Font();
+                Font(FilePtr data);
     
                 void drawString(NonNull<ImageBuffer> out, Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0) const;
                 uint32 measureString(const char* text, uint32 flags) const;

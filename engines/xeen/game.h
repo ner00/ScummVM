@@ -101,6 +101,4 @@ namespace XEEN
     };
 }
 
-extern XEEN::Game XEENgame;
-
 #endif // XEEN_GAME_H

@@ -43,7 +43,7 @@ namespace XEEN
             static const unsigned MAX_STRINGS = 256;
         
             private:
-                Text(uint32 mapNumber);
+                Text(FilePtr data);
                 const char* getString(uint32 id) const;
                 
             private:

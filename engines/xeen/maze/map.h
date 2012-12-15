@@ -38,6 +38,7 @@ namespace XEEN
         class Text;
         class EventList;
         class Objects;
+        class Manager;
     
         struct ObjectEntry
         {
@@ -51,7 +52,7 @@ namespace XEEN
             friend class Manager;
 
             private:
-                Map(uint16 mapNumber);
+                Map(Valid<Manager> parent, uint16 mapNumber);
                 ~Map();
     
             public:
@@ -72,6 +73,8 @@ namespace XEEN
                 static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);
     
             private:
+                Valid<Manager> _parent;
+
                 Segment* _base;
                 Text* _text;
                 EventList* _events;

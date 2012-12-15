@@ -41,17 +41,21 @@ namespace XEEN
             friend class XEEN::Game;
         
             private:
-                Manager();
+                Manager(Valid<Game> parent);
                 ~Manager();
                 
             public:
                 Map* getMap(uint16 id);
                 Segment* getSegment(uint16 id);
 
+                Valid<Game> getGame() const { return _parent; }
+
                 const ObjectData* getObjectData() const { return _objectData; }
                 const MonsterData* getMonsterData() const { return _monsterData; }
                 
             private:
+                Valid<Game> _parent;
+
                 Map* _maps[256]; // TODO: <Use a hash table!
                 Segment* _segments[256];
 

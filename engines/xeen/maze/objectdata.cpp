@@ -25,12 +25,12 @@
 #include "xeen/archive/file.h"
 #include "xeen/maze/objectdata_.h"
 
-XEEN::Maze::ObjectData::ObjectData()
+XEEN::Maze::ObjectData::ObjectData(Valid<Manager> parent) : _parent(parent)
 {
     memset(_cloudsDAT, 0, sizeof(_cloudsDAT));
     memset(_darkDAT, 0, sizeof(_darkDAT));
 
-    const Game::Type gt = XEENgame.getGameType();
+    const Game::Type gt = _parent->getGame()->getGameType();
 
     if(gt == Game::CLOUDS)
     {
@@ -55,7 +55,7 @@ const uint8* XEEN::Maze::ObjectData::getDataForObject(uint32 id) const
 {
     XEEN_VALID();
 
-    const Game::Type gt = XEENgame.getGameType();
+    const Game::Type gt = _parent->getGame()->getGameType();
 
     if(enforce(id < MAX_OBJECTS) && gt == Game::CLOUDS)
     {
