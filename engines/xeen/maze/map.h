@@ -62,6 +62,7 @@ namespace XEEN
                     
                 void fillDrawStruct(Common::Point position, uint16 direction);
                 void draw(ImageBuffer& out, SpriteManager& sprite);
+                void drawMini(ImageBuffer& out, const Common::Point& pen, const Common::Point& position, uint32 facing, Valid<SpriteManager> sprites);
     
             public:
                 static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);

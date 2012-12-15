@@ -184,18 +184,21 @@ void XEEN::Game::draw(ImageBuffer& out)
         }
     }
     else
-    {
-        out.setClipArea(Common::Rect(8, 8, 224, 140));    
-        
+    {        
         Maze::Map* m = _party->getMap();
         
         if(valid(m))
         {
-           m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
-           m->draw(out, *_spriteManager); 
-        }
+            m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
 
-        out.resetClipArea();
+            out.setClipArea(Common::Rect(8, 8, 224, 140));    
+            m->draw(out, *_spriteManager);
+
+            out.setClipArea(XRect::cr(237, 12, 70, 56));
+            m->drawMini(out, Common::Point(237, 12), _party->getPosition(), _party->getValue(Party::MAZE_FACING), _spriteManager);
+
+            out.resetClipArea();
+        }
     }
 }
 

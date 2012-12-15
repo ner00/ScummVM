@@ -312,6 +312,50 @@ void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)
     }
 }
 
+void XEEN::Maze::Map::drawMini(ImageBuffer& out, const Common::Point& pen, const Common::Point& position, uint32 facing, Valid<SpriteManager> sprites)
+{
+    XEEN_VALID();
+
+    const CCFileId sprite = "TOWN.TIL";
+
+    // Draw surface
+    // TODO: The surface tile should be draw a few pixels lower, determine how much
+    for(int i = 0; i != 7; i ++)
+    {
+        for(int j = 0; j != 7; j ++)
+        {
+            const uint32 sur = getSurface(position + Common::Point(j - 3, i - 3));
+            sprites->draw(sprite, out, pen + Common::Point(j * 10, (6 - i) * 8), sur ? 36 + sur : 0);
+        }
+    }
+
+    // Draw walls
+    for(int i = 0; i != 7; i ++)
+    {
+        for(int j = 0; j != 7; j ++)
+        {
+            const uint16 wallData = getTile(position + Common::Point(j - 3, i - 3), 0);
+
+            if(wallData != 0x8888)
+            {
+                if(wallData & 0xF000)
+                {
+                    sprites->draw(sprite, out, pen + Common::Point(j * 10, (6 - i) * 8), 2);
+                }
+
+                if(wallData & 0xF)
+                {
+                    sprites->draw(sprite, out, pen + Common::Point(j * 10, (6 - i) * 8), 3);
+                }
+            }
+            else
+            {
+                sprites->draw(sprite, out, pen + Common::Point(j * 10, (6 - i) * 8), 1);
+            }
+        }
+    }
+}
+
 Common::Point XEEN::Maze::Map::translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction)
 {
     switch(direction)

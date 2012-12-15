@@ -154,7 +154,13 @@ namespace XEEN
         int16 y;
         uint16 w;
         uint16 h;
-        
+
+        // Helper to build rect with xywh
+        static Common::Rect cr(int16 x, int16 y, uint16 w, uint16 h)
+        {
+            return Common::Rect(x, y, x + w, y + h);
+        }
+
         operator Common::Rect() const
         {
             return Common::Rect(x, y, x + w, y + h);
