@@ -26,8 +26,7 @@
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
-#include "xeen/graphics/imagebuffer.h"
-#include "xeen/graphics/spritemanager.h"
+#include "xeen/graphics/manager.h"
 
 #include "xeen/ui/window.h"
 
@@ -45,24 +44,23 @@ void XEEN::Window::fillStringBuffer(const char* fmt, ...)
     va_end(args);
 }
 
-void XEEN::Window::draw(ImageBuffer& out)
+void XEEN::Window::draw()
 {
     XEEN_VALID();
 
     const Common::Point location(_area.left, _area.top);
+    Graphics::Manager* graphics = XEENgame.getGraphicsManager();
 
-    // Background: TODO: Get correct color; draw border.    
-    out.fillRect(_area, 21);
+    // Background: TODO: Get correct color; draw border.
+    graphics->fillRect(_area, 21);
     
-    // Draw buttons
-    SpriteManager* sprites = XEENgame.getSpriteManager();
-    
+    // Draw buttons    
     for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)
     {
         if(button->sprite)
         {
             const uint32 frame = (button == _pressedButton) ? button->pressedFrame : button->normalFrame;
-            sprites->draw(button->sprite, out, location + button->area, frame);
+            graphics->draw(button->sprite, location + button->area, frame);
         }
     }
     
@@ -71,13 +69,13 @@ void XEEN::Window::draw(ImageBuffer& out)
     {
         if(string->text)
         {
-            XEENgame.drawString(out, location + Common::Point(string->x, string->y), string->text, string->flags, _area.width());
+            graphics->drawString(location + Common::Point(string->x, string->y), string->text, string->flags, _area.width());
         }
         else
         {
             _stringBuffer[0] = 0;
             produceString(string->stringID);
-            XEENgame.drawString(out, location + Common::Point(string->x, string->y), _stringBuffer, string->flags, _area.width());
+            graphics->drawString(location + Common::Point(string->x, string->y), _stringBuffer, string->flags, _area.width());
         }
     }
 }

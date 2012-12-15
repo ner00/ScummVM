@@ -19,52 +19,48 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-
-#ifndef XEEN_GRAPHICS_SPRITE_H
-#define XEEN_GRAPHICS_SPRITE_H
-
-#ifndef XEEN_GRAPHICS_SOURCE
-# error "Private header included"
-#endif
+#ifndef XEEN_GRAPHICS_MANAGER_H
+#define XEEN_GRAPHICS_MANAGER_H
 
 #include "xeen/utility.h"
+#include "xeen/archive/file.h"
 
 namespace XEEN
 {
+    class Game;
+
     namespace Graphics
     {
-        class Game;
-        class Manager;
+        class Sprite;
         class ImageBuffer;
-    
-        class Sprite : public Validateable_Cleanable
+        class Font;
+        
+        class Manager : public Validateable
         {
-            friend class Manager;
+            static const unsigned MAX_SPRITES = 65536;
+            friend class XEEN::Game;
         
             private:
-                Sprite(FilePtr file);
-                ~Sprite();
+                Manager();
+                ~Manager();
+                
+            public:
+                void reset();
+                void setClipArea(const Common::Rect& area);
+
+                void fillRect(Common::Rect area, uint8 color);
+
+                void draw(const CCFileId& id, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
+                void drawString(Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0);
+
+                const byte* getScreenBitmap() const;
     
-            protected:
-                void cleanse();
-                
             private:
-                void drawCell(NonNull<ImageBuffer> out, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
-                void drawFrame(NonNull<ImageBuffer> out, const Common::Point& pen, bool flip, uint32 scale);
-                uint32 drawLine(NonNull<ImageBuffer> out);
-                
-            private:
-                FilePtr _file;
-    
-                struct Cell
-                {
-                    uint16 offset[2];
-                };
-                
-                uint32 _cellCount;
-                Cell* _cells;
+                ImageBuffer* _screen;
+                Font* _font;
+                Sprite* _sprites[MAX_SPRITES]; // TODO: <Use a hash table!
         };
-    }
+    }   
 }
 
-#endif // XEEN_SPRITE_H
+#endif // XEEN_GRAPHICS_MANAGER_H

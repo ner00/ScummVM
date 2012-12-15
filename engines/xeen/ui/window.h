@@ -62,6 +62,16 @@ namespace XEEN
     {
         static const unsigned BUTTON_DELAY = 100;
     
+        //HACK
+        public:
+            struct Font
+            {
+                static const uint32 SMALL = 1;
+                static const uint32 CENTER = 2;
+                static const uint32 ALIGN_RIGHT = 4;
+            };
+
+
         protected:
             Window(const Common::Rect& area, bool clickToClose = false);
             virtual ~Window() {};
@@ -78,7 +88,7 @@ namespace XEEN
             virtual void show() { };        
         
             void heartbeat();
-            void draw(ImageBuffer& out);
+            void draw();
             bool click(const Common::Point& point);
             bool key(Common::KeyCode code);
 

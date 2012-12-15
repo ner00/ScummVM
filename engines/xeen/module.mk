@@ -10,7 +10,7 @@ MODULE_OBJS := \
     archive/toc.o \
     graphics/font.o \
     graphics/sprite.o \
-    graphics/spritemanager.o \
+    graphics/manager.o \
     maze/eventlist.o \
     maze/map.o \
     maze/manager.o \

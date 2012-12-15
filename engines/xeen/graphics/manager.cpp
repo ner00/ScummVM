@@ -23,24 +23,48 @@
 
 #include "xeen/game.h"
 
-#include "xeen/graphics/imagebuffer.h"
 #include "xeen/graphics/sprite_.h"
-#include "xeen/graphics/spritemanager.h"
+#include "xeen/graphics/imagebuffer_.h"
+#include "xeen/graphics/font_.h"
+#include "xeen/graphics/manager.h"
 
-XEEN::SpriteManager::SpriteManager()
+XEEN::Graphics::Manager::Manager() : _screen(new ImageBuffer()), _font(new Font())
 {
     memset(_sprites, 0, sizeof(_sprites));
 }
 
-XEEN::SpriteManager::~SpriteManager()
+XEEN::Graphics::Manager::~Manager()
 {
     for(unsigned i = 0; i != MAX_SPRITES; i ++)
     {
         delete _sprites[i];
     }
+
+    delete _screen;
+    delete _font;
 }
 
-void XEEN::SpriteManager::draw(const CCFileId& id, ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
+void XEEN::Graphics::Manager::reset()
+{
+    XEEN_VALID();
+    _screen->reset();
+}
+
+void XEEN::Graphics::Manager::setClipArea(const Common::Rect& area)
+{
+    XEEN_VALID();
+    _screen->setClipArea(area);
+}
+
+
+void XEEN::Graphics::Manager::fillRect(Common::Rect area, uint8 color)
+{
+    XEEN_VALID();
+
+    _screen->fillRect(area, color);
+}
+
+void XEEN::Graphics::Manager::draw(const CCFileId& id, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
 {
     XEEN_VALID();
 
@@ -51,6 +75,20 @@ void XEEN::SpriteManager::draw(const CCFileId& id, ImageBuffer& out, const Commo
 
     if(valid(_sprites[id]))
     {
-        _sprites[id]->drawCell(out, pen, frame, flip, scale);
+        _sprites[id]->drawCell(_screen, pen, frame, flip, scale);
     }
+}
+
+void XEEN::Graphics::Manager::drawString(Common::Point pen, const char* text, uint32 flags, uint32 width)
+{
+    XEEN_VALID();
+
+    _font->drawString(_screen, pen, text, flags, width);
+}
+
+const byte* XEEN::Graphics::Manager::getScreenBitmap() const
+{
+    XEEN_VALID();
+
+    return _screen->buffer;
 }

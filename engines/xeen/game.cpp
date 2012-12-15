@@ -29,15 +29,13 @@
 
 #include "xeen/archive/archive.h"
 
-#include "xeen/graphics/font.h"
-#include "xeen/graphics/imagebuffer.h"
-#include "xeen/graphics/spritemanager.h"
+#include "xeen/graphics/manager.h"
 
 #include "xeen/maze/map.h"
 
 XEEN::Game XEENgame;
 
-XEEN::Game::Game() : _windowID(NONE), _currentWindow(0), _activeCharacterSlot(0), _assets(0), _spriteManager(0),_mapManager(0), _party(0), _font(0)
+XEEN::Game::Game() : _windowID(NONE), _currentWindow(0), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0)
 {
     markInvalid();
 }
@@ -49,25 +47,23 @@ XEEN::Game::~Game()
 
 void XEEN::Game::cleanse()
 {
-    XEEN_DELETE(_font);
     XEEN_DELETE(_party);
     XEEN_DELETE(_mapManager);
-    XEEN_DELETE(_spriteManager);
+    XEEN_DELETE(_graphicsManager);
     XEEN_DELETE(_assets);
 }
 
 void XEEN::Game::load()
 {
     _assets = new Archive("XEEN.CC");
-    _spriteManager = new SpriteManager();
+    _graphicsManager = new Graphics::Manager();
     _mapManager = new Maze::Manager();
     _party = new Party();
-    _font = new Font();
     
     _windowID = NONE;
     _currentWindow = 0;
     
-    if(!(valid(_assets) && valid(_spriteManager) && valid(_mapManager) && valid(_party) && valid(_font)))
+    if(!(valid(_assets) && valid(_graphicsManager) && valid(_mapManager) && valid(_party)))
     {
         markInvalidAndClean();
         return;
@@ -95,14 +91,16 @@ void XEEN::Game::load()
 
     // Load cursor
     {
-        ImageBuffer mouseBuffer;
         byte mouseImage[16*16];
 
-        _spriteManager->draw("MOUSE.ICN", mouseBuffer.clear(0), Common::Point(0, 0), 0);
+        _graphicsManager->fillRect(Common::Rect(0, 0, 16, 16), 0);
+        _graphicsManager->draw("MOUSE.ICN", Common::Point(0, 0), 0);
+
+        const byte* buf = _graphicsManager->getScreenBitmap();
         
         for(int i = 0; i != 16; i ++)
         {
-            memcpy(&mouseImage[i * 16], &mouseBuffer.buffer[i * 320], 16);
+            memcpy(&mouseImage[i * 16], &buf[i * 320], 16);
         }
         
         g_system->setMouseCursor(mouseImage, 16, 16, 0, 0, 0);
@@ -163,16 +161,16 @@ void XEEN::Game::key(Common::KeyCode keycode)
     }
 }
 
-void XEEN::Game::draw(ImageBuffer& out)
+void XEEN::Game::draw()
 {   
     XEEN_VALID();
 
     _portraitWnd.heartbeat();
     _mainWnd.heartbeat();
     
-    out.resetClipArea();
-    _mainWnd.draw(out);
-    _portraitWnd.draw(out);
+    _graphicsManager->reset();
+    _mainWnd.draw();
+    _portraitWnd.draw();
     
     if(_currentWindow)
     {
@@ -180,7 +178,7 @@ void XEEN::Game::draw(ImageBuffer& out)
 
         if(_currentWindow)
         {
-            _currentWindow->draw(out);
+            _currentWindow->draw();
         }
     }
     else
@@ -191,13 +189,11 @@ void XEEN::Game::draw(ImageBuffer& out)
         {
             m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
 
-            out.setClipArea(Common::Rect(8, 8, 224, 140));    
-            m->draw(out, *_spriteManager);
+            _graphicsManager->setClipArea(Common::Rect(8, 8, 224, 140));    
+            m->draw(_graphicsManager);
 
-            out.setClipArea(XRect::cr(237, 12, 70, 56));
-            m->drawMini(out, Common::Point(237, 12), _party->getPosition(), _party->getValue(Party::MAZE_FACING), _spriteManager);
-
-            out.resetClipArea();
+            _graphicsManager->setClipArea(XRect::cr(237, 12, 70, 56));
+            m->drawMini(Common::Point(237, 12), _party->getPosition(), _party->getValue(Party::MAZE_FACING), _graphicsManager);
         }
     }
 }
@@ -207,12 +203,6 @@ XEEN::FilePtr XEEN::Game::getFile(CCFileId id, bool fromSave)
     assert(valid(_assets));
     return _assets->getFile(id, fromSave);
 }
-
-void XEEN::Game::drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags, unsigned width) const
-{
-    return _font->drawString(out, pen, text, flags, width);
-}
-
 
 XEEN::Character* XEEN::Game::getActiveCharacter()
 {

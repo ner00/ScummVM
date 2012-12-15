@@ -26,8 +26,6 @@
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
-#include "xeen/graphics/font.h"
-
 XEEN::CastWindow::CastWindow() : Window(Common::Rect(226, 0, 226 + 94, 146), false)
 {
 }

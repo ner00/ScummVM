@@ -20,32 +20,43 @@
  *
  */
 
-#ifndef XEEN_GRAPHICS_SPRITEMANAGER_H
-#define XEEN_GRAPHICS_SPRITEMANAGER_H
+#ifndef XEEN_FONT_H
+#define XEEN_FONT_H
+
+#ifndef XEEN_GRAPHICS_SOURCE
+# error "Private header included"
+#endif
 
 #include "xeen/utility.h"
 #include "xeen/archive/file.h"
 
 namespace XEEN
 {
-    class Sprite;
-    class Game;
-    
-    class SpriteManager : public Validateable
+    namespace Graphics
     {
-        static const unsigned MAX_SPRITES = 65536;
-        friend class Game;
+        class Manager;
+        class ImageBuffer;
+
+        // Only accessible by Manager
+        class Font : public Validateable, public Common::NonCopyable
+        {
+            friend class Manager;
+        
+            public:
+                static const uint32 SMALL = 1;
+                static const uint32 CENTER = 2;
+                static const uint32 ALIGN_RIGHT = 4;
     
-        private:
-            SpriteManager();
-            ~SpriteManager();
-            
-        public:
-            void draw(const CCFileId& id, ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
-            
-        private:
-            Sprite* _sprites[MAX_SPRITES]; // TODO: <Use a hash table!
-    };
+            private:
+                Font();
+    
+                void drawString(NonNull<ImageBuffer> out, Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0) const;
+                uint32 measureString(const char* text, uint32 flags) const;
+                
+            private:
+                FilePtr _data;
+        };
+    }
 }
 
-#endif // XEEN_GRAPHICS_SPRITEMANAGER_H
+#endif // XEEN_FONT_H

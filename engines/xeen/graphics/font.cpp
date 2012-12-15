@@ -19,11 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+#define XEEN_GRAPHICS_SOURCE
 
 #include "xeen/game.h"
 
-#include "xeen/graphics/font.h"
-#include "xeen/graphics/imagebuffer.h"
+#include "xeen/graphics/font_.h"
+#include "xeen/graphics/imagebuffer_.h"
 
 static const unsigned CHARACTER_COUNT = 256;
 static const unsigned CHARACTER_SIZE = 16;
@@ -33,7 +34,7 @@ static const unsigned SPACING_OFFSET = 0x1000;
 ///
 /// Font
 ///
-XEEN::Font::Font() : _data(XEENgame.getFile("FNT"))
+XEEN::Graphics::Font::Font() : _data(XEENgame.getFile("FNT"))
 {
     if(!_data)
     {
@@ -42,7 +43,7 @@ XEEN::Font::Font() : _data(XEENgame.getFile("FNT"))
     }
 }
 
-void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags, unsigned width) const
+void XEEN::Graphics::Font::drawString(NonNull<ImageBuffer> out, Common::Point pen, const char* text, uint32 flags, unsigned width) const
 {
     XEEN_VALID();
 
@@ -68,18 +69,18 @@ void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* tex
 
         for(int i = 0; i != 8; i ++, offset += 2)
         {
-            out.setPen(pen + Common::Point(0, i));
+            out->setPen(pen + Common::Point(0, i));
             uint16 line = _data->getU16At(offset);
 
             for(int j = 0; j != 8 && line; j ++, line >>= 2)
             {
                 if(line & 3)
                 {
-                    out.putPixel(line & 3);
+                    out->putPixel(line & 3);
                 }
                 else
                 {
-                    out.movePen(Common::Point(1, 0));
+                    out->movePen(Common::Point(1, 0));
                 }
             }
         }
@@ -88,7 +89,7 @@ void XEEN::Font::drawString(ImageBuffer& out, Common::Point pen, const char* tex
     }
 }
 
-unsigned XEEN::Font::measureString(const char* text, uint32 flags) const
+unsigned XEEN::Graphics::Font::measureString(const char* text, uint32 flags) const
 {
     XEEN_VALID();
 

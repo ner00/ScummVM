@@ -32,8 +32,6 @@
 #include "xeen/xeen.h"
 #include "xeen/game.h"
 
-#include "xeen/graphics/imagebuffer.h"
-
 XEEN::XeenEngine::XeenEngine(OSystem* syst) : Engine(syst), _console(0)
 {
 	DebugMan.addDebugChannel(kXeenDebugVerbose, "verbose", "verbose");
@@ -76,10 +74,9 @@ Common::Error XEEN::XeenEngine::run()
             }
         }
 
-        ImageBuffer buffer;        
-        XEENgame.draw(buffer);
+        XEENgame.draw();
 
-        _system->copyRectToScreen(buffer.buffer, 320, 0, 0, 320, 200);        
+        _system->copyRectToScreen(XEENgame.getGraphicsManager()->getScreenBitmap(), 320, 0, 0, 320, 200);        
         _system->updateScreen();
     }
 

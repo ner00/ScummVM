@@ -23,10 +23,10 @@
 
 #include "xeen/game.h"
 
-#include "xeen/graphics/imagebuffer.h"
+#include "xeen/graphics/imagebuffer_.h"
 #include "xeen/graphics/sprite_.h"
 
-XEEN::Sprite::Sprite(FilePtr file) : _file(file), _cellCount(0), _cells(0)
+XEEN::Graphics::Sprite::Sprite(FilePtr file) : _file(file), _cellCount(0), _cells(0)
 {
     if(_file)
     {
@@ -52,18 +52,18 @@ XEEN::Sprite::Sprite(FilePtr file) : _file(file), _cellCount(0), _cells(0)
     markInvalidAndClean();
 }
 
-XEEN::Sprite::~Sprite()
+XEEN::Graphics::Sprite::~Sprite()
 {
     cleanse();
 }
 
-void XEEN::Sprite::cleanse()
+void XEEN::Graphics::Sprite::cleanse()
 {
     XEEN_DELETE_ARRAY(_cells);
     _cellCount = 0;
 }
 
-void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
+void XEEN::Graphics::Sprite::drawCell(NonNull<ImageBuffer> out, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
 {
     XEEN_VALID();
 
@@ -82,7 +82,7 @@ void XEEN::Sprite::drawCell(ImageBuffer& out, const Common::Point& pen, uint16 f
     }
 }
 
-void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool flip, uint32 scale)
+void XEEN::Graphics::Sprite::drawFrame(NonNull<ImageBuffer> out, const Common::Point& pen, bool flip, uint32 scale)
 {
     XEEN_VALID();
 
@@ -106,17 +106,17 @@ void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool fl
             yoff ++;
         }
 
-        out.setPen(pen + Common::Point(((penX + frameWidth) - scaledWidth) / 2, yoff));
-        out.setPenOffset(Common::Point(1, 0));
-        out.setScale(scale);
+        out->setPen(pen + Common::Point(((penX + frameWidth) - scaledWidth) / 2, yoff));
+        out->setPenOffset(Common::Point(1, 0));
+        out->setScale(scale);
 
         if(flip)
         {
-            out.advancePen(penX + frameWidth - 1);
-            out.setPenOffset(Common::Point(-1, 0));
+            out->advancePen(penX + frameWidth - 1);
+            out->setPenOffset(Common::Point(-1, 0));
         }
 
-        out.advancePen(penX);
+        out->advancePen(penX);
 
         const uint32 linesDrawn = drawLine(out);
         onLine += linesDrawn;
@@ -129,7 +129,7 @@ void XEEN::Sprite::drawFrame(ImageBuffer& out, const Common::Point& pen, bool fl
     }
 }
 
-uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
+uint32 XEEN::Graphics::Sprite::drawLine(NonNull<ImageBuffer> out)
 {
     XEEN_VALID();
 
@@ -143,7 +143,7 @@ uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
     }
     
     // Draw
-    out.advancePen(x);
+    out->advancePen(x);
     int32 end = (_file->pos() - 1) + bytes;
     
     while(_file->pos() != end)
@@ -157,7 +157,7 @@ uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
         {
             case 0: case 1:
             {
-                out.readPixels(*_file, (controlByte & 0x3F) + 1);
+                out->readPixels(*_file, (controlByte & 0x3F) + 1);
                 break;
             }
             
@@ -167,7 +167,7 @@ uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
                 
                 for(int i = 0; i != length + 3; i ++)
                 {
-                    out.putPixel(color);
+                    out->putPixel(color);
                 }
                 
                 break;
@@ -179,7 +179,7 @@ uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
                 const int32 streamPos = _file->pos();
                 
                 _file->seek(_file->pos() - backTrack);
-                out.readPixels(*_file, length + 4);
+                out->readPixels(*_file, length + 4);
                 _file->seek(streamPos);
                 break;
             }
@@ -191,8 +191,8 @@ uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
                 
                 for(int i = 0; i != length + 2; i ++)
                 {
-                    out.putPixel(color1);
-                    out.putPixel(color2);
+                    out->putPixel(color1);
+                    out->putPixel(color2);
                 }
                 
                 break;
@@ -200,7 +200,7 @@ uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
             
             case 5:
             {
-                out.advancePen(length + 1);
+                out->advancePen(length + 1);
                 break;
             }
             
@@ -210,7 +210,7 @@ uint32 XEEN::Sprite::drawLine(ImageBuffer& out)
                 const uint8 color = _file->readByte();
                 for(int i = 0; i != (controlByte & 0x7) + 3; i ++)
                 {
-                    out.putPixel(color);
+                    out->putPixel(color);
                 }
                 
                 break;

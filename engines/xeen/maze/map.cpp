@@ -25,8 +25,7 @@
 
 #include "xeen/utility.h"
 
-#include "xeen/graphics/imagebuffer.h"
-#include "xeen/graphics/spritemanager.h"
+#include "xeen/graphics/manager.h"
 
 #include "xeen/maze/map.h"
 #include "xeen/maze/drawlist_.h"
@@ -299,7 +298,7 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
     }
 }
 
-void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)
+void XEEN::Maze::Map::draw(Valid<Graphics::Manager> sprites)
 {
     XEEN_VALID();
 
@@ -307,12 +306,12 @@ void XEEN::Maze::Map::draw(ImageBuffer& out, SpriteManager& sprites)
     {
         if(indoorDrawList[i].sprite != 0xFFFF)
         {
-            sprites.draw(indoorDrawList[i].sprite, out, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000, indoorDrawList[i].scale);
+            sprites->draw(indoorDrawList[i].sprite, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000, indoorDrawList[i].scale);
         }
     }
 }
 
-void XEEN::Maze::Map::drawMini(ImageBuffer& out, const Common::Point& pen, const Common::Point& position, uint32 facing, Valid<SpriteManager> sprites)
+void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& position, uint32 facing, Valid<Graphics::Manager> sprites)
 {
     XEEN_VALID();
 
@@ -325,7 +324,7 @@ void XEEN::Maze::Map::drawMini(ImageBuffer& out, const Common::Point& pen, const
         for(int j = 0; j != 7; j ++)
         {
             const uint32 sur = getSurface(position + Common::Point(j - 3, i - 3));
-            sprites->draw(sprite, out, pen + Common::Point(j * 10, (6 - i) * 8), sur ? 36 + sur : 0);
+            sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), sur ? 36 + sur : 0);
         }
     }
 
@@ -340,17 +339,17 @@ void XEEN::Maze::Map::drawMini(ImageBuffer& out, const Common::Point& pen, const
             {
                 if(wallData & 0xF000)
                 {
-                    sprites->draw(sprite, out, pen + Common::Point(j * 10, (6 - i) * 8), 2);
+                    sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 2);
                 }
 
                 if(wallData & 0xF)
                 {
-                    sprites->draw(sprite, out, pen + Common::Point(j * 10, (6 - i) * 8), 3);
+                    sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 3);
                 }
             }
             else
             {
-                sprites->draw(sprite, out, pen + Common::Point(j * 10, (6 - i) * 8), 1);
+                sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 1);
             }
         }
     }

@@ -27,8 +27,7 @@
 
 #include "xeen/party.h"
 
-#include "xeen/graphics/font.h"
-#include "xeen/graphics/spritemanager.h"
+#include "xeen/graphics/manager.h"
 
 #include "xeen/archive/file.h"
 
@@ -46,8 +45,6 @@
 namespace XEEN
 {
     class Archive;
-    class ImageBuffer;
-    class SpriteManager;
     class Party;
     class Character;
     class Font;
@@ -73,12 +70,11 @@ namespace XEEN
         
             void click(const Common::Point& location);
             void key(Common::KeyCode key);
-            void draw(ImageBuffer& out);
+            void draw();
         
             FilePtr getFile(CCFileId id, bool fromSave = false);
-            void drawString(ImageBuffer& out, Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0) const;
 
-            Valid<SpriteManager> getSpriteManager() { return _spriteManager; }
+            Valid<Graphics::Manager> getGraphicsManager() { return _graphicsManager; }
             Valid<Maze::Manager> getMapManager() { return _mapManager; }
             Valid<Party> getParty() { return _party; }
 
@@ -94,7 +90,7 @@ namespace XEEN
         private:
             Archive* _assets;
 
-            SpriteManager* _spriteManager;
+            Graphics::Manager* _graphicsManager;
             Maze::Manager* _mapManager;
             Party* _party;
             Font* _font;

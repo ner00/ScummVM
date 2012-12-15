@@ -25,8 +25,6 @@
 #include "xeen/ui/gameinfowindow.h"
 #include "xeen/party.h"
 
-#include "xeen/graphics/font.h"
-
 XEEN::GameInfoWindow::GameInfoWindow() : Window(Common::Rect(88, 20, 88 + 160, 20 + 92), true)
 {
 }

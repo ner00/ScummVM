@@ -27,8 +27,10 @@
 
 namespace XEEN
 {
-    class ImageBuffer;
-    class SpriteManager;
+    namespace Graphics
+    {
+        class Manager;
+    }
 
     namespace Maze
     {
@@ -61,8 +63,8 @@ namespace XEEN
                 bool getObjectAt(const Common::Point& position, ObjectEntry& data) const;
                     
                 void fillDrawStruct(Common::Point position, uint16 direction);
-                void draw(ImageBuffer& out, SpriteManager& sprite);
-                void drawMini(ImageBuffer& out, const Common::Point& pen, const Common::Point& position, uint32 facing, Valid<SpriteManager> sprites);
+                void draw(Valid<Graphics::Manager> sprites);
+                void drawMini(const Common::Point& pen, const Common::Point& position, uint32 facing, Valid<Graphics::Manager> sprites);
     
             public:
                 static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);

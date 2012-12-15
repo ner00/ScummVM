@@ -26,8 +26,6 @@
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
-#include "xeen/graphics/font.h"
-
 XEEN::ScrollWindow::ScrollWindow() : Window(Common::Rect(27, 6, 27 + 180, 6 + 136)), _selected(0)
 {
 }
