@@ -20,45 +20,41 @@
  *
  */
 
-#ifndef XEEN_MAZE_MANAGER_H
-#define XEEN_MAZE_MANAGER_H
+#ifndef XEEN_MAZE_MONSTERDATA_H
+#define XEEN_MAZE_MONSTERDATA_H
+
+#ifndef XEEN_MAZE_SOURCE
+# error "Private header included"
+#endif
 
 #include "xeen/utility.h"
 
 namespace XEEN
 {
-    class Game;
-
     namespace Maze
     {
+        class Manager;
         class Map;
-        class Segment;
-        class ObjectData;
-        class MonsterData;
 
-        class Manager : public Validateable
+        // Only accessible by Map and Manager
+        class MonsterData : public Validateable
         {
-            friend class XEEN::Game;
+            friend class Manager;
+            friend class Map;
+
+            static const uint32 MAX_MONSTERS = 90;
+            static const uint32 DAT_SIZE = MAX_MONSTERS * 60;
         
             private:
-                Manager();
-                ~Manager();
+                MonsterData();
                 
-            public:
-                Map* getMap(uint16 id);
-                Segment* getSegment(uint16 id);
+                NonNull<const char> getName(uint32 id) const;
 
-                const ObjectData* getObjectData() const { return _objectData; }
-                const MonsterData* getMonsterData() const { return _monsterData; }
-                
             private:
-                Map* _maps[256]; // TODO: <Use a hash table!
-                Segment* _segments[256];
-
-                ObjectData* _objectData;
-                MonsterData* _monsterData;
+                byte _xeenMON[DAT_SIZE];
+                byte _darkMON[DAT_SIZE];
         };
     }
 }
 
-#endif // XEEN_MAZE_MANAGER_H
+#endif // XEEN_MAZE_MONSTERDATA_H

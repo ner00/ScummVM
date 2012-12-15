@@ -16,6 +16,7 @@ MODULE_OBJS := \
     maze/manager.o \
     maze/objects.o \
     maze/objectdata.o \
+    maze/monsterdata.o \
     maze/segment.o \
     maze/text.o \
     ui/window.o \

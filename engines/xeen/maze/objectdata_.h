@@ -21,7 +21,7 @@
  */
 
 #ifndef XEEN_MAZE_OBJECTDATA_H
-#define XEEN_MAZE_OBJECTSDATA_H
+#define XEEN_MAZE_OBJECTDATA_H
 
 #ifndef XEEN_MAZE_SOURCE
 # error "Private header included"
@@ -43,6 +43,7 @@ namespace XEEN
             friend class Map;
 
             static const uint32 MAX_OBJECTS = 121;
+            static const uint32 DAT_SIZE = MAX_OBJECTS * 12;
         
             private:
                 ObjectData();
@@ -50,8 +51,8 @@ namespace XEEN
                 const uint8* getDataForObject(uint32 id) const;
 
             private:
-                FilePtr _cloudsDAT;
-                FilePtr _darkDAT;
+                byte _cloudsDAT[DAT_SIZE];
+                byte _darkDAT[DAT_SIZE];
         };
     }
 }

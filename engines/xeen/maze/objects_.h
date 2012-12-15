@@ -45,6 +45,9 @@ namespace XEEN
                 Objects(uint16 mapNumber);
                 
                 bool getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const;
+
+                // 'data' must be an array of three ObjectEntry structs
+                uint32 getMonstersAt(uint8 x, uint8 y, NonNull<ObjectEntry> data) const; 
                 
             protected:
                 void cleanse();

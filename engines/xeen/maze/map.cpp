@@ -33,6 +33,7 @@
 #include "xeen/maze/text_.h"
 #include "xeen/maze/segment_.h"
 #include "xeen/maze/objectdata_.h"
+#include "xeen/maze/monsterdata_.h"
 
 namespace XEEN
 {

@@ -21,52 +21,47 @@
  */
 #define XEEN_MAZE_SOURCE
 
-#include "xeen/utility.h"
-
-#include "xeen/maze/map.h"
-#include "xeen/maze/manager.h"
-#include "xeen/maze/segment_.h"
-#include "xeen/maze/objectdata_.h"
+#include "xeen/game.h"
+#include "xeen/archive/file.h"
 #include "xeen/maze/monsterdata_.h"
 
-XEEN::Maze::Manager::Manager()
+XEEN::Maze::MonsterData::MonsterData()
 {
-    memset(_maps, 0, sizeof(_maps));
-    memset(_segments, 0, sizeof(_segments));
+    memset(_xeenMON, 0, sizeof(_xeenMON));
+    memset(_darkMON, 0, sizeof(_darkMON));
 
-    _objectData = new ObjectData();
-    _monsterData = new MonsterData();
+    const Game::Type gt = XEENgame.getGameType();
+
+    if(gt == Game::CLOUDS)
+    {
+        Common::File xeenmon;
+        if(xeenmon.open("XEEN.MON"))
+        {
+            xeenmon.read(&_xeenMON, DAT_SIZE);
+        }
+        else
+        {
+            markInvalid("XEEN.MON not found.");
+        }
+    }
+    else
+    {
+        markInvalid("Unrecognized game type.");
+        assert(false);
+    }
 }
 
-XEEN::Maze::Manager::~Manager()
+XEEN::NonNull<const char> XEEN::Maze::MonsterData::getName(uint32 id) const
 {
-    for(int i = 0; i != 256; i ++)
+    XEEN_VALID();
+
+    const Game::Type gt = XEENgame.getGameType();
+
+    if(enforce(id < MAX_MONSTERS) && gt == Game::CLOUDS)
     {
-        delete _maps[i];
-        delete _segments[i];
+        return (const char*)&_xeenMON[id * 60];
     }
 
-    delete _objectData;
-    delete _monsterData;
-}
-
-XEEN::Maze::Map* XEEN::Maze::Manager::getMap(uint16 id)
-{
-    if(!_maps[id])
-    {
-        _maps[id] = new Map(id);
-    }
-    
-    return _maps[id];
-}
-
-XEEN::Maze::Segment* XEEN::Maze::Manager::getSegment(uint16 id)
-{
-    if(!_segments[id])
-    {
-        _segments[id] = new Segment(id);
-        _segments[id]->loadSurrounding(); //< Can't be done is Segment's constructor
-    }
-    
-    return _segments[id];
+    // TODO: Other games
+    assert(false);
 }

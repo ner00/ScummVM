@@ -99,3 +99,21 @@ bool XEEN::Maze::Objects::getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const
     
     return false;
 }
+
+uint32 XEEN::Maze::Objects::getMonstersAt(uint8 x, uint8 y, NonNull<ObjectEntry> data) const
+{
+    uint32 foundMonsters = 0;
+
+    for(unsigned i = 0; i != _counts[1] && foundMonsters != 3; i ++)
+    {
+        const uint8 ox = _data->getByteAt(_offsets[1] + (i * 4));
+        const uint8 oy = _data->getByteAt(_offsets[1] + (i * 4) + 1);
+
+        if(ox == x && oy == y)
+        {
+            data[foundMonsters++].id = _data->getByteAt(16 + _data->getByteAt(_offsets[1] + (i * 4) + 2));
+        }
+    }
+
+    return foundMonsters;
+}
