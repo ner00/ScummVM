@@ -43,6 +43,11 @@ namespace XEEN
         {
             friend class Map;
             friend class Manager;
+
+            private:
+                static const uint32 INSIDE      = 0x08;
+                static const uint32 AUTOEXECUTE = 0x10;
+                static const uint32 WATER       = 0x40;
         
             private:
                 Segment(uint16 mapNumber);

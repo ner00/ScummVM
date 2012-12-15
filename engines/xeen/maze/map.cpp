@@ -115,7 +115,7 @@ void XEEN::Maze::Map::runEventAt(uint8 x, uint8 y, uint32 facing)
     }
 }
 
-uint16 XEEN::Maze::Map::getTile(Common::Point position, uint32 direction)
+uint16 XEEN::Maze::Map::getTile(Common::Point position, uint32 direction) const
 {
     XEEN_VALID();
 
@@ -141,7 +141,7 @@ uint16 XEEN::Maze::Map::getTile(Common::Point position, uint32 direction)
     }
 }
 
-uint16 XEEN::Maze::Map::getSurface(Common::Point position)
+uint8 XEEN::Maze::Map::getFlags(Common::Point position) const
 {
     XEEN_VALID();
 
@@ -153,8 +153,15 @@ uint16 XEEN::Maze::Map::getSurface(Common::Point position)
     }
     else
     {
-        return _base->lookupSurface(seg->getCellFlags(position.x, position.y) & 7);
+        return seg->getCellFlags(position.x, position.y);
     }
+}
+
+uint16 XEEN::Maze::Map::getSurface(Common::Point position) const
+{
+    XEEN_VALID();
+
+    return _base->lookupSurface(getFlags(position) & 7);
 }
 
 bool XEEN::Maze::Map::getObjectAt(const Common::Point& position, ObjectEntry& data) const
@@ -176,10 +183,19 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
 
     buildDrawIndex();
 
+    const bool facingFlip = !(((position.x + position.y) & 1) == (direction & 1));
+
     // ENVIRONMENT
-    indoorDrawIndex[SKY_TOP]->sprite = CCFileId("SKY.SKY");
-    indoorDrawIndex[SKY_BOTTOM]->sprite = CCFileId("SKY.SKY");
+    const CCFileId skysprite = (getFlags(position) & Segment::INSIDE) ? CCFileId("TOWN.SKY") : CCFileId("SKY.SKY");
+
+    indoorDrawIndex[SKY_TOP]->sprite = skysprite;
+    indoorDrawIndex[SKY_BOTTOM]->sprite = skysprite;
+
+    indoorDrawIndex[SKY_TOP]->setFlipped(!(direction & 1));
+    indoorDrawIndex[SKY_BOTTOM]->setFlipped(!(direction & 1));
+
     indoorDrawIndex[GROUND]->sprite = CCFileId("TOWN.GND");
+    indoorDrawIndex[GROUND]->setFlipped(facingFlip);
     
     // SURFACE
     static const CCFileId surfaceMap[16] = 

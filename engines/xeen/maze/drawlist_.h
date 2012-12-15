@@ -43,12 +43,10 @@ struct DrawListItem
     int16 y;            //< Y position to draw at
     uint8 scale;        //< ?
     uint16 flags;       //< ?
-    
-    // The purpose of this flag is unknown. It only seems to be set along with obscureable.
-    bool unknown_flag() const {return flags & 0x4000; }
-    
+        
     // The draw sprite is flipped horizontally.
     bool flipped() const { return flags & 0x8000; }
+    void setFlipped(bool state) { flags &= ~0x8000; flags |= (state) ? 0x8000 : 0; }
 };
 
 DrawListItem indoorDrawList[] =
