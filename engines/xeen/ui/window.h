@@ -20,19 +20,15 @@
  *
  */
 
-#ifndef XEEN_WINDOW_H
-#define XEEN_WINDOW_H
-
-#include "common/scummsys.h"
-#include "common/rect.h"
-#include "common/keyboard.h"
+#ifndef XEEN_UI_WINDOW_H
+#define XEEN_UI_WINDOW_H
 
 #include "xeen/utility.h"
 
 namespace XEEN
 {
-    class ImageBuffer;
-    
+    class Game;
+
     struct Button
     {
         static const uint32 NOACTION = 0xFFFFFFFF;
@@ -73,7 +69,7 @@ namespace XEEN
 
 
         protected:
-            Window(const Common::Rect& area, bool clickToClose = false);
+            Window(Valid<Game> parent, const Common::Rect& area, bool clickToClose = false);
             virtual ~Window() {};
 
             virtual const Button* getButtons() const { return 0; }
@@ -92,6 +88,9 @@ namespace XEEN
             bool click(const Common::Point& point);
             bool key(Common::KeyCode code);
 
+        protected:
+            Valid<Game> _parent;
+
         private:
             char _stringBuffer[128];
 
@@ -101,19 +100,6 @@ namespace XEEN
             const Button* _pressedButton;
             uint32 _pressedTime;
     };
-    
-    class CharacterStatusWindow : public Window
-    {
-        public:
-            CharacterStatusWindow();
-            
-        protected:
-            const Button* getButtons() const;
-            const String* getStrings() const;
-            
-            void handleAction(unsigned id);
-            void produceString(unsigned id);
-    };
 }
 
-#endif // XEEN_WINDOW_H
+#endif // XEEN_UI_WINDOW_H

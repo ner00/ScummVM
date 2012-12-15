@@ -31,7 +31,7 @@ namespace XEEN
     class ScrollWindow : public Window
     {
         public:
-            ScrollWindow();
+            ScrollWindow(Valid<Game> parent);
       
         protected:
             virtual unsigned itemCount() const = 0;
@@ -58,7 +58,7 @@ namespace XEEN
     class SpellSelectWindow : public ScrollWindow
     {
         public:
-            SpellSelectWindow();
+            SpellSelectWindow(Valid<Game> parent);
 
         protected:
             unsigned itemCount() const;

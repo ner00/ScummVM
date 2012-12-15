@@ -28,7 +28,6 @@
 
 namespace XEEN
 {
-    class Game;
     class Party;
 
     enum Sex {MALE, FEMALE};

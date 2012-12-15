@@ -21,7 +21,6 @@
  */
 
 #include "xeen/characters.h"
-#include "xeen/game.h"
 #include "xeen/party.h"
 #include "xeen/utility.h"
 

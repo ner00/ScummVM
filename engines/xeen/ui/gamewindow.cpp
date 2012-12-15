@@ -19,16 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#include "common/system.h"
 
 #include "xeen/game.h"
 #include "xeen/party.h"
+#include "xeen/ui/basicwindows.h"
 
-#include "xeen/maze/map.h"
-
-#include "xeen/ui/gamewindow.h"
-
-XEEN::GameWindow::GameWindow() : Window(Common::Rect(0, 0, 0, 0))
+XEEN::GameWindow::GameWindow(Valid<Game> parent) : Window(parent, Common::Rect(0, 0, 0, 0))
 {
     
 }
@@ -58,27 +54,20 @@ void XEEN::GameWindow::handleAction(unsigned id)
 {
     XEEN_VALID();
 
-    if(valid(XEENgame))
+    Party* party = _parent->getParty();
+    switch(id)
     {
-        Party* party = XEENgame.getParty();
-        
-        if(valid(party))
-        {
-            switch(id)
-            {
-                case  1: XEENgame.showWindow(Game::CASTSPELL); break;
-                case  4: XEENgame.showWindow(Game::CHARACTION); break;
-                case  7: XEENgame.showWindow(Game::GAMEINFO); break;
-                case  8: XEENgame.showWindow(Game::QUICKREF); break;
+        case  1: _parent->showWindow(Game::CASTSPELL); break;
+        case  4: _parent->showWindow(Game::CHARACTION); break;
+        case  7: _parent->showWindow(Game::GAMEINFO); break;
+        case  8: _parent->showWindow(Game::QUICKREF); break;
 
-                // MOVEMENT
-                case 10: party->turn(true); break;
-                case 11: party->moveRelative(Common::Point(0, 1)); break;
-                case 12: party->turn(false); break;
-                case 13: party->moveRelative(Common::Point(-1, 0)); break;
-                case 14: party->moveRelative(Common::Point(0, -1)); break;
-                case 15: party->moveRelative(Common::Point(1, 0)); break;
-            }
-        }
+        // MOVEMENT
+        case 10: party->turn(true); break;
+        case 11: party->moveRelative(Common::Point(0, 1)); break;
+        case 12: party->turn(false); break;
+        case 13: party->moveRelative(Common::Point(-1, 0)); break;
+        case 14: party->moveRelative(Common::Point(0, -1)); break;
+        case 15: party->moveRelative(Common::Point(1, 0)); break;
     }
 }

@@ -19,14 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#include "common/system.h"
 
 #include "xeen/game.h"
 #include "xeen/ui/scrollwindow.h"
-#include "xeen/party.h"
 #include "xeen/characters.h"
 
-XEEN::ScrollWindow::ScrollWindow() : Window(Common::Rect(27, 6, 27 + 180, 6 + 136)), _selected(0)
+XEEN::ScrollWindow::ScrollWindow(Valid<Game> parent) : Window(parent, Common::Rect(27, 6, 27 + 180, 6 + 136)), _selected(0)
 {
 }
 
@@ -54,8 +52,8 @@ void XEEN::ScrollWindow::handleAction(unsigned id)
 
     switch(id)
     {
-        case 1: accept(); XEENgame.showWindow(Game::NONE); return;
-        case 2: cancel(); XEENgame.showWindow(Game::NONE); return;
+        case 1: accept(); _parent->showWindow(Game::NONE); return;
+        case 2: cancel(); _parent->showWindow(Game::NONE); return;
     }
 }
 
@@ -104,7 +102,7 @@ void XEEN::ScrollWindow::produceString(unsigned id)
 ///
 /// SpellSelectWindow
 ///
-XEEN::SpellSelectWindow::SpellSelectWindow()
+XEEN::SpellSelectWindow::SpellSelectWindow(Valid<Game> parent) : ScrollWindow(parent)
 {
 
 }
@@ -135,14 +133,11 @@ void XEEN::SpellSelectWindow::fillHeader()
 {
     XEEN_VALID();
 
-    if(valid(XEENgame))
-    {
-        Character* chara = XEENgame.getActiveCharacter();
+    Character* chara = _parent->getActiveCharacter();
 
-        if(valid(chara))
-        {
-            fillStringBuffer("Spells for %s", chara->getName()); //TODO: Fill proper name
-        }
+    if(valid(chara))
+    {
+        fillStringBuffer("Spells for %s", chara->getName()); //TODO: Fill proper name
     }
 }
 

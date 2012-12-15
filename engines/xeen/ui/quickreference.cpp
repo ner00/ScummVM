@@ -19,14 +19,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#include "common/system.h"
 
 #include "xeen/game.h"
-#include "xeen/ui/quickreference.h"
+#include "xeen/ui/basicwindows.h"
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
-XEEN::QuickReferenceWindow::QuickReferenceWindow() : Window(Common::Rect(0, 0, 320, 146), true)
+XEEN::QuickReferenceWindow::QuickReferenceWindow(Valid<Game> parent) : Window(parent, Common::Rect(0, 0, 320, 146), true)
 {
 }
 
@@ -52,31 +51,28 @@ void XEEN::QuickReferenceWindow::produceString(unsigned id)
 {
     XEEN_VALID();
 
-    if(valid(XEENgame) && valid(XEENgame.getParty()))
+    Party* party = _parent->getParty();
+
+    // #
+    if(id >= 1 && id <= 6)
     {
-        Party* party = XEENgame.getParty();
+        fillStringBuffer("%d)", id);
+        return;            
+    }
     
-        // #
-        if(id >= 1 && id <= 6)
-        {
-            fillStringBuffer("%d)", id);
-            return;            
-        }
-        
-        // Name
-        if(id >= 7 && id <= 12)
-        {
-            Character* character = party->getMemberInSlot(id - 7);
-            fillStringBuffer("%s", valid(character) ? character->getName() : "");
-            return;
-        }
-        
-        // Class
-        if(id >= 13 && id <= 18)
-        {
-            Character* character = party->getMemberInSlot(id - 13);
-            fillStringBuffer("%.3s", valid(character) ? getClassName(character->getClass()) : "");
-            return;
-        }
+    // Name
+    if(id >= 7 && id <= 12)
+    {
+        Character* character = party->getMemberInSlot(id - 7);
+        fillStringBuffer("%s", valid(character) ? character->getName() : "");
+        return;
+    }
+    
+    // Class
+    if(id >= 13 && id <= 18)
+    {
+        Character* character = party->getMemberInSlot(id - 13);
+        fillStringBuffer("%.3s", valid(character) ? getClassName(character->getClass()) : "");
+        return;
     }
 }

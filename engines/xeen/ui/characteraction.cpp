@@ -19,15 +19,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#include "common/system.h"
 
 #include "xeen/game.h"
-#include "xeen/party.h"
-#include "xeen/characters.h"
+#include "xeen/ui/basicwindows.h"
 
-#include "xeen/ui/characteraction.h"
-
-XEEN::CharacterActionWindow::CharacterActionWindow() : Window(Common::Rect(50, 112, 50 + 216, 112 + 36))
+XEEN::CharacterActionWindow::CharacterActionWindow(Valid<Game> parent) : Window(parent, Common::Rect(50, 112, 50 + 216, 112 + 36))
 {
 }
 
@@ -50,9 +46,9 @@ void XEEN::CharacterActionWindow::handleAction(unsigned id)
 {
     XEEN_VALID();
 
-    if(valid(XEENgame) && id == 0)
+    if(id == 0)
     {
-        XEENgame.showWindow(Game::NONE);
+        _parent->showWindow(Game::NONE);
     }
 }
 

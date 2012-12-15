@@ -31,6 +31,8 @@
 #include "common/array.h"
 #include "common/stream.h"
 #include "common/memstream.h"
+#include "common/keyboard.h"
+#include "common/system.h"
 
 namespace XEEN
 {

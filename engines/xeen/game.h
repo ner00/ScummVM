@@ -34,12 +34,7 @@
 #include "xeen/maze/manager.h"
 
 #include "xeen/ui/window.h"
-#include "xeen/ui/characteraction.h"
-#include "xeen/ui/characterwindow.h"
-#include "xeen/ui/gamewindow.h"
-#include "xeen/ui/quickreference.h"
-#include "xeen/ui/castwindow.h"
-#include "xeen/ui/gameinfowindow.h"
+#include "xeen/ui/basicwindows.h"
 #include "xeen/ui/scrollwindow.h"
 
 namespace XEEN
@@ -95,14 +90,14 @@ namespace XEEN
             Party* _party;
             Font* _font;
 
-            CharacterStatusWindow _statusWnd;
-            CharacterWindow _portraitWnd;
-            CharacterActionWindow _charActionWnd;
-            GameWindow _mainWnd;
-            QuickReferenceWindow _quickrefWnd;
-            CastWindow _castWnd;
-            GameInfoWindow _gameInfoWnd;
-            SpellSelectWindow _spellSelectWnd;
+            CharacterStatusWindow* _statusWnd;
+            CharacterWindow* _portraitWnd;
+            CharacterActionWindow* _charActionWnd;
+            GameWindow* _mainWnd;
+            QuickReferenceWindow* _quickrefWnd;
+            CastWindow* _castWnd;
+            GameInfoWindow* _gameInfoWnd;
+            SpellSelectWindow* _spellSelectWnd;
     };
 }
 

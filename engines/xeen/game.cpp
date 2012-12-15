@@ -35,7 +35,8 @@
 
 XEEN::Game XEENgame;
 
-XEEN::Game::Game() : _windowID(NONE), _currentWindow(0), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0)
+XEEN::Game::Game() : _windowID(NONE), _currentWindow(0), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
+                     _statusWnd(0), _portraitWnd(0), _charActionWnd(0), _mainWnd(0), _quickrefWnd(0), _castWnd(0), _gameInfoWnd(0), _spellSelectWnd(0)
 {
     markInvalid();
 }
@@ -65,6 +66,15 @@ void XEEN::Game::load()
     _windowID = NONE;
     _currentWindow = 0;
     
+    _statusWnd = new CharacterStatusWindow(this);
+    _portraitWnd = new CharacterWindow(this);
+    _charActionWnd = new CharacterActionWindow(this);
+    _mainWnd = new GameWindow(this);
+    _quickrefWnd = new QuickReferenceWindow(this);
+    _castWnd = new CastWindow(this);
+    _gameInfoWnd = new GameInfoWindow(this);
+    _spellSelectWnd = new SpellSelectWindow(this);
+
     if(!(valid(_assets) && valid(_graphicsManager) && valid(_mapManager) && valid(_party)))
     {
         markInvalidAndClean();
@@ -72,8 +82,8 @@ void XEEN::Game::load()
     }
 
     //
-    _mainWnd.show();
-    _portraitWnd.show();
+    _mainWnd->show();
+    _portraitWnd->show();
 
     // HACK: TODO Error check
     // Load palette
@@ -115,12 +125,12 @@ void XEEN::Game::showWindow(WindowID id)
 
     switch(id)
     {
-        case STATUS: _currentWindow = &_statusWnd; break;
-        case QUICKREF: _currentWindow = &_quickrefWnd; break;
-        case CASTSPELL: _currentWindow = &_castWnd; break;
-        case SELECTSPELL: _currentWindow = &_spellSelectWnd; break;
-        case GAMEINFO: _currentWindow = &_gameInfoWnd; break;
-        case CHARACTION: _currentWindow = &_charActionWnd; break;
+        case STATUS: _currentWindow = _statusWnd; break;
+        case QUICKREF: _currentWindow = _quickrefWnd; break;
+        case CASTSPELL: _currentWindow = _castWnd; break;
+        case SELECTSPELL: _currentWindow = _spellSelectWnd; break;
+        case GAMEINFO: _currentWindow = _gameInfoWnd; break;
+        case CHARACTION: _currentWindow = _charActionWnd; break;
     }
 
     if(_currentWindow)
@@ -140,8 +150,8 @@ void XEEN::Game::click(const Common::Point& location)
     }
     else
     {
-        _portraitWnd.click(location);
-        _mainWnd.click(location);
+        _portraitWnd->click(location);
+        _mainWnd->click(location);
     }
 }
 
@@ -156,8 +166,8 @@ void XEEN::Game::key(Common::KeyCode keycode)
     }
     else
     {
-        _portraitWnd.key(keycode);
-        _mainWnd.key(keycode);
+        _portraitWnd->key(keycode);
+        _mainWnd->key(keycode);
     }
 }
 
@@ -165,12 +175,12 @@ void XEEN::Game::draw()
 {   
     XEEN_VALID();
 
-    _portraitWnd.heartbeat();
-    _mainWnd.heartbeat();
+    _portraitWnd->heartbeat();
+    _mainWnd->heartbeat();
     
     _graphicsManager->reset();
-    _mainWnd.draw();
-    _portraitWnd.draw();
+    _mainWnd->draw();
+    _portraitWnd->draw();
     
     if(_currentWindow)
     {

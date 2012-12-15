@@ -19,13 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#include "common/system.h"
 
 #include "xeen/game.h"
-#include "xeen/ui/gameinfowindow.h"
+#include "xeen/ui/basicwindows.h"
 #include "xeen/party.h"
 
-XEEN::GameInfoWindow::GameInfoWindow() : Window(Common::Rect(88, 20, 88 + 160, 20 + 92), true)
+XEEN::GameInfoWindow::GameInfoWindow(Valid<Game> parent) : Window(parent, Common::Rect(88, 20, 88 + 160, 20 + 92), true)
 {
 }
 
@@ -52,27 +51,24 @@ void XEEN::GameInfoWindow::produceString(unsigned id)
 {
     XEEN_VALID();
 
-    if(valid(XEENgame) && valid(XEENgame.getParty()))
+    Party* party = _parent->getParty();
+
+    const unsigned day = party->getValue(Party::DAY);
+    const unsigned year = party->getValue(Party::YEAR);
+    const unsigned mins = party->getValue(Party::MINUTES);
+
+    // TODO: Check day names
+    static const char* const daynames[10] =
     {
-        Party* party = XEENgame.getParty();
+        "Tensday", "Onesday", "Twosday", "Threesday", "Foursday",
+        "Fivesday", "Sixday", "Sevenday", "Eightday", "Ninesday", 
+    };
 
-        const unsigned day = party->getValue(Party::DAY);
-        const unsigned year = party->getValue(Party::YEAR);
-        const unsigned mins = party->getValue(Party::MINUTES);
-
-        // TODO: Check day names
-        static const char* const daynames[10] =
-        {
-            "Tensday", "Onesday", "Twosday", "Threesday", "Foursday",
-            "Fivesday", "Sixday", "Sevenday", "Eightday", "Ninesday", 
-        };
-
-        switch(id)
-        {
-            case 1: fillStringBuffer("Today is %s", daynames[day % 10]); return; // TODO: Make dayname yellow
-            case 2: fillStringBuffer("000"); return;
-            case 3: fillStringBuffer("%d", day); return;
-            case 4: fillStringBuffer("%d", year); return;
-        }
+    switch(id)
+    {
+        case 1: fillStringBuffer("Today is %s", daynames[day % 10]); return; // TODO: Make dayname yellow
+        case 2: fillStringBuffer("000"); return;
+        case 3: fillStringBuffer("%d", day); return;
+        case 4: fillStringBuffer("%d", year); return;
     }
 }

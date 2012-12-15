@@ -19,13 +19,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#include "common/system.h"
-
 #include "xeen/game.h"
-#include "xeen/ui/characterwindow.h"
+#include "xeen/ui/basicwindows.h"
 #include "xeen/party.h"
 
-XEEN::CharacterWindow::CharacterWindow() : Window(Common::Rect(0, 0, 0, 0))
+XEEN::CharacterWindow::CharacterWindow(Valid<Game> parent) : Window(parent, Common::Rect(0, 0, 0, 0))
 {
     static const uint32 X = Button::NOACTION;
 
@@ -50,17 +48,11 @@ void XEEN::CharacterWindow::show()
     XEEN_VALID();
 
     // TODO: Update when needed
-    if(valid(XEENgame))
+    Party* party = _parent->getParty();
+    
+    for(unsigned i = 0; i != party->getValue(Party::PARTY_COUNT); i ++)
     {
-        Party* party = XEENgame.getParty();
-        
-        if(valid(party))
-        {
-            for(unsigned i = 0; i != party->getValue(Party::PARTY_COUNT); i ++)
-            {
-                _buttons[i * 2].sprite = CCFileId("CHAR%02d.FAC", party->getMemberIdFromSlot(i) + 1);
-            }
-        }
+        _buttons[i * 2].sprite = CCFileId("CHAR%02d.FAC", party->getMemberIdFromSlot(i) + 1);
     }
 }
 
@@ -75,9 +67,6 @@ void XEEN::CharacterWindow::handleAction(unsigned id)
 {
     XEEN_VALID();
 
-    if(valid(XEENgame))
-    {
-        XEENgame.selectCharacter(id);
-        XEENgame.showWindow(Game::STATUS);
-    }
+    _parent->selectCharacter(id);
+    _parent->showWindow(Game::STATUS);
 }

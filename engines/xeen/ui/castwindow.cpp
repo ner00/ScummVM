@@ -19,14 +19,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#include "common/system.h"
 
 #include "xeen/game.h"
-#include "xeen/ui/castwindow.h"
+#include "xeen/ui/basicwindows.h"
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
-XEEN::CastWindow::CastWindow() : Window(Common::Rect(226, 0, 226 + 94, 146), false)
+XEEN::CastWindow::CastWindow(Valid<Game> parent) : Window(parent, Common::Rect(226, 0, 226 + 94, 146), false)
 {
 }
 
@@ -52,8 +51,8 @@ void XEEN::CastWindow::handleAction(unsigned id)
 
     switch(id)
     {
-        case 1: XEENgame.showWindow(Game::SELECTSPELL); return;
-        case 2: XEENgame.showWindow(Game::NONE); return;
+        case 1: _parent->showWindow(Game::SELECTSPELL); return;
+        case 2: _parent->showWindow(Game::NONE); return;
     }
 }
 
@@ -83,20 +82,17 @@ void XEEN::CastWindow::produceString(unsigned id)
 {
     XEEN_VALID();
 
-    if(valid(XEENgame) && valid(XEENgame.getParty()))
-    {
-        Party* party = XEENgame.getParty();
-        Character* character = XEENgame.getActiveCharacter();
+    Party* party = _parent->getParty();
+    Character* character = _parent->getActiveCharacter();
 
-        if(valid(character))
+    if(valid(character))
+    {
+        switch(id)
         {
-            switch(id)
-            {
-                case  1: fillStringBuffer("%s", character->getName()); return;
-                case  2: fillStringBuffer("Light"); return; // TODO: Use real spell name, make yellow
-                case  3: fillStringBuffer("1/0"); return; //TODO: Use real cost
-                case  4: fillStringBuffer("2"); return; //TODO: Use real cur sp
-            }
+            case  1: fillStringBuffer("%s", character->getName()); return;
+            case  2: fillStringBuffer("Light"); return; // TODO: Use real spell name, make yellow
+            case  3: fillStringBuffer("1/0"); return; //TODO: Use real cost
+            case  4: fillStringBuffer("2"); return; //TODO: Use real cur sp
         }
     }
 }
