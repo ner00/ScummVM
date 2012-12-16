@@ -76,13 +76,13 @@ void XEEN::Graphics::Sprite::drawCell(NonNull<ImageBuffer> out, const Common::Po
             if(cell.offset[i])
             {
                 _file->seek(cell.offset[i]);
-                drawFrame(out, pen, flip, scale);
+                drawFrame(out, pen.x, pen.y, flip, scale);
             }
         }
     }
 }
 
-void XEEN::Graphics::Sprite::drawFrame(NonNull<ImageBuffer> out, const Common::Point& pen, bool flip, uint32 scale)
+void XEEN::Graphics::Sprite::drawFrame(NonNull<ImageBuffer> out, int32 x, int32 y, bool flip, uint32 scale)
 {
     XEEN_VALID();
 
@@ -92,36 +92,31 @@ void XEEN::Graphics::Sprite::drawFrame(NonNull<ImageBuffer> out, const Common::P
     const int16 penY = _file->readSint16LE();
     const uint16 frameHeight = _file->readUint16LE();
 
-    uint16 yscale = 16 - scale;
-    uint32 yaccum = yscale * penY;
-    uint32 yoff = 0;
+    const uint32 scaledWidth = out->scaleSize(penX + frameWidth, scale);
 
-    const uint32 scaledWidth = (uint32)(((float)(penX + frameWidth)) / (16.0 / (float)(16 - scale)));
+    uint32 yoff = 0;
+    for(int16 i = 0; i != penY; i ++)
+    {
+        yoff += (out->checkScale(i, scale)) ? 1 : 0;
+    }
 
     // Draw the lines
     for(uint32 onLine = 0; onLine != frameHeight; )
     {
-        for(; yaccum >= 16; yaccum -= 16)
+        uint8 line[320];
+        const uint32 linesDrawn = drawLine(line);
+
+        if(out->checkScale(penY + onLine, scale))
         {
-            yoff ++;
+            out->drawLine<0>(x + (penX + frameWidth - scaledWidth) / 2, y + yoff, penX + frameWidth, line, scale, flip);
         }
 
-        out->setPen(pen + Common::Point(((penX + frameWidth) - scaledWidth) / 2, yoff));
-        out->setPenOffset(Common::Point(1, 0));
-        out->setScale(scale);
-
-        if(flip)
+        for(uint32 i = 0; i != linesDrawn; i ++)
         {
-            out->advancePen(penX + frameWidth - 1);
-            out->setPenOffset(Common::Point(-1, 0));
+            yoff += (out->checkScale(penY + onLine + i, scale)) ? 1 : 0;
         }
 
-        out->advancePen(penX);
-
-        const uint32 linesDrawn = drawLine(out);
         onLine += linesDrawn;
-
-        yaccum += yscale * linesDrawn;
 
         // Check sanity: At least one line must have been drawn, and No more than 
         // frameHeight lines may have been drawn.
@@ -129,9 +124,11 @@ void XEEN::Graphics::Sprite::drawFrame(NonNull<ImageBuffer> out, const Common::P
     }
 }
 
-uint32 XEEN::Graphics::Sprite::drawLine(NonNull<ImageBuffer> out)
+uint32 XEEN::Graphics::Sprite::drawLine(NonNull<uint8> out)
 {
     XEEN_VALID();
+
+    uint8* pen = out;
 
     uint8 bytes = _file->readByte();
     int16 x = _file->readByte();
@@ -143,7 +140,9 @@ uint32 XEEN::Graphics::Sprite::drawLine(NonNull<ImageBuffer> out)
     }
     
     // Draw
-    out->advancePen(x);
+    memset(pen, 0, 320);
+    pen += x;
+
     int32 end = (_file->pos() - 1) + bytes;
     
     while(_file->pos() != end)
@@ -157,19 +156,16 @@ uint32 XEEN::Graphics::Sprite::drawLine(NonNull<ImageBuffer> out)
         {
             case 0: case 1:
             {
-                out->readPixels(*_file, (controlByte & 0x3F) + 1);
+                _file->read(pen, (controlByte & 0x3F) + 1);
+                pen += (controlByte & 0x3F) + 1;
                 break;
             }
             
             case 2:
             {
                 const uint8 color = _file->readByte();
-                
-                for(int i = 0; i != length + 3; i ++)
-                {
-                    out->putPixel(color);
-                }
-                
+                memset(pen, color, length + 3);
+                pen += length + 3;
                 break;
             }
             
@@ -179,8 +175,10 @@ uint32 XEEN::Graphics::Sprite::drawLine(NonNull<ImageBuffer> out)
                 const int32 streamPos = _file->pos();
                 
                 _file->seek(_file->pos() - backTrack);
-                out->readPixels(*_file, length + 4);
+                _file->read(pen, length + 4);
                 _file->seek(streamPos);
+
+                pen += length + 4;
                 break;
             }
             
@@ -191,8 +189,8 @@ uint32 XEEN::Graphics::Sprite::drawLine(NonNull<ImageBuffer> out)
                 
                 for(int i = 0; i != length + 2; i ++)
                 {
-                    out->putPixel(color1);
-                    out->putPixel(color2);
+                    *pen++ = color1;
+                    *pen++ = color2;
                 }
                 
                 break;
@@ -200,17 +198,22 @@ uint32 XEEN::Graphics::Sprite::drawLine(NonNull<ImageBuffer> out)
             
             case 5:
             {
-                out->advancePen(length + 1);
+                memset(pen, 0, length + 1);
+                pen += length + 1;
                 break;
             }
             
             case 6: case 7:
             {
-                // TODO: Implement properly                
-                const uint8 color = _file->readByte();
-                for(int i = 0; i != (controlByte & 0x7) + 3; i ++)
+                static const int8 pattern[] = {0, 1, 1, 1, 2, 2, 3, 3, 0, -1, -1, -1, -2, -2, -3, -3};
+                const int8* const change = &pattern[(controlByte >> 2) & 0x0E];
+                const uint32 count = (controlByte & 0x7) + 3;
+
+                uint8 color = _file->readByte();
+                
+                for(uint32 i = 0; i != count; color += change[i & 1], i ++)
                 {
-                    out->putPixel(color);
+                    *pen++ = color;
                 }
                 
                 break;

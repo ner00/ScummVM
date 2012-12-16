@@ -49,8 +49,8 @@ namespace XEEN
                 
             private:
                 void drawCell(NonNull<ImageBuffer> out, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
-                void drawFrame(NonNull<ImageBuffer> out, const Common::Point& pen, bool flip, uint32 scale);
-                uint32 drawLine(NonNull<ImageBuffer> out);
+                void drawFrame(NonNull<ImageBuffer> out, int32 x, int32 y, bool flip, uint32 scale);
+                uint32 drawLine(NonNull<uint8> out);
                 
             private:
                 FilePtr _file;

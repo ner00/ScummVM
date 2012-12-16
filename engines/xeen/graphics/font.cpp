@@ -69,19 +69,13 @@ void XEEN::Graphics::Font::drawString(NonNull<ImageBuffer> out, Common::Point pe
 
         for(int i = 0; i != 8; i ++, offset += 2)
         {
-            out->setPen(pen + Common::Point(0, i));
+            uint8 pixels[8];
             uint16 line = _data->getU16At(offset);
 
-            for(int j = 0; j != 8 && line; j ++, line >>= 2)
+            for(int j = 0; j != 8; j ++, line >>= 2)
             {
-                if(line & 3)
-                {
-                    out->putPixel(line & 3);
-                }
-                else
-                {
-                    out->movePen(Common::Point(1, 0));
-                }
+                pixels[j] = line & 3;
+                out->drawLine<0>(pen.x, pen.y + i, 8, pixels, 0, false);
             }
         }
         

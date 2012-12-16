@@ -33,36 +33,43 @@ namespace XEEN
 {
     namespace Graphics
     {
+        static const uint16 scaleTable[] = {0xFFFF, 0xFFEF, 0xEFEF, 0xEFEE, 0xEEEE, 0xEEAE,
+                                            0xAEAE, 0xAEAA, 0xAAAA, 0xAA8A, 0x8A8A, 0x8A88,
+                                            0x8888, 0x8880, 0x8080, 0x8000};
+
         struct ImageBuffer
         {
             public:
-                ImageBuffer() : _pen(0, 0), _penOffset(1, 0), _clip(0, 0, 320, 200), _scale(0), _xaccum(0)
+                static const uint32 WIDTH = 320;
+                static const uint32 HEIGHT = 200;
+
+            public:
+                ImageBuffer() : _pen(0, 0), _penOffset(1, 0), _clip(0, 0, WIDTH, HEIGHT)
                 {
                 
+                }
+
+                bool checkScale(uint32 offset, uint32 scale)
+                {
+                    const uint16 val = scaleTable[scale & 0xF];
+                    return (val << (offset & 0xF)) & 0x8000;
+                }
+
+                uint32 scaleSize(uint32 size, uint32 scale)
+                {
+                    uint32 result = 0;
+                    for(uint32 i = 0; i != size; i ++)
+                    {
+                        result += checkScale(i, scale) ? 1 : 0;
+                    }
+                    return result;
                 }
 
                 void reset()
                 {
                     _pen = Common::Point(0, 0);
                     _penOffset = Common::Point(1, 0);
-                    _clip = Common::Rect(0, 0, 320, 200);
-                    _scale = 0;
-                    _xaccum = 0;
-                }
-
-                ImageBuffer& setPen(const Common::Point& pen)
-                {
-                    _pen = pen;
-                    _xaccum = 0;
-                    return *this;
-                }
-                
-                ImageBuffer& movePen(const Common::Point& pen)
-                {
-                    _pen.x = _pen.x + (_penOffset.x * pen.x);
-                    _pen.y = _pen.y + (_penOffset.y * pen.y);
-                    _xaccum = 0;
-                    return *this;
+                    _clip = Common::Rect(0, 0, WIDTH, HEIGHT);
                 }
                 
                 ImageBuffer& clear(uint8 color)
@@ -71,24 +78,14 @@ namespace XEEN
                     return *this;
                 }
                 
-                ImageBuffer& setPenOffset(const Common::Point& offset)
-                {
-                    _penOffset = offset;
-                    return *this;
-                }
-                
                 ImageBuffer& setClipArea(const Common::Rect& clip)
                 {
                     _clip = clip;
+                    _clip.clip(Common::Rect(0, 0, WIDTH, HEIGHT));
+
                     return *this;
                 }
-    
-                ImageBuffer& setScale(uint32 scale)
-                {
-                    _scale = 16 - scale;
-                    return *this;
-                }
-    
+        
                 // TODO: CLIP
                 ImageBuffer& fillRect(const Common::Rect& rect, byte color)
                 {
@@ -107,60 +104,57 @@ namespace XEEN
                     
                     return *this;
                 }
-        
-                // Draw Pixels KEYED UNSCALED NOFLIP
-                template <byte KEY>
-                void drawPixels_K_U_NF(const byte* pixels, unsigned length)
-                {            
-                    for(unsigned i = 0; i != length; i ++, pixels++)
+
+                template <uint8 KEY>
+                void drawLine(int32 x, int32 y, uint32 width, const uint8* pixels, uint32 scale, bool flip)
+                {
+                    if(_clip.contains(_clip.top, y))
                     {
-                        if(*pixels != KEY && _clip.contains(_pen))
+                        if(!flip)
                         {
-                            buffer[_pen.y * 320 + _pen.x] = *pixels;
-                        }
-                        
-                        _pen.x ++;
-                    }
-                }
-                
-                void readPixels(Common::ReadStream& input, uint32 length)
-                {
-                    for(uint32 i = 0; i != length; i ++)
-                    {
-                        putPixel(input.readByte());
-                    }
-                }
-                
-                void putPixel(uint8 color)
-                {
-                    if(_clip.contains(_pen))
-                    {
-                        buffer[_pen.y * 320 + _pen.x] = color;
-                    }
-                    
-                    advancePen(1);
-                }
+                            for(uint32 i = 0; i != width && x < _clip.right; i ++)
+                            {
+                                if(checkScale(i, scale))
+                                {
+                                    const uint8 pixel = pixels[i];
+                                    if(pixel != KEY && x >= _clip.left)
+                                    {
+                                        buffer[y * WIDTH + x] = pixel;
+                                    }
     
-                void advancePen(uint32 amount)
-                {
-                    _xaccum += _scale * amount;
-                    for(; _xaccum >= 16; _xaccum -= 16)
-                    {
-                        _pen += _penOffset;
+                                    x ++;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            x += scaleSize(width, scale);
+
+                            for(uint32 i = 0; i != width && x >= _clip.left; i ++)
+                            {
+                                if(checkScale(i, scale))
+                                {
+                                    const uint8 pixel = pixels[i];
+                                    if(pixel != KEY && x < _clip.right)
+                                    {
+                                        buffer[y * WIDTH + x] = pixel;
+                                    }
+    
+                                    x --;
+                                }
+                            }
+                        }
                     }
                 }
-                
+        
             public:    
-                byte buffer[320 * 200];
+                byte buffer[WIDTH * HEIGHT];
                 
             private:
                 Common::Point _pen;
                 Common::Point _penOffset;
                 
                 Common::Rect _clip;
-    
-                uint32 _scale;
-                uint32 _xaccum;
         };
     }
 }
