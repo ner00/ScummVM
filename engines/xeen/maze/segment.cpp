@@ -30,6 +30,7 @@
 static const uint32 OFF_WALLS         = 0x000;
 static const uint32 OFF_CELL_FLAGS    = 0x200;
 static const uint32 OFF_SURR_MAZES    = 0x302;
+static const uint32 OFF_MAP_FLAGS     = 0x30A;
 static const uint32 OFF_WALL_TYPES    = 0x30E;
 static const uint32 OFF_SURFACE_TYPES = 0x31E;
 
@@ -56,6 +57,12 @@ void XEEN::Maze::Segment::loadSurrounding()
             _surrMazes[i] = _parent->getSegment(segID);
         }
     }
+}
+
+uint32 XEEN::Maze::Segment::getMapFlags() const
+{
+    XEEN_VALID();
+    return _data->getU32At(OFF_MAP_FLAGS);
 }
 
 uint16 XEEN::Maze::Segment::getWall(uint8 x, uint8 y) const

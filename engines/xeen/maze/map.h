@@ -46,6 +46,8 @@ namespace XEEN
             uint8 facing;
         };    
 
+        struct DrawListItem;
+
         // Only constructible by MapManager
         class Map : public Validateable
         {
@@ -69,6 +71,11 @@ namespace XEEN
                 void draw(Valid<Graphics::Manager> sprites);
                 void drawMini(const Common::Point& pen, const Common::Point& position, uint32 facing, Valid<Graphics::Manager> sprites);
     
+            private:
+                void processSurface(const Common::Point& position, uint32 facing, DrawListItem** index);
+                void processObjects(const Common::Point& position, uint32 facing, DrawListItem** index);
+                void processSideWallList(const Common::Point& position, uint32 facing, uint32 distance, uint32 count, NonNull<const int32> ids);
+
             public:
                 static Common::Point translatePoint(Common::Point position, int16 xOffset, int16 yOffset, uint16 direction);
     

@@ -48,10 +48,25 @@ namespace XEEN
                 static const uint32 INSIDE      = 0x08;
                 static const uint32 AUTOEXECUTE = 0x10;
                 static const uint32 WATER       = 0x40;
+
+                static const uint32 MAP_OUTDOORS        = 0x80000000;
+                static const uint32 MAP_ISDRAK          = 0x40000000;
+                static const uint32 MAP_BLOCKSAVE       = 0x00008000;
+                static const uint32 MAP_BLOCKREST       = 0x00004000;
+                static const uint32 MAP_UNKNOWN1        = 0x00002000;
+                static const uint32 MAP_BLOCKTELEPORT   = 0x00001000;
+                static const uint32 MAP_BLOCKBEACON     = 0x00000800;
+                static const uint32 MAP_BLOCKTIMEDIST   = 0x00000400;
+                static const uint32 MAP_BLOCKSUPERSHLTR = 0x00000200;
+                static const uint32 MAP_BLOCKTOWNPORTAL = 0x00000100;
+                static const uint32 MAP_UNKNOWN2        = 0x00000080;
+                static const uint32 MAP_BLOCKETHERALIZE = 0x00000040;
         
             private:
                 Segment(Valid<Manager> parent, FilePtr data);
                 void loadSurrounding();
+
+                uint32 getMapFlags() const;
     
                 uint16 getWall(uint8 x, uint8 y) const;
                 uint8 getCellFlags(uint8 x, uint8 y) const;

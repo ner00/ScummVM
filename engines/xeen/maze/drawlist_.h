@@ -16,6 +16,7 @@ enum DRAWID
     FWALL_3_2L, FWALL_3_1L, FWALL_3_CEN, FWALL_3_1R, FWALL_3_2R,
     FWALL_2_1L, FWALL_2_CEN, FWALL_2_1R,
     FWALL_1_1L, FWALL_1_CEN, FWALL_1_1R,
+    FWALL_0_1L, FWALL_0_CEN, FWALL_0_1R,
     
     // WALLS PERPENDICULAR TO CAMERA
     SWALL_4_4L, SWALL_4_3L, SWALL_4_2L, SWALL_4_1L, SWALL_4_1R, SWALL_4_2R, SWALL_4_3R, SWALL_4_4R,    
@@ -41,13 +42,168 @@ struct DrawListItem
     uint8 frame;        //< Sprite cell index to draw
     int16 x;            //< X position to draw at
     int16 y;            //< Y position to draw at
-    uint8 scale;        //< ?
+    uint16 scale;       //< ?
     uint16 flags;       //< ?
         
     // The draw sprite is flipped horizontally.
     bool flipped() const { return flags & 0x8000; }
     void setFlipped(bool state) { flags &= ~0x8000; flags |= (state) ? 0x8000 : 0; }
 };
+
+DrawListItem outdoorDrawList[] = 
+{
+    {SKY_TOP,      0xFFFF,      0,      8,      8,      0, 0x0000},
+    {SKY_BOTTOM,   0xFFFF,      1,      8,     25,      0, 0x0000},
+    {GROUND,       0xFFFF,      0,      8,     67,      0, 0x0000},
+    {SURF00,       0xFFFF,     18,      8,     67,      0, 0x0000},
+    {SURF01,       0xFFFF,     19,     38,     67,      0, 0x0000},
+    {SURF02,       0xFFFF,     20,     84,     67,      0, 0x0000},
+    {SURF03,       0xFFFF,     24,    134,     67,      0, 0x0000},
+    {SURF04,       0xFFFF,     23,    117,     67,      0, 0x0000},
+    {SURF05,       0xFFFF,     22,    117,     67,      0, 0x0000},
+    {SURF06,       0xFFFF,     21,    103,     67,      0, 0x0000},
+    {SURF07,       0xFFFF,     11,      8,     73,      0, 0x0000},
+    {SURF08,       0xFFFF,     12,      8,     73,      0, 0x0000},
+    {SURF09,       0xFFFF,     13,     30,     73,      0, 0x0000},
+    {SURF10,       0xFFFF,     17,    181,     73,      0, 0x0000},
+    {SURF11,       0xFFFF,     16,    154,     73,      0, 0x0000},
+    {SURF12,       0xFFFF,     15,    129,     73,      0, 0x0000},
+    {SURF13,       0xFFFF,     14,     87,     73,      0, 0x0000},
+    {SURF14,       0xFFFF,      6,      8,     81,      0, 0x0000},
+    {SURF15,       0xFFFF,      7,      8,     81,      0, 0x0000},
+    {SURF16,       0xFFFF,     10,    202,     81,      0, 0x0000},
+    {SURF17,       0xFFFF,      9,    145,     81,      0, 0x0000},
+    {SURF18,       0xFFFF,      8,     63,     81,      0, 0x0000},
+    {SURF19,       0xFFFF,      3,      8,     93,      0, 0x0000},
+    {SURF20,       0xFFFF,      5,    169,     93,      0, 0x0000},
+    {SURF21,       0xFFFF,      4,     31,     93,      0, 0x0000},
+    {SURF22,       0xFFFF,      0,      8,    109,      0, 0x0000},
+    {SURF23,       0xFFFF,      2,    201,    109,      0, 0x0000},
+    {SURF24,       0xFFFF,      1,      8,    109,      0, 0x0000},
+
+    {FWALL_4_4L,   0xFFFF,      1,    -64,     61,     14, 0x2000},
+    {FWALL_4_3L,   0xFFFF,      1,    -40,     61,     14, 0x0000},
+    {FWALL_4_2L,   0xFFFF,      1,    -16,     61,     14, 0x0000},
+    {FWALL_4_1L,   0xFFFF,      1,      8,     61,     14, 0x0000},
+    {FWALL_4_4R,   0xFFFF,      1,    128,     61,     14, 0xA000},
+    {FWALL_4_3R,   0xFFFF,      1,    104,     61,     14, 0x8000},
+    {FWALL_4_2R,   0xFFFF,      1,     80,     61,     14, 0x8000},
+    {FWALL_4_1R,   0xFFFF,      1,     56,     61,     14, 0x8000},
+    {FWALL_4_CEN,  0xFFFF,      1,     32,     61,     14, 0x0000},
+    {OBJ_3_CEN,    0xFFFF,      0,     -9,     61,     14, 0x0000},
+    {OBJ_3_1L,     0xFFFF,      0,    -58,     61,     14, 0x0000},
+    {OBJ_3_1R,     0xFFFF,      0,     40,     61,     14, 0x0000},
+    {OBJ_3_2L,     0xFFFF,      0,    -82,     61,     14, 0x0000},
+    {OBJ_3_2R,     0xFFFF,      0,     64,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,    -41,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,    -26,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,    -34,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,    -16,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,     23,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,     16,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,    -58,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,     40,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,    -17,     61,     14, 0x0000},
+    {XXX,          0xFFFF,      0,     -1,     58,     14, 0x0000},
+    {XXX,          0xFFFF,      0,     -9,     58,     14, 0x0000},
+    {XXX,          0xFFFF,      0,     72,     58,     12, 0x0000},
+    {XXX,          0xFFFF,      0,     72,     58,     12, 0x8000},
+    {XXX,          0xFFFF,      0,     69,     63,     12, 0x0000},
+    {XXX,          0xFFFF,      0,     75,     63,     12, 0x8000},
+    {XXX,          0xFFFF,      0,     73,     53,     12, 0x0000},
+    {XXX,          0xFFFF,      0,     71,     53,     12, 0x8000},
+    {XXX,          0xFFFF,      0,     80,     57,     12, 0x0000},
+    {XXX,          0xFFFF,      0,     64,     57,     12, 0x8000},
+    {FWALL_3_2L,   0xFFFF,      2,    -11,     54,      8, 0x0000},
+    {FWALL_3_1L,   0xFFFF,      1,    -21,     54,     11, 0x0000},
+    {FWALL_3_2R,   0xFFFF,      2,    165,     54,      8, 0x8000},
+    {FWALL_3_1R,   0xFFFF,      1,     86,     54,     11, 0x8000},
+    {FWALL_3_CEN,  0xFFFF,      1,     33,     54,     11, 0x0000},
+    {OBJ_2_CEN,    0xFFFF,      0,     -8,     54,     12, 0x0000},
+    {OBJ_2_1L,     0xFFFF,      0,    -73,     54,     12, 0x0000},
+    {OBJ_2_1R,     0xFFFF,      0,     57,     54,     12, 0x0000},
+    {XXX,          0xFFFF,      0,    -65,     54,     12, 0x0000},
+    {XXX,          0xFFFF,      0,    -81,     54,     12, 0x0000},
+    {XXX,          0xFFFF,      0,     49,     54,     12, 0x0000},
+    {XXX,          0xFFFF,      0,     65,     54,     12, 0x0000},
+    {XXX,          0xFFFF,      0,    -24,     54,     12, 0x0000},
+    {XXX,          0xFFFF,      0,      9,     50,     12, 0x0000},
+    {XXX,          0xFFFF,      0,     -8,     50,     12, 0x0000},
+    {XXX,          0xFFFF,      0,     72,     53,      8, 0x0000},
+    {XXX,          0xFFFF,      0,     72,     53,      8, 0x8000},
+    {XXX,          0xFFFF,      0,     77,     58,      8, 0x0000},
+    {XXX,          0xFFFF,      0,     67,     58,      8, 0x8000},
+    {XXX,          0xFFFF,      0,     81,     47,      8, 0x0000},
+    {XXX,          0xFFFF,      0,     63,     47,      8, 0x8000},
+    {XXX,          0xFFFF,      0,     94,     52,      8, 0x0000},
+    {XXX,          0xFFFF,      0,     50,     52,      8, 0x8000},
+    {FWALL_2_1L,   0xFFFF,      2,      8,     40,      0, 0x0000},
+    {FWALL_2_1R,   0xFFFF,      2,    146,     40,      0, 0x8000},
+    {FWALL_2_CEN,  0xFFFF,      1,     32,     40,      6, 0x0000},
+    {OBJ_1_CEN,    0xFFFF,      0,     -7,     30,      7, 0x0000},
+    {OBJ_1_1L,     0xFFFF,      0,   -112,     30,      7, 0x2000},
+    {OBJ_1_1R,     0xFFFF,      0,     98,     30,      7, 0x2000},
+    {XXX,          0xFFFF,      0,   -112,     30,      8, 0x2000},
+    {XXX,          0xFFFF,      0,     98,     30,      8, 0x2000},
+    {XXX,          0xFFFF,      0,    -38,     30,      8, 0x0000},
+    {XXX,          0xFFFF,      0,     25,     30,      8, 0x0000},
+    {XXX,          0xFFFF,      0,     -7,     30,      8, 0x0000},
+    {XXX,          0xFFFF,      0,     72,     48,      4, 0x0000},
+    {XXX,          0xFFFF,      0,     72,     48,      4, 0x8000},
+    {XXX,          0xFFFF,      0,     85,     53,      4, 0x0000},
+    {XXX,          0xFFFF,      0,     59,     53,      4, 0x8000},
+    {XXX,          0xFFFF,      0,     89,     41,      4, 0x0000},
+    {XXX,          0xFFFF,      0,     55,     41,      4, 0x8000},
+    {XXX,          0xFFFF,      0,    106,     47,      4, 0x0000},
+    {XXX,          0xFFFF,      0,     38,     47,      4, 0x8000},
+    {FWALL_1_1L,   0xFFFF,      0,      8,     24,      0, 0x0000},
+    {FWALL_1_1R,   0xFFFF,      0,    169,     24,      0, 0x8000},
+    {FWALL_1_CEN,  0xFFFF,      1,     32,     24,      0, 0x0000},
+    {XXX,          0xFFFF,      0,    -23,     40,      0, 0x2000},
+    {XXX,          0xFFFF,      0,    200,     40,      0, 0xA000},
+    {FWALL_0_1L,   0xFFFF,      0,      8,     47,      0, 0x0000},
+    {FWALL_0_1R,   0xFFFF,      0,    169,     47,      0, 0x8000},
+    {FWALL_0_CEN,  0xFFFF,      1,    -56,     -4,  32768, 0x6000},
+    {OBJ_HERE,     0xFFFF,      0,     -5,      2,      0, 0x6000},
+    {XXX,          0xFFFF,      0,    -67,      2,      0, 0x6000},
+    {XXX,          0xFFFF,      0,     44,     73,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     44,     73,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     58,     14,      0, 0x6000},
+    {XXX,          0xFFFF,      0,    169,     73,      0, 0x0000},
+    {XXX,          0xFFFF,      0,    169,     73,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     -5,     14,      0, 0x6000},
+    {XXX,          0xFFFF,      0,    110,     73,      0, 0x0000},
+    {XXX,          0xFFFF,      0,    110,     73,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     -5,     14,      0, 0x6000},
+    {XXX,          0xFFFF,      0,    110,     73,      0, 0x0000},
+    {XXX,          0xFFFF,      0,    110,     73,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     72,     43,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     72,     43,      0, 0x8000},
+    {XXX,          0xFFFF,      0,     93,     48,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     51,     48,      0, 0x8000},
+    {XXX,          0xFFFF,      0,     97,     36,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     47,     36,      0, 0x8000},
+    {XXX,          0xFFFF,      0,    118,     42,      0, 0x0000},
+    {XXX,          0xFFFF,      0,     26,     42,      0, 0x8000}
+};
+
+DrawListItem* outdoorDrawIndex[XXX];
+
+void buildOutdoorDrawIndex()
+{
+    for(int i = 0; i != XXX; i ++)
+    {
+        for(int j = 0; j != sizeof(outdoorDrawList) / sizeof(outdoorDrawList[0]); j ++)
+        {
+            if(outdoorDrawList[j].id == (DRAWID)i)
+            {
+                outdoorDrawIndex[i] = &outdoorDrawList[j];
+                break;
+            }
+        }
+    }
+}
+
 
 DrawListItem indoorDrawList[] =
 {
@@ -255,7 +411,5 @@ void buildDrawIndex()
                 break;
             }
         }
-        
-        assert(indoorDrawIndex[i]);
     }
 }
