@@ -61,6 +61,8 @@ namespace XEEN
                 const char* getString(uint32 id) const;
                 void runEventAt(uint8 x, uint8 y, Direction facing);
     
+                bool canMove(const Common::Point& position, Direction dir) const;
+
                 uint16 getTile(Common::Point position, Direction facing = 0) const;
                 uint8 getFlags(Common::Point position) const;
                 uint16 getSurface(Common::Point position) const;

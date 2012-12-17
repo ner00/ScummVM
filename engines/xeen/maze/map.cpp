@@ -90,6 +90,16 @@ void XEEN::Maze::Map::runEventAt(uint8 x, uint8 y, Direction facing)
     }
 }
 
+bool XEEN::Maze::Map::canMove(const Common::Point& position, Direction dir) const
+{
+    XEEN_VALID();
+
+    const uint32 wallNoPass = _base->getValue(Segment::WALLNOPASS);
+    const uint32 tile = getTile(position, dir);
+
+    return (tile >> 12) < wallNoPass;
+}
+
 uint16 XEEN::Maze::Map::getTile(Common::Point position, Direction facing) const
 {
     XEEN_VALID();
@@ -444,11 +454,7 @@ void XEEN::Maze::Map::processObjects(const Common::Point& position, Direction fa
             index[objOffsets[i].id]->sprite = CCFileId("%03d.%sBJ", t.id, (t.id < 100) ? "O" : "0");
             const uint8* const data = od->getDataForObject(t.id);
 
-            uint32 dir = t.facing.relativeTo(facing);
-            if(dir & 1)
-            {
-                dir ^= 2;
-            }
+            uint32 dir = facing.relativeTo(t.facing).turnAround();
 
             if(enforce(data))
             {

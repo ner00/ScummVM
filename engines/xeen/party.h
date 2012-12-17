@@ -74,7 +74,7 @@ namespace XEEN
             void changeMap(uint8 id);
             
             void moveTo(const Common::Point& position, uint8 facing);
-            void moveRelative(const Common::Point& delta);
+            void moveRelative(Direction dir);
             void turn(bool left);
                 
         private:

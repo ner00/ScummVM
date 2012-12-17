@@ -208,7 +208,7 @@ namespace XEEN
             }
 
             // The number of times this would need to turn right to equal other.
-            Direction relativeTo(Direction other) const { return _direction - other; }
+            Direction relativeTo(Direction other) const { return _direction + other; }
 
             Common::Point move(const Common::Point pos, int32 x, int32 y) const
             {

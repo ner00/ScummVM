@@ -64,10 +64,10 @@ void XEEN::GameWindow::handleAction(unsigned id)
 
         // MOVEMENT
         case 10: party->turn(true); break;
-        case 11: party->moveRelative(Common::Point(0, 1)); break;
+        case 11: party->moveRelative(Direction::NORTH); break;
         case 12: party->turn(false); break;
-        case 13: party->moveRelative(Common::Point(-1, 0)); break;
-        case 14: party->moveRelative(Common::Point(0, -1)); break;
-        case 15: party->moveRelative(Common::Point(1, 0)); break;
+        case 13: party->moveRelative(Direction::WEST); break;
+        case 14: party->moveRelative(Direction::SOUTH); break;
+        case 15: party->moveRelative(Direction::EAST); break;
     }
 }

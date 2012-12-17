@@ -232,12 +232,18 @@ void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
     }
 }
 
-void XEEN::Party::moveRelative(const Common::Point& delta)
+void XEEN::Party::moveRelative(Direction dir)
 {
     XEEN_VALID();
 
     const Direction facing = getValue(MAZE_FACING);
-    moveTo(facing.move(getPosition(), delta.x, delta.y), facing);
+    const Common::Point position = getPosition();
+    const Direction moving = facing.relativeTo(dir);
+
+    if(getMap()->canMove(position, moving))
+    {
+        moveTo(moving.move(position, 0, 1), facing);
+    }
 }
 
 void XEEN::Party::turn(bool left)
