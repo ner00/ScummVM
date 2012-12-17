@@ -61,17 +61,27 @@ namespace XEEN
                 static const uint32 MAP_BLOCKTOWNPORTAL = 0x00000100;
                 static const uint32 MAP_UNKNOWN2        = 0x00000080;
                 static const uint32 MAP_BLOCKETHERALIZE = 0x00000040;
+
+                enum SegmentValue
+                {
+                    FLOORTYPE, RUNX, WALLNOPASS, SURFACENOPASS, UNLOCKDOOR, UNLOCKBOX,
+                    BASHDOOR, BASHGRATE, BASHWALL, CHANCETORUN, RUNY, TRAPDAMAGE, WALLTYPE,
+                    TAVERNTIPS, MAX_VALUE
+                };
         
             private:
                 Segment(Valid<Manager> parent, FilePtr data);
                 void loadSurrounding();
-
-                uint32 getMapFlags() const;
     
                 uint16 getWall(uint8 x, uint8 y) const;
                 uint8 getCellFlags(uint8 x, uint8 y) const;
+
+                uint32 getMapFlags() const;
+
                 uint8 lookupSurface(uint8 id) const;
                 uint8 lookupWall(uint8 id) const;
+
+                uint32 getValue(SegmentValue val) const;
 
                 Segment* resolveSegment(Common::Point& position);
     

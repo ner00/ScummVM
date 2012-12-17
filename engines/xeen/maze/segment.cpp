@@ -33,6 +33,7 @@ static const uint32 OFF_SURR_MAZES    = 0x302;
 static const uint32 OFF_MAP_FLAGS     = 0x30A;
 static const uint32 OFF_WALL_TYPES    = 0x30E;
 static const uint32 OFF_SURFACE_TYPES = 0x31E;
+static const uint32 OFF_VALUES        = 0x32E;
 
 XEEN::Maze::Segment::Segment(Valid<Manager> parent, FilePtr data) : _parent(parent), _data(data)
 {
@@ -59,58 +60,40 @@ void XEEN::Maze::Segment::loadSurrounding()
     }
 }
 
+uint16 XEEN::Maze::Segment::getWall(uint8 x, uint8 y) const
+{
+    XEEN_VALID();
+    return enforce(x < 16 && y < 16) ? _data->getU16At(OFF_WALLS + (y * 32 + x * 2)) : 0;
+}
+
+uint8 XEEN::Maze::Segment::getCellFlags(uint8 x, uint8 y) const
+{
+    XEEN_VALID();
+    return enforce(x < 16 && y < 16) ? _data->getByteAt(OFF_CELL_FLAGS + (y * 16 + x)) : 0;
+}
+
 uint32 XEEN::Maze::Segment::getMapFlags() const
 {
     XEEN_VALID();
     return _data->getU32At(OFF_MAP_FLAGS);
 }
 
-uint16 XEEN::Maze::Segment::getWall(uint8 x, uint8 y) const
-{
-    XEEN_VALID();
-
-    if(enforce(x < 16 && y < 16))
-    {
-        return _data->getU16At(OFF_WALLS + (y * 32 + x * 2));
-    }
-
-    return 0;
-}
-
-uint8 XEEN::Maze::Segment::getCellFlags(uint8 x, uint8 y) const
-{
-    XEEN_VALID();
-
-    if(enforce(x < 16 && y < 16))
-    {
-        return _data->getByteAt(OFF_CELL_FLAGS + (y * 16 + x));
-    }
-
-    return 0;    
-}
-
 uint8 XEEN::Maze::Segment::lookupSurface(uint8 id) const
 {
     XEEN_VALID();
-
-    if(enforce(id < 16))
-    {
-        return _data->getByteAt(OFF_SURFACE_TYPES + id);
-    }
-
-    return 0;    
+    return enforce(id < 16) ? _data->getByteAt(OFF_SURFACE_TYPES + id) : 0;
 }
 
 uint8 XEEN::Maze::Segment::lookupWall(uint8 id) const
 {
     XEEN_VALID();
+    return enforce(id < 16) ? _data->getByteAt(OFF_WALL_TYPES + id) : 0;
+}
 
-    if(enforce(id < 16))
-    {
-        return _data->getByteAt(OFF_WALL_TYPES + id);
-    }
-
-    return 0;
+uint32 XEEN::Maze::Segment::getValue(SegmentValue val) const
+{
+    XEEN_VALID();
+    return enforce(val < MAX_VALUE) ? _data->getByteAt(OFF_VALUES + val) : 0;
 }
 
 XEEN::Maze::Segment* XEEN::Maze::Segment::resolveSegment(Common::Point& position)
