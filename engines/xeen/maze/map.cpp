@@ -136,6 +136,13 @@ uint16 XEEN::Maze::Map::getSurface(Common::Point position) const
 {
     XEEN_VALID();
 
+    uint32 flags = getFlags(position);
+
+    if(flags & Segment::WATER)
+    {
+        return 8;
+    }
+
     if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
     {
         return _base->lookupSurface(getTile(position, 0) & 0xF);
