@@ -46,7 +46,7 @@ namespace XEEN
     
             private:
                 EventList(Map* parent, FilePtr data);
-                void runEventAt(uint8 x, uint8 y, uint32 facing);
+                void runEventAt(uint8 x, uint8 y, Direction facing);
     
             private:
                 uint8 runEventLine(int32 off);

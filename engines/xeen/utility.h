@@ -183,6 +183,60 @@ namespace XEEN
         }
     };
 
+    struct Direction
+    {
+        private:
+            uint32 _direction;
+
+        public:
+            static const uint32 NORTH = 0;
+            static const uint32 EAST = 1;
+            static const uint32 SOUTH = 2;
+            static const uint32 WEST = 3;
+
+        public:
+            Direction() : _direction(0) {}
+            Direction(uint32 d) : _direction(d & 3) {}
+
+            operator uint32() const { return _direction; }
+
+            static Direction fromOffsets(int32 x, int32 y)
+            {
+                if(x && y) return 0;
+                if(x && !y) return (x < 0) ? 3 : 1;
+                if(!x && y) return (y < 0) ? 2 : 0;
+            }
+
+            // The number of times this would need to turn right to equal other.
+            Direction relativeTo(Direction other) const { return _direction - other; }
+
+            Common::Point move(const Common::Point pos, int32 x, int32 y) const
+            {
+                Common::Point out = pos;
+
+                if(!isAlongX())
+                {
+                    out.x += (_direction & 2) ? 0 - x : x;
+                    out.y += (_direction & 2) ? 0 - y : y;
+                }
+                else
+                {
+                    out.x += (_direction & 2) ? 0 - y : y;
+                    out.y += (_direction & 2) ? x : 0 - x;
+                }
+
+                return out;
+            }
+
+            bool isAlongX() const   { return _direction & 1; }
+
+            // These both modify and return the object. They are not 'const'
+            Direction& turnLeft()         { _direction = (_direction - 1) & 3; return *this; }
+            Direction& turnRight()        { _direction = (_direction + 1) & 3; return *this; }
+            Direction& turnAround()       { _direction ^= 2; return *this; }
+            Direction& turn(bool left)    { _direction = (_direction + (left ? -1 : 1)) & 3; return *this; }
+    };
+
     //
     struct CCFileId
     {

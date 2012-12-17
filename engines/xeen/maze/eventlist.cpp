@@ -66,14 +66,17 @@ XEEN::Maze::EventList::EventList(Map* parent, FilePtr data) : _parent(parent), _
     }
 }
 
-void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, uint32 facing)
+void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, Direction facing)
 {
     XEEN_VALID();
 
-    if(_eventOffset[y * MAX_MAP_WIDTH + x] >= 0)
+    const int32 off = _eventOffset[y * MAX_MAP_WIDTH + x];
+
+    if(off >= 0)
     {
-        const int32 off = _eventOffset[y * MAX_MAP_WIDTH + x];
-        if(off)
+        const uint8 dir = _data->getByteAt(off + 3);
+
+        if(dir == 4 || dir == facing)
         {
             runEventLine(off);
         }

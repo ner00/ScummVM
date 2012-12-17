@@ -236,12 +236,12 @@ void XEEN::Party::moveRelative(const Common::Point& delta)
 {
     XEEN_VALID();
 
-    const uint8 facing = getValue(MAZE_FACING);
-    moveTo(Maze::Map::translatePoint(getPosition(), delta.x, delta.y, facing), facing);
+    const Direction facing = getValue(MAZE_FACING);
+    moveTo(facing.move(getPosition(), delta.x, delta.y), facing);
 }
 
 void XEEN::Party::turn(bool left)
 {
     XEEN_VALID();
-    moveTo(getPosition(), (GET8(OFF_MAZE_FACING) + (left ? -1 : 1)) & 3);
+    moveTo(getPosition(), Direction(GET8(OFF_MAZE_FACING)).turn(left));
 }
