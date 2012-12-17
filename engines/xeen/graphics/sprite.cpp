@@ -92,35 +92,54 @@ void XEEN::Graphics::Sprite::drawFrame(NonNull<ImageBuffer> out, int32 x, int32 
     const int16 penY = _file->readSint16LE();
     const uint16 frameHeight = _file->readUint16LE();
 
-    const uint32 scaledWidth = out->scaleSize(penX + frameWidth, scale);
-
-    uint32 yoff = 0;
-    for(int16 i = 0; i != penY; i ++)
+    if(scale == 0x8000) // Double size
     {
-        yoff += (out->checkScale(i, scale)) ? 1 : 0;
+        y += penY * 2;
+
+        for(uint32 onLine = 0; onLine != frameHeight; )
+        {
+            byte line[320];
+            const uint32 linesDrawn = drawLine(line);
+
+            out->drawLine<0>(x, y + onLine * 2, penX + frameWidth, line, 0x8000, flip);
+            out->drawLine<0>(x, y + onLine * 2 + 1, penX + frameWidth, line, 0x8000, flip);
+
+            onLine += linesDrawn;
+            assert((linesDrawn > 0) && (onLine <= frameHeight)); // < Sanity
+        }
     }
-
-    // Draw the lines
-    for(uint32 onLine = 0; onLine != frameHeight; )
+    else
     {
-        uint8 line[320];
-        const uint32 linesDrawn = drawLine(line);
-
-        if(out->checkScale(penY + onLine, scale))
+        const uint32 scaledWidth = out->scaleSize(penX + frameWidth, scale);
+    
+        uint32 yoff = 0;
+        for(int16 i = 0; i != penY; i ++)
         {
-            out->drawLine<0>(x + (penX + frameWidth - scaledWidth) / 2, y + yoff, penX + frameWidth, line, scale, flip);
+            yoff += (out->checkScale(i, scale)) ? 1 : 0;
         }
-
-        for(uint32 i = 0; i != linesDrawn; i ++)
+    
+        // Draw the lines
+        for(uint32 onLine = 0; onLine != frameHeight; )
         {
-            yoff += (out->checkScale(penY + onLine + i, scale)) ? 1 : 0;
+            uint8 line[320];
+            const uint32 linesDrawn = drawLine(line);
+    
+            if(out->checkScale(penY + onLine, scale))
+            {
+                out->drawLine<0>(x + (penX + frameWidth - scaledWidth) / 2, y + yoff, penX + frameWidth, line, scale, flip);
+            }
+    
+            for(uint32 i = 0; i != linesDrawn; i ++)
+            {
+                yoff += (out->checkScale(penY + onLine + i, scale)) ? 1 : 0;
+            }
+    
+            onLine += linesDrawn;
+    
+            // Check sanity: At least one line must have been drawn, and No more than 
+            // frameHeight lines may have been drawn.
+            assert((linesDrawn > 0) && (onLine <= frameHeight));
         }
-
-        onLine += linesDrawn;
-
-        // Check sanity: At least one line must have been drawn, and No more than 
-        // frameHeight lines may have been drawn.
-        assert((linesDrawn > 0) && (onLine <= frameHeight));
     }
 }
 

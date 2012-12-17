@@ -110,37 +110,85 @@ namespace XEEN
                 {
                     if(_clip.contains(_clip.left, y))
                     {
-                        if(!flip)
+                        if(scale & 0x8000) // Double Size
                         {
-                            for(uint32 i = 0; i != width && x < _clip.right; i ++)
+                            if(!flip)
                             {
-                                if(checkScale(i, scale))
+                                for(uint32 i = 0; i != width && x < _clip.right; i ++)
                                 {
                                     const uint8 pixel = pixels[i];
                                     if(pixel != KEY && x >= _clip.left)
                                     {
                                         buffer[y * WIDTH + x] = pixel;
                                     }
-    
+
+                                    x ++;
+
+                                    if(pixel != KEY && x >= _clip.left && x < _clip.right)
+                                    {
+                                        buffer[y * WIDTH + x] = pixel;
+                                    }
+
                                     x ++;
                                 }
                             }
-                        }
-                        else
-                        {
-                            x += scaleSize(width, scale);
-
-                            for(uint32 i = 0; i != width && x >= _clip.left; i ++)
+                            else
                             {
-                                if(checkScale(i, scale))
+                                x += width * 2;
+
+                                for(uint32 i = 0; i != width && x >= _clip.left; i ++)
                                 {
                                     const uint8 pixel = pixels[i];
                                     if(pixel != KEY && x < _clip.right)
                                     {
                                         buffer[y * WIDTH + x] = pixel;
                                     }
-    
+
                                     x --;
+
+                                    if(pixel != KEY && x < _clip.right && x >= _clip.left)
+                                    {
+                                        buffer[y * WIDTH + x] = pixel;
+                                    }
+
+                                    x --;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(!flip)
+                            {
+                                for(uint32 i = 0; i != width && x < _clip.right; i ++)
+                                {
+                                    if(checkScale(i, scale))
+                                    {
+                                        const uint8 pixel = pixels[i];
+                                        if(pixel != KEY && x >= _clip.left)
+                                        {
+                                            buffer[y * WIDTH + x] = pixel;
+                                        }
+        
+                                        x ++;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                x += scaleSize(width, scale);
+    
+                                for(uint32 i = 0; i != width && x >= _clip.left; i ++)
+                                {
+                                    if(checkScale(i, scale))
+                                    {
+                                        const uint8 pixel = pixels[i];
+                                        if(pixel != KEY && x < _clip.right)
+                                        {
+                                            buffer[y * WIDTH + x] = pixel;
+                                        }
+        
+                                        x --;
+                                    }
                                 }
                             }
                         }

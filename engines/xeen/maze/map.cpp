@@ -195,20 +195,21 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
         static const uint16 wallmap[16] = {0xFFFF, CCFileId("MOUNT.WAL"), CCFileId("LTREE.WAL"), CCFileId("LAVAMNT.WAL"),
                                            CCFileId("DTREE.WAL"), CCFileId("DEDLTREE.WAL"), CCFileId("PALM.WAL"),
                                            CCFileId("SNOMNT.WAL"), CCFileId("SNOTREE.WAL")};
+        static const int wall0[3] = {FWALL_0_1L, FWALL_0_CEN, FWALL_0_1R};
         static const int wall1[3] = {FWALL_1_1L, FWALL_1_CEN, FWALL_1_1R};
         static const int wall2[3] = {FWALL_2_1L, FWALL_2_CEN, FWALL_2_1R};
         static const int wall3[5] = {FWALL_3_2L, FWALL_3_1L, FWALL_3_CEN, FWALL_3_1R, FWALL_3_2R};
         static const int wall4[9] = {FWALL_4_4L, FWALL_4_3L, FWALL_4_2L, FWALL_4_1L, FWALL_4_CEN,
                                      FWALL_4_1R, FWALL_4_2R, FWALL_4_3R, FWALL_4_4R};    
-        static const int wallcount[4] = {3, 3, 5, 9};
-        static const int walloffset[4] = {1, 1, 2, 4};
-        static const int* const wallbase[] = {wall1, wall2, wall3, wall4};
+        static const int wallcount[5] = {3, 3, 3, 5, 9};
+        static const int walloffset[5] = {1, 1, 1, 2, 4};
+        static const int* const wallbase[] = {wall0, wall1, wall2, wall3, wall4};
         
-        for(int i = 0; i != 4; i ++)
+        for(int i = 0; i != 5; i ++)
         {
             for(int j = 0; j != wallcount[i]; j ++)
             {
-                Common::Point cell = translatePoint(position, j - walloffset[i], i + 1, direction);
+                Common::Point cell = translatePoint(position, j - walloffset[i], i, direction);
                 outdoorDrawIndex[wallbase[i][j]]->sprite = wallmap[(getTile(cell, 0) >> 4) & 0xF];
             }
         }
