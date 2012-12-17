@@ -183,6 +183,18 @@ namespace XEEN
         }
     };
 
+
+    class Game;
+    class GameHolder
+    {
+        public:
+            GameHolder(Valid<Game> game) : _heldGame(game) { }
+            Valid<Game> getGame() { return _heldGame; }
+            const Valid<Game> getGame() const { return _heldGame; }
+        private:
+            Valid<Game> _heldGame;
+    };
+
     struct Direction
     {
         private:

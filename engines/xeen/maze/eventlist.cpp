@@ -22,6 +22,7 @@
 #define XEEN_MAZE_SOURCE
 
 #include "xeen/game.h"
+#include "xeen/ui/basicwindows.h"
 #include "xeen/utility.h"
 
 #include "xeen/maze/eventlist_.h"
@@ -29,13 +30,8 @@
 
 XEEN::Maze::EventList::EventList(Map* parent, FilePtr data) : _parent(parent), _data(data)
 {
-    memset(_eventOffset, 0xFF, sizeof(_eventOffset));
-
     if(_data)
     {
-        uint8 lastX = 255;
-        uint8 lastY = 255;
-
         while(!_data->eos())
         {
             uint8 length = _data->readByte();
@@ -45,23 +41,27 @@ XEEN::Maze::EventList::EventList(Map* parent, FilePtr data) : _parent(parent), _
                 break;
             }
 
-            uint8 x = _data->readByte();
-            uint8 y = _data->readByte();
+            const uint8 x = _data->readByte();
+            const uint8 y = _data->readByte();
+            const uint8 f = _data->readByte();
+            const uint8 l = _data->readByte();
+            const uint32 key = (x << 16) | (y << 8);
 
-            if(x != lastX || y != lastY)
+            (void)f;
+
+            Event& ev = _events[key];
+
+            if(enforce(l == ev.lines.size()))
             {
-                lastX = x;
-                lastY = y;
-
-                _eventOffset[y * MAX_MAP_WIDTH + x] = _data->pos() - 3;
+                ev.lines.push_back(_data->pos() - 5);
             }
            
-            _data->seek(_data->pos() + length - 2);
+            _data->seek(_data->pos() + length - 4);
         }
     }
     else
     {
-        _data.reset();
+        _events.clear();
         markInvalid();
     }
 }
@@ -70,38 +70,96 @@ void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, Direction facing)
 {
     XEEN_VALID();
 
-    const int32 off = _eventOffset[y * MAX_MAP_WIDTH + x];
+    const uint32 key = (x << 16) | (y << 8);
 
-    if(off >= 0)
+    if(_events.contains(key))
     {
-        const uint8 dir = _data->getByteAt(off + 3);
+        Event& ev = _events[key];
 
-        if(dir == 4 || dir == facing)
+        debug("\nEVENT START");
+        for(uint32 i = 0; i != ev.lines.size(); i ++)
         {
-            runEventLine(off);
+            runEventLine(ev.lines[i]);
         }
     }
 }
 
-uint8 XEEN::Maze::EventList::runEventLine(int32 off)
+int32 XEEN::Maze::EventList::runEventLine(int32 off)
 {
     XEEN_VALID();
 
     if(valid(_parent))
     {
-        _data->seek(off);
-    
-        uint8 length = _data->readByte();
-        _data->seek(4, SEEK_CUR);
-    
-        uint8 opcode = _data->readByte();
+        const uint8 length = _data->getByteAt(off);
+        const uint8 opcode = _data->getByteAt(off + 5);
+
         switch(opcode)
         {
-            case 0x00: return 0;
-            case 0x01: return 0;
-            case 0x02: debug("%s", _parent->getString(_data->readByte())); return 0;
+            case 0x00: { return evNOP(off); }
+            case 0x01: { return evMESSAGE(off); }
+            case 0x02: { return evMAPTEXT(off); }
+            case 0x03: { return evMAPTEXT(off); }
+            case 0x04: { return evMAPTEXT(off); }
+            case 0x05: { return evNPC(off); }
+            case 0x07: { return evTELEPORT(off); }
+            case 0x08: { return evIF(off); }
+            case 0x09: { return evIF(off); }
+            case 0x0A: { return evIF(off); }
+            case 0x1F: { return evTELEPORT(off); }
+            case 0x27: { return evMAPTEXT(off); }
+            case 0x29: { return evMESSAGE(off); }
+            case 0x35: { return evMESSAGE(off); }
+            default: debug("EV: %02X", opcode); return 1;
         }
     }
 
     return 0;
+}
+
+int32 XEEN::Maze::EventList::evNOP(uint32 offset)
+{
+    return 1;
+}
+
+int32 XEEN::Maze::EventList::evMAPTEXT(uint32 offset)
+{
+    // TODO
+    debug("MAPTEXT");
+    debug("%s", _parent->getString(_data->getByteAt(offset + 6)));
+    return 1;
+}
+
+int32 XEEN::Maze::EventList::evMESSAGE(uint32 offset)
+{
+    // TODO
+    debug("MESSAGE");
+    debug("%s", _parent->getString(_data->getByteAt(offset + 6)));
+    return 1;
+}
+
+int32 XEEN::Maze::EventList::evNPC(uint32 offset)
+{
+    // TODO
+    debug("NPC");
+
+    const char* name = _parent->getString(_data->getByteAt(offset + 6));
+    const char* msg = _parent->getString(_data->getByteAt(offset + 7));
+
+    _parent->getGame()->showWindow(new NPCWindow(_parent->getGame(), name, msg));
+
+    return 1;
+}
+
+int32 XEEN::Maze::EventList::evTELEPORT(uint32 offset)
+{
+    // TODO
+    debug("TELEPORT");
+    return 1;
+}
+
+int32 XEEN::Maze::EventList::evIF(uint32 offset)
+{
+    // TODO
+    debug("IF");
+    return 1;
 }

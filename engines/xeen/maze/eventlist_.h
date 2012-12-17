@@ -49,12 +49,25 @@ namespace XEEN
                 void runEventAt(uint8 x, uint8 y, Direction facing);
     
             private:
-                uint8 runEventLine(int32 off);
+                int32 runEventLine(int32 off);
+                int32 evNOP(uint32 offset);
+                int32 evMAPTEXT(uint32 offset);
+                int32 evMESSAGE(uint32 offset);
+                int32 evNPC(uint32 offset);
+                int32 evTELEPORT(uint32 offset);
+                int32 evIF(uint32 offset);
     
+            private:
+                struct Event
+                {
+                    Common::Array<uint32> lines;
+                };
+
             private:
                 Map* _parent;
                 FilePtr _data;
-                int32 _eventOffset[MAX_MAP_WIDTH * MAX_MAP_HEIGHT];
+
+                Common::HashMap<uint32, Event> _events;
         };
     }
 }

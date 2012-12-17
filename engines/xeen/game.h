@@ -47,7 +47,7 @@ namespace XEEN
     class Game : public Validateable_Cleanable
     {
         public:
-            enum WindowID { NONE, STATUS, QUICKREF, CASTSPELL, SELECTSPELL, GAMEINFO, CHARACTION, MAX_WINDOW_ID };
+            enum WindowID { NONE, STATUS, QUICKREF, CASTSPELL, SELECTSPELL, GAMEINFO, CHARACTION, MAX_WINDOW_ID, TEMP };
             enum Type { CLOUDS, DARKSIDE, WORLD };
     
         public:
@@ -62,6 +62,8 @@ namespace XEEN
             Type getGameType() const { return CLOUDS; }
         
             void showWindow(WindowID id);
+            void showWindow(Valid<Window> window);
+            void closeWindow();
         
             void click(const Common::Point& location);
             void key(Common::KeyCode key);
@@ -78,8 +80,10 @@ namespace XEEN
             void selectCharacter(unsigned slot) { _activeCharacterSlot = slot; }
                 
         private:
-            WindowID _windowID;
-            Window* _currentWindow;
+            WindowID _windowID[16];
+            Window* _windowStack[16];
+            uint32 _windowDepth;
+
             unsigned _activeCharacterSlot;
                 
         private:

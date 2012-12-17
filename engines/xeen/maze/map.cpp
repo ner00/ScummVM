@@ -42,7 +42,7 @@ namespace XEEN
     }
 }
 
-XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : _parent(parent), _base(0), _text(0), _events(0), _objects(0)
+XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(parent->getGame()), _parent(parent), _base(0), _text(0), _events(0), _objects(0)
 {
     _base = _parent->getSegment(mapNumber);
  

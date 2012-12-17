@@ -113,6 +113,20 @@ namespace XEEN
             void handleAction(unsigned id);
             void produceString(unsigned id);
     };
+
+    class NPCWindow : public Window
+    {
+        public:
+            NPCWindow(Valid<Game> parent, NonNull<const char> name, NonNull<const char> msg);
+
+        protected:
+            const String* getStrings() const;
+            void produceString(unsigned id);
+
+        private:
+            const char* _name;
+            const char* _msg;
+    };
 }
 
 #endif // XEEN_UI_BASICWINDOWS_H

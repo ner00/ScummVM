@@ -70,8 +70,11 @@ namespace XEEN
 
         protected:
             Window(Valid<Game> parent, const Common::Rect& area, bool clickToClose = false);
+
+        public:
             virtual ~Window() {};
 
+        protected:
             virtual const Button* getButtons() const { return 0; }
             virtual const String* getStrings() const { return 0; }
             

@@ -33,9 +33,11 @@
 
 #include "xeen/maze/map.h"
 
-XEEN::Game::Game() : _windowID(NONE), _currentWindow(0), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
+XEEN::Game::Game() : _windowDepth(0), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
                      _statusWnd(0), _portraitWnd(0), _charActionWnd(0), _mainWnd(0), _quickrefWnd(0), _castWnd(0), _gameInfoWnd(0), _spellSelectWnd(0)
 {
+    memset(_windowID, 0, sizeof(_windowID));
+    memset(_windowStack, 0, sizeof(_windowStack));
     markInvalid();
 }
 
@@ -60,9 +62,10 @@ void XEEN::Game::load()
     _graphicsManager = new Graphics::Manager(this);
     _mapManager = new Maze::Manager(this);
     _party = new Party(this);
-    
-    _windowID = NONE;
-    _currentWindow = 0;
+
+    memset(_windowID, 0, sizeof(_windowID));
+    memset(_windowStack, 0, sizeof(_windowStack));
+    _windowDepth = 0;
     
     _statusWnd = new CharacterStatusWindow(this);
     _portraitWnd = new CharacterWindow(this);
@@ -118,32 +121,67 @@ void XEEN::Game::load()
 
 void XEEN::Game::showWindow(WindowID id)
 {
-    _windowID = id;
-    _currentWindow = 0;
-
-    switch(id)
+    //HACK
+    if(id == NONE)
     {
-        case STATUS: _currentWindow = _statusWnd; break;
-        case QUICKREF: _currentWindow = _quickrefWnd; break;
-        case CASTSPELL: _currentWindow = _castWnd; break;
-        case SELECTSPELL: _currentWindow = _spellSelectWnd; break;
-        case GAMEINFO: _currentWindow = _gameInfoWnd; break;
-        case CHARACTION: _currentWindow = _charActionWnd; break;
+        closeWindow();
+        return;
     }
 
-    if(_currentWindow)
+    if(enforce(_windowDepth < 16) && enforce(id < MAX_WINDOW_ID))
     {
-        _currentWindow->show();
+        _windowID[_windowDepth] = id;
+    
+        switch(id)
+        {
+            case STATUS: _windowStack[_windowDepth] = _statusWnd; break;
+            case QUICKREF: _windowStack[_windowDepth] = _quickrefWnd; break;
+            case CASTSPELL: _windowStack[_windowDepth] = _castWnd; break;
+            case SELECTSPELL: _windowStack[_windowDepth] = _spellSelectWnd; break;
+            case GAMEINFO: _windowStack[_windowDepth] = _gameInfoWnd; break;
+            case CHARACTION: _windowStack[_windowDepth] = _charActionWnd; break;
+            default: enforce(false);
+        }
+    
+        _windowStack[_windowDepth]->show();
+        _windowDepth ++;
     }
 }
+
+void XEEN::Game::showWindow(Valid<Window> window)
+{
+    if(enforce(_windowDepth < 16))
+    {
+        _windowID[_windowDepth] = TEMP;
+        _windowStack[_windowDepth] = window;
+        _windowDepth ++;
+    }
+}
+
+void XEEN::Game::closeWindow()
+{
+    if(_windowDepth)
+    {
+        _windowDepth --;
+
+        if(_windowID[_windowDepth] == TEMP)
+        {
+            delete _windowStack[_windowDepth];
+        }
+
+        _windowID[_windowDepth] = NONE;
+        _windowStack[_windowDepth] = 0;
+    }
+}
+
 
 void XEEN::Game::click(const Common::Point& location)
 {
     XEEN_VALID();
 
-    if(_currentWindow)
+    if(_windowDepth)
     {
-        _currentWindow->click(location);
+        _windowStack[_windowDepth - 1]->click(location);
         // TODO: Portraits if needed!
     }
     else
@@ -157,9 +195,9 @@ void XEEN::Game::key(Common::KeyCode keycode)
 {
     XEEN_VALID();
 
-    if(_currentWindow)
+    if(_windowDepth)
     {
-        _currentWindow->key(keycode);
+        _windowStack[_windowDepth - 1]->key(keycode);
         // TODO: Portraits if needed!
     }
     else
@@ -180,13 +218,12 @@ void XEEN::Game::draw()
     _mainWnd->draw();
     _portraitWnd->draw();
     
-    if(_currentWindow)
+    if(_windowDepth)
     {
-        _currentWindow->heartbeat();
-
-        if(_currentWindow)
+        for(int i = _windowDepth - 1; i != -1; i --)
         {
-            _currentWindow->draw();
+            _windowStack[i]->heartbeat();
+            _windowStack[i]->draw();
         }
     }
     else
