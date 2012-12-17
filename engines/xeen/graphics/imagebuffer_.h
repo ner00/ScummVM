@@ -108,7 +108,7 @@ namespace XEEN
                 template <uint8 KEY>
                 void drawLine(int32 x, int32 y, uint32 width, const uint8* pixels, uint32 scale, bool flip)
                 {
-                    if(_clip.contains(_clip.top, y))
+                    if(_clip.contains(_clip.left, y))
                     {
                         if(!flip)
                         {

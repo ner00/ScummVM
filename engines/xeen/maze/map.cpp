@@ -182,6 +182,30 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, uint16 direction)
     
         processSurface(position, direction, outdoorDrawIndex);
         processObjects(position, direction, outdoorDrawIndex);
+
+        // WALLS
+        // TODO: Nearest walls
+        static const uint16 wallmap[16] = {0xFFFF, CCFileId("MOUNT.WAL"), CCFileId("LTREE.WAL"), CCFileId("LAVAMNT.WAL"),
+                                           CCFileId("DTREE.WAL"), CCFileId("DEDLTREE.WAL"), CCFileId("PALM.WAL"),
+                                           CCFileId("SNOMNT.WAL"), CCFileId("SNOTREE.WAL")};
+        static const int wall1[3] = {FWALL_1_1L, FWALL_1_CEN, FWALL_1_1R};
+        static const int wall2[3] = {FWALL_2_1L, FWALL_2_CEN, FWALL_2_1R};
+        static const int wall3[5] = {FWALL_3_2L, FWALL_3_1L, FWALL_3_CEN, FWALL_3_1R, FWALL_3_2R};
+        static const int wall4[9] = {FWALL_4_4L, FWALL_4_3L, FWALL_4_2L, FWALL_4_1L, FWALL_4_CEN,
+                                     FWALL_4_1R, FWALL_4_2R, FWALL_4_3R, FWALL_4_4R};    
+        static const int wallcount[4] = {3, 3, 5, 9};
+        static const int walloffset[4] = {1, 1, 2, 4};
+        static const int* const wallbase[] = {wall1, wall2, wall3, wall4};
+        
+        for(int i = 0; i != 4; i ++)
+        {
+            for(int j = 0; j != wallcount[i]; j ++)
+            {
+                Common::Point cell = translatePoint(position, j - walloffset[i], i + 1, direction);
+                outdoorDrawIndex[wallbase[i][j]]->sprite = wallmap[(getTile(cell, 0) >> 4) & 0xF];
+            }
+        }
+
     }
     else
     {    
@@ -291,41 +315,72 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
 {
     XEEN_VALID();
 
-    const CCFileId sprite = "TOWN.TIL";
-
-    // Draw surface
-    // TODO: The surface tile should be draw a few pixels lower, determine how much
-    for(int i = 0; i != 7; i ++)
+    if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
     {
-        for(int j = 0; j != 7; j ++)
+        const CCFileId sprite = "OUTDOOR.TIL";
+
+        for(int i = 0; i != 7; i ++)
         {
-            const uint32 sur = getSurface(position + Common::Point(j - 3, i - 3));
-            sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), sur ? 36 + sur : 0);
+            for(int j = 0; j != 7; j ++)
+            {
+                const Common::Point tilepen = pen + Common::Point(j * 10, (6 - i) * 8);
+                const uint16 tile = getTile(position + Common::Point(j - 3, i - 3), 0);
+
+                sprites->draw(sprite, tilepen, _base->lookupSurface(tile & 0xF));
+
+                uint32 wall = _base->lookupWall((tile >> 4) & 0xF);
+                if(wall)
+                {
+                    sprites->draw(sprite, tilepen, 16 + wall);
+                }
+
+                if(tile & 0xF00)
+                {
+                    sprites->draw(sprite, tilepen, 32 + ((tile >> 8) & 0xF));
+                }
+
+                // TODO: Overlay?
+            }
         }
     }
-
-    // Draw walls
-    for(int i = 0; i != 7; i ++)
+    else
     {
-        for(int j = 0; j != 7; j ++)
+        const CCFileId sprite = "TOWN.TIL";
+    
+        // Draw surface
+        // TODO: The surface tile should be draw a few pixels lower, determine how much
+        for(int i = 0; i != 7; i ++)
         {
-            const uint16 wallData = getTile(position + Common::Point(j - 3, i - 3), 0);
-
-            if(wallData != 0x8888)
+            for(int j = 0; j != 7; j ++)
             {
-                if(wallData & 0xF000)
-                {
-                    sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 2);
-                }
-
-                if(wallData & 0xF)
-                {
-                    sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 3);
-                }
+                const uint32 sur = getSurface(position + Common::Point(j - 3, i - 3));
+                sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), sur ? 36 + sur : 0);
             }
-            else
+        }
+    
+        // Draw walls
+        for(int i = 0; i != 7; i ++)
+        {
+            for(int j = 0; j != 7; j ++)
             {
-                sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 1);
+                const uint16 wallData = getTile(position + Common::Point(j - 3, i - 3), 0);
+    
+                if(wallData != 0x8888)
+                {
+                    if(wallData & 0xF000)
+                    {
+                        sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 2);
+                    }
+    
+                    if(wallData & 0xF)
+                    {
+                        sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 3);
+                    }
+                }
+                else
+                {
+                    sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 1);
+                }
             }
         }
     }

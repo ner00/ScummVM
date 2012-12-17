@@ -71,6 +71,7 @@ namespace XEEN
                 uint16 getWall(uint8 x, uint8 y) const;
                 uint8 getCellFlags(uint8 x, uint8 y) const;
                 uint8 lookupSurface(uint8 id) const;
+                uint8 lookupWall(uint8 id) const;
 
                 Segment* resolveSegment(Common::Point& position);
     

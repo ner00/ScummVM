@@ -101,6 +101,18 @@ uint8 XEEN::Maze::Segment::lookupSurface(uint8 id) const
     return 0;    
 }
 
+uint8 XEEN::Maze::Segment::lookupWall(uint8 id) const
+{
+    XEEN_VALID();
+
+    if(enforce(id < 16))
+    {
+        return _data->getByteAt(OFF_WALL_TYPES + id);
+    }
+
+    return 0;
+}
+
 XEEN::Maze::Segment* XEEN::Maze::Segment::resolveSegment(Common::Point& position)
 {
     XEEN_VALID();

@@ -48,6 +48,7 @@ void XEEN::Graphics::Manager::reset()
 {
     XEEN_VALID();
     _screen->reset();
+    _screen->clear(0x00);
 }
 
 void XEEN::Graphics::Manager::setClipArea(const Common::Rect& area)
