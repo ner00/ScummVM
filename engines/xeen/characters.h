@@ -78,6 +78,8 @@ namespace XEEN
         Statistic(int8* realv, int8* tempv) : real(realv), temp(tempv) {}
         
         int16 getValue() const { return (*real) + (*temp); }
+        int16 getReal() const { return *real; }
+        int16 getTemp() const { return *temp; }
         void modifyReal(int8 value) { *real += value; }
         void modifyTemp(int8 value) { *temp += value; }
         void resetTemp() { *temp = 0; }
@@ -87,7 +89,8 @@ namespace XEEN
             int8* temp;
     };
 
-    enum Stat { MIGHT, INTELLECT, PERSONALITY, ENDURANCE, SPEED, ACCURACY, LUCK, LEVEL, STAT_COUNT };
+    enum Stat { MIGHT, INTELLECT, PERSONALITY, ENDURANCE, SPEED, ACCURACY, LUCK, LEVEL, 
+                FIRE, ELEC, COLD, POISON, ENERGY, MAGIC, STAT_COUNT };
 
     // Stats for a single playable character
     class Character : public Validateable

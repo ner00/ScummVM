@@ -24,6 +24,7 @@
 #include "xeen/game.h"
 #include "xeen/ui/basicwindows.h"
 #include "xeen/utility.h"
+#include "xeen/characters.h"
 
 #include "xeen/maze/eventlist_.h"
 #include "xeen/maze/map.h"
@@ -161,5 +162,91 @@ int32 XEEN::Maze::EventList::evIF(uint32 offset)
 {
     // TODO
     debug("IF");
+    uint32 val = produceValue(_data->getByteAt(offset + 6));
+
     return 1;
+}
+
+uint32 XEEN::Maze::EventList::produceValue(uint32 id)
+{
+    Valid<Game> g = _parent->getGame();
+    Character* c = g->getActiveCharacter();
+
+    switch(id)
+    {
+        case 0x03: return c->getSex();
+        case 0x04: return c->getRace();
+        case 0x05: return c->getClass();
+        case 0x08: return c->getValue(Character::HP) & 0xFF; //TODO: ?
+        case 0x09: return c->getValue(Character::SP) & 0xFF; //TODO: ?
+        case 0x0A: debug("AC"); return 10;
+        case 0x0B: return c->getStat(LEVEL).getTemp();
+        case 0x0C: debug("AGE"); return 21;
+        case 0x0D: debug("SKILL"); return 0;
+        case 0x0F: debug("AWARD"); return 0;
+        case 0x10: return c->getValue(Character::EXPERIENCE);
+        case 0x11: debug("POISPROT"); return 0;
+        case 0x12: debug("CONDITION"); return 0;
+        case 0x13: debug("CANCAST"); return 0;
+        case 0x14: debug("GAMEFLAG"); return 0;
+        case 0x15: debug("ITEM"); return 0;
+        case 0x19: debug("MINS"); return 0;
+        case 0x22: debug("GOLD"); return 0;
+        case 0x23: debug("GEMS"); return 0;
+        case 0x25: return c->getStat(MIGHT).getTemp();
+        case 0x26: return c->getStat(INTELLECT).getTemp();
+        case 0x27: return c->getStat(PERSONALITY).getTemp();
+        case 0x28: return c->getStat(ENDURANCE).getTemp();
+        case 0x29: return c->getStat(SPEED).getTemp();
+        case 0x2A: return c->getStat(ACCURACY).getTemp();
+        case 0x2B: return c->getStat(LUCK).getTemp();
+        case 0x2C: debug("YESNO"); return 0;
+        case 0x2D: return c->getStat(MIGHT).getReal();
+        case 0x2E: return c->getStat(INTELLECT).getReal();
+        case 0x2F: return c->getStat(PERSONALITY).getReal();
+        case 0x30: return c->getStat(ENDURANCE).getReal();
+        case 0x31: return c->getStat(SPEED).getReal();
+        case 0x32: return c->getStat(ACCURACY).getReal();
+        case 0x33: return c->getStat(LUCK).getReal();
+        case 0x34: return c->getStat(FIRE).getReal();
+        case 0x35: return c->getStat(ELEC).getReal();
+        case 0x36: return c->getStat(COLD).getReal();
+        case 0x37: return c->getStat(POISON).getReal();
+        case 0x38: return c->getStat(ENERGY).getReal();
+        case 0x39: return c->getStat(MAGIC).getReal();
+        case 0x3A: return c->getStat(FIRE).getTemp();
+        case 0x3B: return c->getStat(ELEC).getTemp();
+        case 0x3C: return c->getStat(COLD).getTemp();
+        case 0x3D: return c->getStat(POISON).getTemp();
+        case 0x3E: return c->getStat(ENERGY).getTemp();
+        case 0x3F: return c->getStat(MAGIC).getTemp();
+        case 0x40: return c->getStat(LEVEL).getReal();
+        case 0x41: debug("FOOD"); return 600;
+        case 0x45: debug("LEVITATE"); return 0;
+        case 0x46: debug("LIGHT"); return 0;
+        case 0x47: debug("FIREPROT"); return 0;
+        case 0x48: debug("ELECPROT"); return 0;
+        case 0x49: debug("COLDPROT"); return 0;
+        case 0x4C: debug("DAY"); return 0;
+        case 0x4D: debug("ACTEMP"); return 0;
+        case 0x4E: debug("HPFULL"); return 0;
+        case 0x4F: debug("WIZEYE"); return 0;
+        case 0x51: debug("SPFULL"); return 0;
+        case 0x55: debug("YEAR"); return 100;
+        case 0x56: return c->getStat(MIGHT).getValue();
+        case 0x57: return c->getStat(INTELLECT).getValue();
+        case 0x58: return c->getStat(PERSONALITY).getValue();
+        case 0x59: return c->getStat(ENDURANCE).getValue();
+        case 0x5A: return c->getStat(SPEED).getValue();
+        case 0x5B: return c->getStat(ACCURACY).getValue();
+        case 0x5C: return c->getStat(LUCK).getValue();
+        case 0x5D: debug("WEEK"); return 0;
+        case 0x5E: debug("WALKONWATER"); return 0;
+        case 0x63: debug("SKILL"); return 0;
+        case 0x66: debug("THIEV"); return 0;
+        case 0x67: debug("WORLD FLAGS"); return 0;
+        case 0x68: debug("QUEST FLAG"); return 0;
+        case 0x69: debug("CREDITS"); return 0;
+        default: debug("Unknown Value ID: %02X", id); return 0;
+    }
 }

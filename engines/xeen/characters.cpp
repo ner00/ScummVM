@@ -30,6 +30,7 @@ static const int OFF_CLASS      = 0x012;
 static const int OFF_STATS      = 0x014;
 static const int OFF_LEVEL      = 0x023;
 static const int OFF_SPELLS     = 0x079;
+static const int OFF_RESIST     = 0x137;
 static const int OFF_HP         = 0x156;
 static const int OFF_SP         = 0x158;
 static const int OFF_EXPERIENCE = 0x15C;
@@ -123,8 +124,12 @@ XEEN::Statistic XEEN::Character::getStat(Stat stat) const
             int8* temp = (int8*)_data->getBytePtrAt((_index * 354) + OFF_LEVEL + 1);
             return Statistic(real, temp);            
         }
-
-        enforce(false);
+        else if(stat > LEVEL)
+        {
+            int8* real = (int8*)_data->getBytePtrAt((_index * 354) + OFF_RESIST + (2 * (stat - FIRE)) + 0);
+            int8* temp = (int8*)_data->getBytePtrAt((_index * 354) + OFF_RESIST + (2 * (stat - FIRE)) + 1);
+            return Statistic(real, temp);
+        }
     }
 
     return Statistic(0, 0);

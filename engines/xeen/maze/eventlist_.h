@@ -57,6 +57,8 @@ namespace XEEN
                 int32 evTELEPORT(uint32 offset);
                 int32 evIF(uint32 offset);
     
+                uint32 produceValue(uint32 id);
+
             private:
                 struct Event
                 {
