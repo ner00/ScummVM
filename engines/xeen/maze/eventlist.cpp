@@ -181,6 +181,10 @@ int32 XEEN::Maze::EventList::evTELEPORT(uint32 offset)
 {
     // TODO
     debug("TELEPORT");
+    Valid<Party> p = _parent->getGame()->getParty();
+    p->changeMap(_data->getByteAt(offset + 6));
+    p->moveTo(Common::Point(_data->getByteAt(offset + 7), _data->getByteAt(offset + 8)), 4);
+    
     return 1;
 }
 

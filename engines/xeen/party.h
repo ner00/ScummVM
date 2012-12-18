@@ -58,6 +58,7 @@ namespace XEEN
             // Read basic values
             uint32 getValue(PartyValue val) const;
             Common::Point getPosition() const;
+            Direction getFacing() const;
             uint8 getMemberIdFromSlot(unsigned slot) const;            
 
             // Manage members

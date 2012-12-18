@@ -268,7 +268,7 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
             const int i = 0;
         
             Common::Point cell = facing.move(position, j - walloffset[i], i);
-            uint16 wallData = wallmap[getTile(cell, facing) >> 12];
+            uint16 wallData = wallmap[_base->lookupWall(getTile(cell, facing) >> 12)];
             
             indoorDrawIndex[wallbase[i][j]]->sprite = (wallData != 32) ? (wallData < 8) ? CCFileId("FTOWN1.FWL") : CCFileId("FTOWN2.FWL") : CCFileId(0xFFFF);
             indoorDrawIndex[wallbase[i][j]]->frame = (wallData < 8) ? wallData : wallData - 8;

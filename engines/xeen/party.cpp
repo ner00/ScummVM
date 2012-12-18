@@ -134,6 +134,12 @@ Common::Point XEEN::Party::getPosition() const
     return Common::Point(GET8(OFF_MAZE_X), GET8(OFF_MAZE_Y));
 }
 
+XEEN::Direction XEEN::Party::getFacing() const
+{
+    XEEN_VALID();
+    return GET8(OFF_MAZE_FACING);
+}
+
 uint8 XEEN::Party::getMemberIdFromSlot(unsigned slot) const
 {
     XEEN_VALID();
@@ -224,12 +230,6 @@ void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
     SET8(OFF_MAZE_X, position.x);
     SET8(OFF_MAZE_Y, position.y);
     SET8(OFF_MAZE_FACING, (facing <= 3) ? facing : GET8(OFF_MAZE_FACING));
-
-    Maze::Map* const map = getMap();
-    if(valid(map))
-    {
-        map->runEventAt(position.x, position.y, facing);
-    }
 }
 
 void XEEN::Party::moveRelative(Direction dir)
