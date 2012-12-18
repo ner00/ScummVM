@@ -178,6 +178,9 @@ bool XEEN::Maze::Map::getObjectAt(const Common::Point& position, ObjectEntry& da
 void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
 {
     XEEN_VALID();
+
+    _events->pumpEvent();
+
     buildOutdoorDrawIndex();
     buildDrawIndex();
 

@@ -28,7 +28,8 @@
 
 #include "xeen/ui/window.h"
 
-XEEN::Window::Window(Valid<Game> parent, const Common::Rect& area, bool clickToClose) : _area(area), _parent(parent), _clickToClose(clickToClose), _pressedButton(0), _pressedTime(0)
+XEEN::Window::Window(Valid<Game> parent, const Common::Rect& area, bool clickToClose) :
+    _parent(parent), _finished(false), _clickToFinish(false), _area(area), _clickToClose(clickToClose), _pressedButton(0), _pressedTime(0)
 {
 }
 
@@ -110,7 +111,14 @@ bool XEEN::Window::click(const Common::Point& point)
     
     if(_clickToClose)
     {
-        _parent->showWindow(Game::NONE);
+        if(_clickToFinish)
+        {
+            _finished = true;
+        }
+        else
+        {
+            _parent->showWindow(Game::NONE);
+        }
         return true;
     }
     
@@ -133,7 +141,14 @@ bool XEEN::Window::key(Common::KeyCode code)
     
     if(_clickToClose)
     {
-        _parent->showWindow(Game::NONE);
+        if(_clickToFinish)
+        {
+            _finished = true;
+        }
+        else
+        {
+            _parent->showWindow(Game::NONE);
+        }
         return true;
     }
     

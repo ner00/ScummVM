@@ -26,6 +26,7 @@
 XEEN::NPCWindow::NPCWindow(Valid<Game> parent, NonNull<const char> name, NonNull<const char> msg) :
     Window(parent, Common::Rect(8, 8, 324, 140), true), _name(name), _msg(msg)
 {
+    _clickToFinish = true;
 }
 
 const XEEN::String* XEEN::NPCWindow::getStrings() const

@@ -86,6 +86,7 @@ namespace XEEN
         public:
             virtual void show() { };        
         
+            const bool isFinished() { return _finished; }
             void heartbeat();
             void draw();
             bool click(const Common::Point& point);
@@ -93,6 +94,8 @@ namespace XEEN
 
         protected:
             Valid<Game> _parent;
+            bool _finished;
+            bool _clickToFinish;
 
         private:
             char _stringBuffer[128];

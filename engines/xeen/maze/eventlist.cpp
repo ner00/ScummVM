@@ -29,7 +29,7 @@
 #include "xeen/maze/eventlist_.h"
 #include "xeen/maze/map.h"
 
-XEEN::Maze::EventList::EventList(Map* parent, FilePtr data) : _parent(parent), _data(data)
+XEEN::Maze::EventList::EventList(Map* parent, FilePtr data) : _parent(parent), _data(data), _runningEvent(0), _runningLine(0), _waitingWindow(0)
 {
     if(_data)
     {
@@ -78,9 +78,34 @@ void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, Direction facing)
         Event& ev = _events[key];
 
         debug("\nEVENT START");
-        for(uint32 i = 0; i != ev.lines.size(); i ++)
+        _runningEvent = &ev;
+        _runningLine = 0;
+        _waitingWindow = 0;
+    }
+}
+
+void XEEN::Maze::EventList::pumpEvent()
+{
+    if(_runningEvent)
+    {
+        if(_waitingWindow && _waitingWindow->isFinished())
         {
-            runEventLine(ev.lines[i]);
+            _parent->getGame()->closeWindow();
+            _waitingWindow = 0;
+        }
+
+        if(!_waitingWindow)
+        {
+            if(_runningLine < _runningEvent->lines.size())
+            {
+                runEventLine(_runningEvent->lines[_runningLine]);
+                _runningLine ++;
+            }
+            else
+            {
+                _runningEvent = 0;
+                _runningLine = 0;
+            }
         }
     }
 }
@@ -146,7 +171,8 @@ int32 XEEN::Maze::EventList::evNPC(uint32 offset)
     const char* name = _parent->getString(_data->getByteAt(offset + 6));
     const char* msg = _parent->getString(_data->getByteAt(offset + 7));
 
-    _parent->getGame()->showWindow(new NPCWindow(_parent->getGame(), name, msg));
+    _waitingWindow = new NPCWindow(_parent->getGame(), name, msg);
+    _parent->getGame()->showWindow(_waitingWindow);
 
     return 1;
 }

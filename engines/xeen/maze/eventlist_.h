@@ -29,6 +29,7 @@
 
 #include "xeen/utility.h"
 #include "xeen/archive/file.h"
+#include "xeen/ui/window.h"
 
 namespace XEEN
 {
@@ -47,7 +48,8 @@ namespace XEEN
             private:
                 EventList(Map* parent, FilePtr data);
                 void runEventAt(uint8 x, uint8 y, Direction facing);
-    
+                void pumpEvent();
+
             private:
                 int32 runEventLine(int32 off);
                 int32 evNOP(uint32 offset);
@@ -68,6 +70,10 @@ namespace XEEN
             private:
                 Map* _parent;
                 FilePtr _data;
+
+                Event* _runningEvent;
+                uint32 _runningLine;
+                Window* _waitingWindow;
 
                 Common::HashMap<uint32, Event> _events;
         };

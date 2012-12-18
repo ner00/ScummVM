@@ -218,6 +218,9 @@ void XEEN::Game::draw()
     _mainWnd->draw();
     _portraitWnd->draw();
     
+    Maze::Map* m = _party->getMap();
+    m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
+
     if(_windowDepth)
     {
         for(int i = _windowDepth - 1; i != -1; i --)
@@ -227,13 +230,9 @@ void XEEN::Game::draw()
         }
     }
     else
-    {        
-        Maze::Map* m = _party->getMap();
-        
+    {                
         if(valid(m))
         {
-            m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
-
             _graphicsManager->setClipArea(Common::Rect(8, 8, 224, 140));    
             m->draw(_graphicsManager);
 
