@@ -75,8 +75,8 @@ void XEEN::Graphics::Font::drawString(NonNull<ImageBuffer> out, Common::Point pe
             for(int j = 0; j != 8; j ++, line >>= 2)
             {
                 pixels[j] = line & 3;
-                out->drawLine<0>(pen.x, pen.y + i, 8, pixels, 0, false);
             }
+            out->drawLine<0>(pen.x, pen.y + i, 8, pixels, 0, false);
         }
         
         pen.x += spacing;
