@@ -26,6 +26,7 @@
 #include "xeen/utility.h"
 
 #include "xeen/party.h"
+#include "xeen/event/event.h"
 
 #include "xeen/graphics/manager.h"
 
@@ -47,7 +48,7 @@ namespace XEEN
     class Game : public Validateable_Cleanable
     {
         public:
-            enum WindowID { NONE, STATUS, QUICKREF, CASTSPELL, SELECTSPELL, GAMEINFO, CHARACTION, MAX_WINDOW_ID, TEMP };
+            enum WindowID { NONE, STATUS, QUICKREF, CASTSPELL, SELECTSPELL, CHARACTION, MAX_WINDOW_ID, TEMP };
             enum Type { CLOUDS, DARKSIDE, WORLD };
     
         public:
@@ -78,11 +79,15 @@ namespace XEEN
             Character* getActiveCharacter();
             unsigned getActiveCharacterSlot() const { return _activeCharacterSlot; }
             void selectCharacter(unsigned slot) { _activeCharacterSlot = slot; }
-                
+
+            void setEvent(Event::Event* event);
+
         private:
             WindowID _windowID[16];
             Window* _windowStack[16];
             uint32 _windowDepth;
+
+            Event::Event* _event;
 
             unsigned _activeCharacterSlot;
                 
@@ -98,9 +103,9 @@ namespace XEEN
             CharacterWindow* _portraitWnd;
             CharacterActionWindow* _charActionWnd;
             GameWindow* _mainWnd;
+            MovementWindow* _movementWnd;
             QuickReferenceWindow* _quickrefWnd;
             CastWindow* _castWnd;
-            GameInfoWindow* _gameInfoWnd;
             SpellSelectWindow* _spellSelectWnd;
     };
 }

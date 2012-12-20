@@ -20,32 +20,34 @@
  *
  */
 
-#include "xeen/game.h"
-#include "xeen/ui/basicwindows.h"
+#ifndef XEEN_EVENT_H
+#define XEEN_EVENT_H
 
-XEEN::NPCWindow::NPCWindow(Valid<Game> parent, NonNull<const char> name, NonNull<const char> msg) :
-    Window(parent, Common::Rect(8, 8, 224, 140), true), _name(name), _msg(msg)
+#include "xeen/utility.h"
+#include "xeen/ui/window.h"
+
+namespace XEEN
 {
-    _clickToFinish = true;
-}
-
-const XEEN::String* XEEN::NPCWindow::getStrings() const
-{
-    XEEN_VALID();
-
-    static const String strings[] = 
+    namespace Event
     {
-        {0, 1, 0, 30, Font::CENTER},
-        {0, 2, 0, 70, Font::CENTER},
-        {0, 0, 0, 0, 0}
-    };
+        class Event
+        {
+            public:
+                Event(Valid<Game> parent) : _parent(parent) { }
+                virtual ~Event() { }
     
-    return strings;
+                virtual const Button* getCommandButtons() const { return 0; }
+                virtual void handleAction(unsigned id) { }
+    
+                Common::List<Valid<Window> >& getWindows() { return _windows; }
+                void addWindow(Valid<Window> window) { _windows.push_back(window); }
+                void closeWindow() { _windows.pop_back(); }
+    
+            protected:
+                Valid<Game> _parent;
+                Common::List<Valid<Window> > _windows;
+        };
+    }
 }
 
-void XEEN::NPCWindow::produceString(unsigned id)
-{
-    XEEN_VALID();
-
-    fillStringBuffer("%s", (id == 1) ? _name : _msg);
-}
+#endif // XEEN_EVENT_H

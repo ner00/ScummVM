@@ -20,32 +20,24 @@
  *
  */
 
-#include "xeen/game.h"
-#include "xeen/ui/basicwindows.h"
+#ifndef XEEN_EVENT_BASICEVENTS_H
+#define XEEN_EVENT_BASICEVENTS_H
 
-XEEN::NPCWindow::NPCWindow(Valid<Game> parent, NonNull<const char> name, NonNull<const char> msg) :
-    Window(parent, Common::Rect(8, 8, 224, 140), true), _name(name), _msg(msg)
+#include "xeen/utility.h"
+#include "xeen/event/event.h"
+
+namespace XEEN
 {
-    _clickToFinish = true;
-}
+    class Game;
 
-const XEEN::String* XEEN::NPCWindow::getStrings() const
-{
-    XEEN_VALID();
-
-    static const String strings[] = 
+    namespace Event
     {
-        {0, 1, 0, 30, Font::CENTER},
-        {0, 2, 0, 70, Font::CENTER},
-        {0, 0, 0, 0, 0}
-    };
-    
-    return strings;
+        class GameInfo : public Event
+        {
+            public:
+                GameInfo(Valid<Game> parent);
+        };
+    }
 }
 
-void XEEN::NPCWindow::produceString(unsigned id)
-{
-    XEEN_VALID();
-
-    fillStringBuffer("%s", (id == 1) ? _name : _msg);
-}
+#endif // XEEN_EVENT_BASICEVENTS_H

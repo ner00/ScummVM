@@ -19,16 +19,18 @@ MODULE_OBJS := \
     maze/monsterdata.o \
     maze/segment.o \
     maze/text.o \
+    event/gameinfo.o \
     ui/window.o \
     ui/castwindow.o \
     ui/characteraction.o \
     ui/characterwindow.o \
-    ui/gameinfowindow.o \
     ui/gamewindow.o \
     ui/quickreference.o \
     ui/scrollwindow.o \
     ui/characterstatuswindow.o \
-    ui/npcwindow.o
+    ui/npcwindow.o \
+    ui/messagewindows.o \
+    ui/movementwindow.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_XEEN), DYNAMIC_PLUGIN)

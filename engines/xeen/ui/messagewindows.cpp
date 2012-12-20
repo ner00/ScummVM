@@ -23,29 +23,27 @@
 #include "xeen/game.h"
 #include "xeen/ui/basicwindows.h"
 
-XEEN::NPCWindow::NPCWindow(Valid<Game> parent, NonNull<const char> name, NonNull<const char> msg) :
-    Window(parent, Common::Rect(8, 8, 224, 140), true), _name(name), _msg(msg)
+XEEN::SmallMessageWindow::SmallMessageWindow(Valid<Game> parent, NonNull<const char> msg) :
+    Window(parent, Common::Rect(225, 140, 318, 198), true), _msg(msg)
 {
     _clickToFinish = true;
 }
 
-const XEEN::String* XEEN::NPCWindow::getStrings() const
+const XEEN::String* XEEN::SmallMessageWindow::getStrings() const
 {
     XEEN_VALID();
 
     static const String strings[] = 
     {
-        {0, 1, 0, 30, Font::CENTER},
-        {0, 2, 0, 70, Font::CENTER},
+        {0, 1, 0, 8, Font::CENTER},
         {0, 0, 0, 0, 0}
     };
     
     return strings;
 }
 
-void XEEN::NPCWindow::produceString(unsigned id)
+void XEEN::SmallMessageWindow::produceString(unsigned id)
 {
     XEEN_VALID();
-
-    fillStringBuffer("%s", (id == 1) ? _name : _msg);
+    fillStringBuffer("%s", _msg);
 }

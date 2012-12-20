@@ -33,8 +33,9 @@
 
 #include "xeen/maze/map.h"
 
-XEEN::Game::Game() : _windowDepth(0), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
-                     _statusWnd(0), _portraitWnd(0), _charActionWnd(0), _mainWnd(0), _quickrefWnd(0), _castWnd(0), _gameInfoWnd(0), _spellSelectWnd(0)
+XEEN::Game::Game() : _windowDepth(0), _event(0), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
+                     _statusWnd(0), _portraitWnd(0), _charActionWnd(0), _mainWnd(0), _movementWnd(0), _quickrefWnd(0),
+                     _castWnd(0), _spellSelectWnd(0)
 {
     memset(_windowID, 0, sizeof(_windowID));
     memset(_windowStack, 0, sizeof(_windowStack));
@@ -71,9 +72,9 @@ void XEEN::Game::load()
     _portraitWnd = new CharacterWindow(this);
     _charActionWnd = new CharacterActionWindow(this);
     _mainWnd = new GameWindow(this);
+    _movementWnd = new MovementWindow(this);
     _quickrefWnd = new QuickReferenceWindow(this);
     _castWnd = new CastWindow(this);
-    _gameInfoWnd = new GameInfoWindow(this);
     _spellSelectWnd = new SpellSelectWindow(this);
 
     if(!(valid(_assets) && valid(_graphicsManager) && valid(_mapManager) && valid(_party)))
@@ -84,6 +85,7 @@ void XEEN::Game::load()
 
     //
     _mainWnd->show();
+    _movementWnd->show();
     _portraitWnd->show();
 
     // HACK: TODO Error check
@@ -138,7 +140,6 @@ void XEEN::Game::showWindow(WindowID id)
             case QUICKREF: _windowStack[_windowDepth] = _quickrefWnd; break;
             case CASTSPELL: _windowStack[_windowDepth] = _castWnd; break;
             case SELECTSPELL: _windowStack[_windowDepth] = _spellSelectWnd; break;
-            case GAMEINFO: _windowStack[_windowDepth] = _gameInfoWnd; break;
             case CHARACTION: _windowStack[_windowDepth] = _charActionWnd; break;
             default: enforce(false);
         }
@@ -188,6 +189,7 @@ void XEEN::Game::click(const Common::Point& location)
     {
         _portraitWnd->click(location);
         _mainWnd->click(location);
+        _movementWnd->click(location);
     }
 }
 
@@ -212,6 +214,7 @@ void XEEN::Game::key(Common::KeyCode keycode)
 
         _portraitWnd->key(keycode);
         _mainWnd->key(keycode);
+        _movementWnd->key(keycode);
     }
 }
 
@@ -221,9 +224,11 @@ void XEEN::Game::draw()
 
     _portraitWnd->heartbeat();
     _mainWnd->heartbeat();
+    _movementWnd->heartbeat();
     
     _graphicsManager->reset();
     _mainWnd->draw();
+    _movementWnd->draw();
     _portraitWnd->draw();
     
     Maze::Map* m = _party->getMap();
@@ -246,6 +251,16 @@ void XEEN::Game::draw()
 
             _graphicsManager->setClipArea(XRect::cr(237, 12, 70, 56));
             m->drawMini(Common::Point(237, 12), _party->getPosition(), _party->getValue(Party::MAZE_FACING), _graphicsManager);
+
+            _graphicsManager->setClipArea(Common::Rect(0, 0, 320, 200));
+        }
+    }
+
+    if(_event)
+    {
+        for(Common::List<Valid<Window> >::iterator i = _event->getWindows().begin(); i != _event->getWindows().end(); i ++)
+        {
+            (*i)->draw();
         }
     }
 }
@@ -261,4 +276,9 @@ XEEN::Character* XEEN::Game::getActiveCharacter()
     XEEN_VALID();
     
     return valid(_party) ? _party->getMemberInSlot(_activeCharacterSlot) : 0;
+}
+
+void XEEN::Game::setEvent(Event::Event* event)
+{
+    _event = event;
 }

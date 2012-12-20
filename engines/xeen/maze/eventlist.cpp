@@ -159,7 +159,11 @@ int32 XEEN::Maze::EventList::evMESSAGE(uint32 offset)
 {
     // TODO
     debug("MESSAGE");
-    debug("%s", _parent->getString(_data->getByteAt(offset + 6)));
+
+    const char* msg = _parent->getString(_data->getByteAt(offset + 6));
+    _waitingWindow = new SmallMessageWindow(_parent->getGame(), msg);
+    _parent->getGame()->showWindow(_waitingWindow);
+
     return 1;
 }
 

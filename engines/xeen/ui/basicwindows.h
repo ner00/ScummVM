@@ -71,20 +71,20 @@ namespace XEEN
             Button _buttons[13];
     };
 
-    class GameInfoWindow : public Window
-    {
-        public:
-            GameInfoWindow(Valid<Game> parent);
-            
-        protected:
-            const String* getStrings() const;
-            void produceString(unsigned id);        
-    };
-
     class GameWindow : public Window
     {
         public:
             GameWindow(Valid<Game> parent);
+            
+        protected:
+            const Button* getButtons() const;
+            void handleAction(unsigned id);
+    };
+
+    class MovementWindow : public Window
+    {
+        public:
+            MovementWindow(Valid<Game> parent);
             
         protected:
             const Button* getButtons() const;
@@ -127,6 +127,20 @@ namespace XEEN
             const char* _name;
             const char* _msg;
     };
+
+    class SmallMessageWindow : public Window
+    {
+        public:
+            SmallMessageWindow(Valid<Game> parent, NonNull<const char> msg);
+
+        protected:
+            const String* getStrings() const;
+            void produceString(unsigned id);
+
+        private:
+            const char* _msg;
+    };
+
 }
 
 #endif // XEEN_UI_BASICWINDOWS_H

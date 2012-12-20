@@ -23,28 +23,25 @@
 #include "xeen/game.h"
 #include "xeen/party.h"
 #include "xeen/ui/basicwindows.h"
-#include "xeen/event/basicevents.h"
 
-XEEN::GameWindow::GameWindow(Valid<Game> parent) : Window(parent, Common::Rect(235, 75, 309, 136))
+XEEN::MovementWindow::MovementWindow(Valid<Game> parent) : Window(parent, Common::Rect(0, 0, 0, 0))
 {
     
 }
 
-const XEEN::Button* XEEN::GameWindow::getButtons() const
+const XEEN::Button* XEEN::MovementWindow::getButtons() const
 {
     XEEN_VALID();
 
     static const Button buttons[] = 
     {
-        {"MAIN.ICN",  0,  1, {  0,   0, 24, 20}, 0, Common::KEYCODE_s},
-        {"MAIN.ICN",  2,  3, { 25,   0, 24, 20}, 1, Common::KEYCODE_c}, 
-        {"MAIN.ICN",  4,  5, { 51,   0, 24, 20}, 2, Common::KEYCODE_r}, 
-        {"MAIN.ICN",  6,  7, {  0,  21, 24, 20}, 3, Common::KEYCODE_b}, 
-        {"MAIN.ICN",  8,  9, { 25,  21, 24, 20}, 4, Common::KEYCODE_d}, 
-        {"MAIN.ICN", 10, 11, { 51,  21, 24, 20}, 5, Common::KEYCODE_v}, 
-        {"MAIN.ICN", 12, 13, {  0,  42, 24, 20}, 6, Common::KEYCODE_m}, 
-        {"MAIN.ICN", 14, 15, { 25,  42, 24, 20}, 7, Common::KEYCODE_i},
-        {"MAIN.ICN", 16, 17, { 51,  42, 24, 20}, 8, Common::KEYCODE_q},  
+        {"MAIN.ICN", 18, 19, {109, 137, 24, 20}, 1, Common::KEYCODE_TAB}, //TODO: SIZE?
+        {"MAIN.ICN", 20, 21, {235, 148, 24, 20}, 2, Common::KEYCODE_LEFT}, 
+        {"MAIN.ICN", 22, 23, {260, 148, 24, 20}, 3, Common::KEYCODE_UP}, 
+        {"MAIN.ICN", 24, 25, {286, 148, 24, 20}, 4, Common::KEYCODE_RIGHT}, 
+        {"MAIN.ICN", 26, 27, {235, 169, 24, 20}, 5, Common::KEYCODE_INVALID}, //TODO: Direct left 
+        {"MAIN.ICN", 28, 29, {260, 169, 24, 20}, 6, Common::KEYCODE_DOWN}, 
+        {"MAIN.ICN", 30, 31, {286, 169, 24, 20}, 7, Common::KEYCODE_INVALID}, //TODO: Direct right
 
         {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
@@ -52,15 +49,19 @@ const XEEN::Button* XEEN::GameWindow::getButtons() const
     return buttons;
 }
 
-void XEEN::GameWindow::handleAction(unsigned id)
+void XEEN::MovementWindow::handleAction(unsigned id)
 {
     XEEN_VALID();
 
+    Party* party = _parent->getParty();
     switch(id)
     {
-        case  1: _parent->showWindow(Game::CASTSPELL); break;
-        case  4: _parent->showWindow(Game::CHARACTION); break;
-        case  7: _parent->setEvent(new Event::GameInfo(_parent)); break;
-        case  8: _parent->showWindow(Game::QUICKREF); break;
+        case 1: /* TODO */ break;
+        case 2: party->turn(true); break;
+        case 3: party->moveRelative(Direction::NORTH); break;
+        case 4: party->turn(false); break;
+        case 5: party->moveRelative(Direction::WEST); break;
+        case 6: party->moveRelative(Direction::SOUTH); break;
+        case 7: party->moveRelative(Direction::EAST); break;
     }
 }
