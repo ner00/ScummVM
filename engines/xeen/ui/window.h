@@ -69,7 +69,7 @@ namespace XEEN
 
 
         protected:
-            Window(Valid<Game> parent, const Common::Rect& area, bool clickToClose = false);
+            Window(Valid<Game> parent, const Common::Rect& area, bool clickToFinish = false);
 
         public:
             virtual ~Window() {};
@@ -101,7 +101,6 @@ namespace XEEN
             char _stringBuffer[128];
 
             Common::Rect _area;
-            bool _clickToClose;
             
             const Button* _pressedButton;
             uint32 _pressedTime;

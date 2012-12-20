@@ -22,6 +22,7 @@
 
 #include "xeen/game.h"
 #include "xeen/ui/basicwindows.h"
+#include "xeen/event/basicevents.h"
 #include "xeen/party.h"
 #include "xeen/characters.h"
 
@@ -84,8 +85,8 @@ void XEEN::CharacterStatusWindow::handleAction(unsigned id)
     switch(id)
     {
         //TODO: Make QUICKREF retrun to STATUS window
-        case 21: _parent->showWindow(Game::QUICKREF); break;
-        case 23: _parent->showWindow(Game::NONE); break;
+        case 21: _parent->setEvent(new Event::QuickReference(_parent)); break;
+//        case 23: _parent->showWindow(Game::NONE); break;
     }
 }
 

@@ -52,8 +52,8 @@ void XEEN::ScrollWindow::handleAction(unsigned id)
 
     switch(id)
     {
-        case 1: accept(); _parent->showWindow(Game::NONE); return;
-        case 2: cancel(); _parent->showWindow(Game::NONE); return;
+        case 1: accept(); return;
+        case 2: cancel(); return;
     }
 }
 
@@ -97,59 +97,4 @@ void XEEN::ScrollWindow::produceString(unsigned id)
     {
         fillFooter();
     }
-}
-
-///
-/// SpellSelectWindow
-///
-XEEN::SpellSelectWindow::SpellSelectWindow(Valid<Game> parent) : ScrollWindow(parent)
-{
-
-}
-
-unsigned XEEN::SpellSelectWindow::itemCount() const
-{
-    XEEN_VALID();
-    return 3;
-}
-
-void XEEN::SpellSelectWindow::selectItem(unsigned item)
-{
-    XEEN_VALID();
-}
-
-void XEEN::SpellSelectWindow::fillItemText(unsigned item)
-{
-    XEEN_VALID();
-
-    static const char* const spellhack[] = {"Awaken", "First Aid", "Light"};
-    if(item < 3)
-    {
-        fillStringBuffer("%s", spellhack[item]);
-    }
-}
-
-void XEEN::SpellSelectWindow::fillHeader()
-{
-    XEEN_VALID();
-
-    Character* chara = _parent->getActiveCharacter();
-
-    if(valid(chara))
-    {
-        fillStringBuffer("Spells for %s", chara->getName()); //TODO: Fill proper name
-    }
-}
-
-void XEEN::SpellSelectWindow::fillFooter()
-{
-    XEEN_VALID();
-
-    // TODO
-    fillStringBuffer("Test");
-}
-
-void XEEN::SpellSelectWindow::accept()
-{
-    XEEN_VALID();
 }

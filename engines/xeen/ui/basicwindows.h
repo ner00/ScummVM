@@ -30,19 +30,6 @@ namespace XEEN
 {
     class Game;
 
-    class CastWindow : public Window
-    {
-        public:
-            CastWindow(Valid<Game> parent);
-            
-        protected:
-            const Button* getButtons() const;
-            void handleAction(unsigned id);
-
-            const String* getStrings() const;
-            void produceString(unsigned id);        
-    };
-
     class CharacterActionWindow : public Window
     {
         public:
@@ -89,16 +76,6 @@ namespace XEEN
         protected:
             const Button* getButtons() const;
             void handleAction(unsigned id);
-    };
-
-    class QuickReferenceWindow : public Window
-    {
-        public:
-            QuickReferenceWindow(Valid<Game> parent);
-            
-        protected:
-            const String* getStrings() const;
-            void produceString(unsigned id);        
     };
 
     class CharacterStatusWindow : public Window

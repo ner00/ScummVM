@@ -19,13 +19,14 @@ MODULE_OBJS := \
     maze/monsterdata.o \
     maze/segment.o \
     maze/text.o \
+    event/castspell.o \
+    event/selectspell.o \
     event/gameinfo.o \
+    event/quickreference.o \
     ui/window.o \
-    ui/castwindow.o \
     ui/characteraction.o \
     ui/characterwindow.o \
     ui/gamewindow.o \
-    ui/quickreference.o \
     ui/scrollwindow.o \
     ui/characterstatuswindow.o \
     ui/npcwindow.o \

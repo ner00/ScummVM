@@ -29,7 +29,9 @@ namespace XEEN
     class GameInfoWindow : public Window
     {
         public:
-            GameInfoWindow(Valid<Game> parent) : Window(parent, Common::Rect(88, 20, 88 + 160, 20 + 92), true) { }
+            GameInfoWindow(Valid<Game> parent) : Window(parent, Common::Rect(88, 20, 88 + 160, 20 + 92), true)
+            {
+            }
             
         protected:
             const String* getStrings() const
@@ -82,4 +84,15 @@ namespace XEEN
 XEEN::Event::GameInfo::GameInfo(Valid<Game> parent) : Event(parent)
 {
     addWindow(new GameInfoWindow(parent));
+}
+
+bool XEEN::Event::GameInfo::process()
+{
+    if(getWindows().back()->isFinished())
+    {
+        delete (Window*)getWindows().back();
+        return true;
+    }
+
+    return false;
 }

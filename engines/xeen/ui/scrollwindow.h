@@ -54,22 +54,6 @@ namespace XEEN
             const String* getStrings() const;
             void produceString(unsigned id);        
     };
-
-    class SpellSelectWindow : public ScrollWindow
-    {
-        public:
-            SpellSelectWindow(Valid<Game> parent);
-
-        protected:
-            unsigned itemCount() const;
-            void selectItem(unsigned item);
-
-            void fillItemText(unsigned item);
-            void fillHeader();
-            void fillFooter();
-
-            void accept();
-    };
 }
 
 #endif // XEEN_UI_SCROLLWINDOW_H

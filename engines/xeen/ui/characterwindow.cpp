@@ -68,5 +68,5 @@ void XEEN::CharacterWindow::handleAction(unsigned id)
     XEEN_VALID();
 
     _parent->selectCharacter(id);
-    _parent->showWindow(Game::STATUS);
+//    _parent->showWindow(Game::STATUS);
 }

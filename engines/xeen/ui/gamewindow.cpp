@@ -58,9 +58,9 @@ void XEEN::GameWindow::handleAction(unsigned id)
 
     switch(id)
     {
-        case  1: _parent->showWindow(Game::CASTSPELL); break;
-        case  4: _parent->showWindow(Game::CHARACTION); break;
+        case  1: _parent->setEvent(new Event::CastSpell(_parent)); break;
+//        case  4: _parent->showWindow(Game::CHARACTION); break;
         case  7: _parent->setEvent(new Event::GameInfo(_parent)); break;
-        case  8: _parent->showWindow(Game::QUICKREF); break;
+        case  8: _parent->setEvent(new Event::QuickReference(_parent)); break;
     }
 }

@@ -35,6 +35,8 @@ namespace XEEN
             public:
                 Event(Valid<Game> parent) : _parent(parent) { }
                 virtual ~Event() { }
+
+                virtual bool process() = 0;
     
                 virtual const Button* getCommandButtons() const { return 0; }
                 virtual void handleAction(unsigned id) { }

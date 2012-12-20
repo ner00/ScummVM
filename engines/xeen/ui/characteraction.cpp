@@ -48,7 +48,7 @@ void XEEN::CharacterActionWindow::handleAction(unsigned id)
 
     if(id == 0)
     {
-        _parent->showWindow(Game::NONE);
+//        _parent->showWindow(Game::NONE);
     }
 }
 
