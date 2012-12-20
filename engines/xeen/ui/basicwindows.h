@@ -78,19 +78,6 @@ namespace XEEN
             void handleAction(unsigned id);
     };
 
-    class CharacterStatusWindow : public Window
-    {
-        public:
-            CharacterStatusWindow(Valid<Game> parent);
-            
-        protected:
-            const Button* getButtons() const;
-            const String* getStrings() const;
-            
-            void handleAction(unsigned id);
-            void produceString(unsigned id);
-    };
-
     class NPCWindow : public Window
     {
         public:

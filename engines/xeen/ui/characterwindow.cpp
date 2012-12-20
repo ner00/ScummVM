@@ -21,6 +21,7 @@
  */
 #include "xeen/game.h"
 #include "xeen/ui/basicwindows.h"
+#include "xeen/event/basicevents.h"
 #include "xeen/party.h"
 
 XEEN::CharacterWindow::CharacterWindow(Valid<Game> parent) : Window(parent, Common::Rect(0, 0, 0, 0))
@@ -48,7 +49,7 @@ void XEEN::CharacterWindow::show()
     XEEN_VALID();
 
     // TODO: Update when needed
-    Party* party = _parent->getParty();
+    Party* party = getGame()->getParty();
     
     for(unsigned i = 0; i != party->getValue(Party::PARTY_COUNT); i ++)
     {
@@ -67,6 +68,6 @@ void XEEN::CharacterWindow::handleAction(unsigned id)
 {
     XEEN_VALID();
 
-    _parent->selectCharacter(id);
-//    _parent->showWindow(Game::STATUS);
+    getGame()->selectCharacter(id);
+    getGame()->setEvent(new Event::CharacterStatus(getGame()));
 }

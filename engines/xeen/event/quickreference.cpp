@@ -57,7 +57,7 @@ namespace XEEN
             {
                 XEEN_VALID();
             
-                Party* party = _parent->getParty();
+                Party* party = getGame()->getParty();
             
                 // #
                 if(id >= 1 && id <= 6)
@@ -90,13 +90,7 @@ XEEN::Event::QuickReference::QuickReference(Valid<Game> parent) : Event(parent)
     addWindow(new QuickReferenceWindow(parent));
 }
 
-bool XEEN::Event::QuickReference::process()
+void XEEN::Event::QuickReference::process()
 {
-    if(getWindows().back()->isFinished())
-    {
-        delete (Window*)getWindows().back();
-        return true;
-    }
-
-    return false;
+    setFinished(getWindows().back()->isFinished(), true);
 }

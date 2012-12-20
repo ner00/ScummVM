@@ -33,8 +33,8 @@
 
 #include "xeen/maze/map.h"
 
-XEEN::Game::Game() : _event(0), _processingEvent(false), _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
-                     _statusWnd(0), _portraitWnd(0), _charActionWnd(0), _mainWnd(0), _movementWnd(0)
+XEEN::Game::Game() : _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
+                     _portraitWnd(0), _charActionWnd(0), _mainWnd(0), _movementWnd(0)
 {
     markInvalid();
 }
@@ -61,7 +61,6 @@ void XEEN::Game::load()
     _mapManager = new Maze::Manager(this);
     _party = new Party(this);
     
-    _statusWnd = new CharacterStatusWindow(this);
     _portraitWnd = new CharacterWindow(this);
     _charActionWnd = new CharacterActionWindow(this);
     _mainWnd = new GameWindow(this);
@@ -111,22 +110,21 @@ void XEEN::Game::load()
     }
 }
 
+namespace XEEN
+{
+    struct EvClickProcessor { void operator()(Valid<Window> wnd) { wnd->click(_loc); };  EvClickProcessor(const Common::Point& loc) : _loc(loc) {};  Common::Point _loc;};
+    struct EvKeyProcessor   { void operator()(Valid<Window> wnd) { wnd->key(_key);   };  EvKeyProcessor(Common::KeyCode key) : _key(key) {};  Common::KeyCode _key;};
+    struct EvDrawProcessor  { void operator()(Valid<Window> wnd) { wnd->draw();      };  EvDrawProcessor(uint32 u) { }; };
+    struct EvHeartProcessor { void operator()(Valid<Window> wnd) { wnd->heartbeat(); };  EvHeartProcessor(uint32 u) { }; };
+}
 
 void XEEN::Game::click(const Common::Point& location)
 {
     XEEN_VALID();
 
-    if(_event)
+    if(!_events.empty())
     {
-        _processingEvent = true;
-        for(Common::List<Valid<Window> >::iterator i = _event->getWindows().begin(); i != _event->getWindows().end(); i ++)
-        {
-            if((*i)->click(location))
-            {
-                break;
-            }
-        }
-        _processingEvent = false;
+        _events.top()->processWindows<EvClickProcessor>(location);
     }
     else
     {
@@ -140,17 +138,9 @@ void XEEN::Game::key(Common::KeyCode keycode)
 {
     XEEN_VALID();
 
-    if(_event)
+    if(!_events.empty())
     {
-        _processingEvent = true;
-        for(Common::List<Valid<Window> >::iterator i = _event->getWindows().begin(); i != _event->getWindows().end(); i ++)
-        {
-            if((*i)->key(keycode))
-            {
-                break;
-            }
-        }        
-        _processingEvent = false;
+        _events.top()->processWindows<EvKeyProcessor>(keycode);
     }
     else
     {
@@ -172,24 +162,33 @@ void XEEN::Game::draw()
 {   
     XEEN_VALID();
 
-    if(_event && _event->process())
+    if(!_events.empty())
     {
-        delete _event;
-        _event = 0;
+        if(!_events.top()->isFinished())
+        {
+            _events.top()->process();
+        }
+
+        if(_events.top()->isFinished())
+        {
+            if(_events.top()->wantsDelete())
+            {
+                delete (Event::Event*)_events.pop();
+            }
+            else
+            {
+                _events.pop();
+            }
+        }
     }
 
     _portraitWnd->heartbeat();
     _mainWnd->heartbeat();
     _movementWnd->heartbeat();
 
-    if(_event)
+    if(!_events.empty())
     {
-        _processingEvent = true;
-        for(Common::List<Valid<Window> >::iterator i = _event->getWindows().begin(); i != _event->getWindows().end(); i ++)
-        {
-            (*i)->heartbeat();
-        }
-        _processingEvent = false;
+        _events.top()->processWindows<EvHeartProcessor>(0);
     }
     
     _graphicsManager->reset();
@@ -200,14 +199,12 @@ void XEEN::Game::draw()
     Maze::Map* m = _party->getMap();
     m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
 
-    if(_event)
+    if(!_events.empty())
     {
-        _processingEvent = true;
-        for(Common::List<Valid<Window> >::iterator i = _event->getWindows().begin(); i != _event->getWindows().end(); i ++)
+        for(uint32 i = 0; i != _events.size(); i ++)
         {
-            (*i)->draw();
+            _events[i]->processWindows<EvDrawProcessor>(0);
         }
-        _processingEvent = false;
     }
     else
     {                
@@ -237,10 +234,7 @@ XEEN::Character* XEEN::Game::getActiveCharacter()
     return valid(_party) ? _party->getMemberInSlot(_activeCharacterSlot) : 0;
 }
 
-void XEEN::Game::setEvent(Event::Event* event)
+void XEEN::Game::setEvent(NonNull<Event::Event> event)
 {
-    if(enforce(!_processingEvent))
-    {
-        _event = event;
-    }
+    _events.push(event);
 }

@@ -53,7 +53,7 @@ void XEEN::MovementWindow::handleAction(unsigned id)
 {
     XEEN_VALID();
 
-    Party* party = _parent->getParty();
+    Party* party = getGame()->getParty();
     switch(id)
     {
         case 1: /* TODO */ break;

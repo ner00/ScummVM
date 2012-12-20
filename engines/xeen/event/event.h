@@ -30,24 +30,42 @@ namespace XEEN
 {
     namespace Event
     {
-        class Event
+        typedef Common::List<Valid<Window> > WindowList;
+
+        class Event : public GameHolder
         {
             public:
-                Event(Valid<Game> parent) : _parent(parent) { }
+                Event(Valid<Game> parent) : GameHolder(parent), _finished(false), _delete(false) { }
                 virtual ~Event() { }
 
-                virtual bool process() = 0;
+                virtual void process() = 0;
+
+                template <class FUNCTOR, typename ARGUMENT>
+                void processWindows(ARGUMENT a)
+                {
+                    FUNCTOR f(a);
+                    for(WindowList::iterator i = _windows.begin(); i != _windows.end() && !_finished; i ++)
+                    {
+                        f(*i);
+                    }
+                }
+
+                const bool isFinished() const { return _finished; }
+                const bool wantsDelete() const { return _delete; }
+                void setFinished(bool finished, bool adelete) { _finished = finished; _delete = adelete; }
     
                 virtual const Button* getCommandButtons() const { return 0; }
                 virtual void handleAction(unsigned id) { }
     
-                Common::List<Valid<Window> >& getWindows() { return _windows; }
+                WindowList& getWindows() { return _windows; }
                 void addWindow(Valid<Window> window) { _windows.push_back(window); }
                 void closeWindow() { _windows.pop_back(); }
     
-            protected:
-                Valid<Game> _parent;
-                Common::List<Valid<Window> > _windows;
+            private:
+                WindowList _windows;
+
+                bool _finished;
+                bool _delete;
         };
     }
 }

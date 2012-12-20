@@ -75,11 +75,10 @@ namespace XEEN
             unsigned getActiveCharacterSlot() const { return _activeCharacterSlot; }
             void selectCharacter(unsigned slot) { _activeCharacterSlot = slot; }
 
-            void setEvent(Event::Event* event);
+            void setEvent(NonNull<Event::Event> event);
 
         private:
-            Event::Event* _event;
-            bool _processingEvent; // NOTE: < Not thread safe!
+            Common::Stack<NonNull<Event::Event> > _events;
 
             unsigned _activeCharacterSlot;
                 
@@ -91,7 +90,6 @@ namespace XEEN
             Party* _party;
             Font* _font;
 
-            CharacterStatusWindow* _statusWnd;
             CharacterWindow* _portraitWnd;
             CharacterActionWindow* _charActionWnd;
             GameWindow* _mainWnd;

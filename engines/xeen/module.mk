@@ -20,6 +20,7 @@ MODULE_OBJS := \
     maze/segment.o \
     maze/text.o \
     event/castspell.o \
+    event/characterstatus.o \
     event/selectspell.o \
     event/gameinfo.o \
     event/quickreference.o \
@@ -28,7 +29,6 @@ MODULE_OBJS := \
     ui/characterwindow.o \
     ui/gamewindow.o \
     ui/scrollwindow.o \
-    ui/characterstatuswindow.o \
     ui/npcwindow.o \
     ui/messagewindows.o \
     ui/movementwindow.o

@@ -54,7 +54,7 @@ namespace XEEN
         uint32 flags;
     };
 
-    class Window : public Validateable
+    class Window : public Validateable, public GameHolder
     {
         static const unsigned BUTTON_DELAY = 100;
     
@@ -93,7 +93,6 @@ namespace XEEN
             bool key(Common::KeyCode code);
 
         protected:
-            Valid<Game> _parent;
             bool _finished;
             bool _clickToFinish;
 

@@ -36,32 +36,35 @@ namespace XEEN
         {
             public:
                 GameInfo(Valid<Game> parent);
-                bool process();
+                void process();
+        };
+
+        class CharacterStatus : public Event
+        {
+            public:
+                CharacterStatus(Valid<Game> parent);
+                void process();
         };
 
         class QuickReference : public Event
         {
             public:
                 QuickReference(Valid<Game> parent);
-                bool process();
+                void process();
         };
 
-        class CastSpellWindow;
         class CastSpell : public Event
         {
             public:
                 CastSpell(Valid<Game> parent);
-                bool process();
-
-            private:
-                CastSpellWindow* _window;
+                void process();
         };
 
         class SelectSpell : public Event
         {
             public:
                 SelectSpell(Valid<Game> parent);
-                bool process();
+                void process();
         };
     }
 }

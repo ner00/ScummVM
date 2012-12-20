@@ -29,7 +29,7 @@
 #include "xeen/ui/window.h"
 
 XEEN::Window::Window(Valid<Game> parent, const Common::Rect& area, bool clickToFinish) :
-    _parent(parent), _finished(false), _clickToFinish(clickToFinish), _area(area), _pressedButton(0), _pressedTime(0)
+    GameHolder(parent), _finished(false), _clickToFinish(clickToFinish), _area(area), _pressedButton(0), _pressedTime(0)
 {
 }
 
@@ -48,7 +48,7 @@ void XEEN::Window::draw()
     XEEN_VALID();
 
     const Common::Point location(_area.left, _area.top);
-    Graphics::Manager* graphics = _parent->getGraphicsManager();
+    Graphics::Manager* graphics = getGame()->getGraphicsManager();
 
     // Background: TODO: Get correct color; draw border.
     graphics->fillRect(_area, 21);

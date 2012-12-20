@@ -89,7 +89,7 @@ namespace XEEN
                 {
                     XEEN_VALID();
                 
-                    Character* character = _parent->getActiveCharacter();
+                    Character* character = getGame()->getActiveCharacter();
                 
                     if(valid(character))
                     {
@@ -107,27 +107,21 @@ namespace XEEN
 }
 
 
-XEEN::Event::CastSpell::CastSpell(Valid<Game> parent) : Event(parent), _window(new CastSpellWindow(parent))
+XEEN::Event::CastSpell::CastSpell(Valid<Game> parent) : Event(parent)
 {
-    addWindow(_window);
+    addWindow(new CastSpellWindow(parent));
 }
 
-bool XEEN::Event::CastSpell::process()
+void XEEN::Event::CastSpell::process()
 {
-    bool finished = false;
+    CastSpellWindow* window = (CastSpellWindow*)(Window*)getWindows().back();
         
-    switch(_window->action)
+    switch(window->action)
     {
-        case 1: finished = true; /* TODO: Cast spell */ break;
-        case 2: _parent->setEvent(new SelectSpell(_parent)); break; // TODO: Need event stack!
-        case 3: finished = true; break;
+        case 1: setFinished(true, true); /* TODO: Cast spell */ break;
+        case 2: getGame()->setEvent(new SelectSpell(getGame())); break;
+        case 3: setFinished(true, true); break;
     }
 
-    if(getWindows().back()->isFinished() || finished)
-    {
-        delete _window;
-        return true;
-    }
-
-    return false;
+    window->action = 0;
 }

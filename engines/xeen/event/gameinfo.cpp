@@ -57,7 +57,7 @@ namespace XEEN
             {
                 XEEN_VALID();
 
-                Party* party = _parent->getParty();
+                Party* party = getGame()->getParty();
             
                 const unsigned day = party->getValue(Party::DAY);
                 const unsigned year = party->getValue(Party::YEAR);
@@ -86,13 +86,7 @@ XEEN::Event::GameInfo::GameInfo(Valid<Game> parent) : Event(parent)
     addWindow(new GameInfoWindow(parent));
 }
 
-bool XEEN::Event::GameInfo::process()
+void XEEN::Event::GameInfo::process()
 {
-    if(getWindows().back()->isFinished())
-    {
-        delete (Window*)getWindows().back();
-        return true;
-    }
-
-    return false;
+    setFinished(getWindows().back()->isFinished(), true);
 }

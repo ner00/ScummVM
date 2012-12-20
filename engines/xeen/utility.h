@@ -33,6 +33,7 @@
 #include "common/memstream.h"
 #include "common/keyboard.h"
 #include "common/system.h"
+#include "common/stack.h"
 
 namespace XEEN
 {
