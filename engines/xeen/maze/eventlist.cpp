@@ -78,10 +78,11 @@ void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, Direction facing, uint3
     if(_events.contains(key))
     {
         Event& ev = _events[key];
-        EventState state(this, x, y, facing, line);
+        EventState state(this, x, y, facing, line, 0);
 
         for(; state.line < ev.lines.size(); state.line ++)
         {
+            state.offset = ev.lines[state.line];
             if(!runEventLine(state, ev.lines[state.line]))
             {
                 break;
@@ -131,13 +132,9 @@ bool XEEN::Maze::EventList::evMAPTEXT(const EventState& state, int32 offset)
 
 bool XEEN::Maze::EventList::evMESSAGE(const EventState& state, int32 offset)
 {
-    // TODO
-    debug("MESSAGE");
-
     const char* msg = _parent->getString(_data->getByteAt(offset + 6));
-//    _parent->getGame()->showWindow(_waitingWindow);
-
-    return true;
+    _parent->getGame()->setEvent(new Message(_parent->getGame(), state, msg));
+    return false; // TODO: ?
 }
 
 bool XEEN::Maze::EventList::evNPC(const EventState& state, int32 offset)
@@ -155,13 +152,12 @@ bool XEEN::Maze::EventList::evNPC(const EventState& state, int32 offset)
 
 bool XEEN::Maze::EventList::evTELEPORT(const EventState& state, int32 offset)
 {
-    // TODO
-    debug("TELEPORT");
+    // TODO: Handle map == 0 for mirrors!
     Valid<Party> p = _parent->getGame()->getParty();
     p->changeMap(_data->getByteAt(offset + 6));
     p->moveTo(Common::Point(_data->getByteAt(offset + 7), _data->getByteAt(offset + 8)), 4);
     
-    return true;
+    return _data->getByteAt(offset + 5) == 0x07;
 }
 
 bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)

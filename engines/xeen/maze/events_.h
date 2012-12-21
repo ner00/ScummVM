@@ -50,6 +50,13 @@ namespace XEEN
                 NPC(Valid<Game> parent, const Maze::EventState& state, NonNull<const char> name, NonNull<const char> msg);
                 void process();
         };
+
+        class Message : public MazeEvent
+        {
+            public:
+                Message(Valid<Game> parent, const Maze::EventState& state, NonNull<const char> msg);
+                void process();
+        };
     }
 }
 

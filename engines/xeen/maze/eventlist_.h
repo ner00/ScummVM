@@ -83,11 +83,17 @@ namespace XEEN
             uint32 y;
             Direction facing;
             uint32 line;
+            uint32 offset;
 
-            EventState(Valid<EventList> aparent, uint32 ax, uint32 ay, Direction afacing, uint32 aline) :
-                parent(aparent), x(ax), y(ay), facing(afacing), line(aline)
+            EventState(Valid<EventList> aparent, uint32 ax, uint32 ay, Direction afacing, uint32 aline, uint32 aoffset) :
+                parent(aparent), x(ax), y(ay), facing(afacing), line(aline), offset(aoffset)
             {
                 
+            }
+
+            uint8 getByteAt(uint32 off)
+            {
+                return parent->_data->getByteAt(offset + off);
             }
 
             void runFrom(uint32 fromLine)

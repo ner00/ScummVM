@@ -20,6 +20,7 @@ MODULE_OBJS := \
     maze/segment.o \
     maze/text.o \
     maze/npc.o \
+    maze/message.o \
     event/castspell.o \
     event/characterstatus.o \
     event/selectspell.o \
@@ -30,7 +31,6 @@ MODULE_OBJS := \
     ui/characterwindow.o \
     ui/gamewindow.o \
     ui/scrollwindow.o \
-    ui/messagewindows.o \
     ui/movementwindow.o
 
 # This module can be built as a plugin

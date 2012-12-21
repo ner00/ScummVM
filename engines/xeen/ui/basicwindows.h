@@ -77,20 +77,6 @@ namespace XEEN
             const Button* getButtons() const;
             void handleAction(unsigned id);
     };
-
-    class SmallMessageWindow : public Window
-    {
-        public:
-            SmallMessageWindow(Valid<Game> parent, NonNull<const char> msg);
-
-        protected:
-            const String* getStrings() const;
-            void produceString(unsigned id);
-
-        private:
-            const char* _msg;
-    };
-
 }
 
 #endif // XEEN_UI_BASICWINDOWS_H
