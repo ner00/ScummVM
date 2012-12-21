@@ -462,7 +462,7 @@ void XEEN::Maze::Map::processObjects(const Common::Point& position, Direction fa
             index[objOffsets[i].id]->sprite = CCFileId("%03d.%sBJ", t.id, (t.id < 100) ? "O" : "0");
             const uint8* const data = od->getDataForObject(t.id);
 
-            uint32 dir = facing.relativeTo(t.facing).turnAround();
+            Direction dir = facing - t.facing;
 
             if(enforce(data))
             {
