@@ -63,7 +63,7 @@ namespace XEEN
     
                 bool canMove(const Common::Point& position, Direction dir) const;
 
-                uint16 getTile(Common::Point position, Direction facing = 0) const;
+                uint16 getTile(Common::Point position, Direction facing = Direction::NORTH) const;
                 uint8 getFlags(Common::Point position) const;
                 uint16 getSurface(Common::Point position) const;
 

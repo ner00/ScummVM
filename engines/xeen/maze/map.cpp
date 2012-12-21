@@ -95,9 +95,16 @@ bool XEEN::Maze::Map::canMove(const Common::Point& position, Direction dir) cons
     XEEN_VALID();
 
     const uint32 wallNoPass = _base->getValue(Segment::WALLNOPASS);
-    const uint32 tile = getTile(position, dir);
-
-    return (tile >> 12) < wallNoPass;
+    if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
+    {
+        // TODO!
+        return true;
+    }
+    else
+    {
+        const uint32 tile = getTile(position, dir);
+        return (tile >> 12) < wallNoPass;
+    }
 }
 
 uint16 XEEN::Maze::Map::getTile(Common::Point position, Direction facing) const

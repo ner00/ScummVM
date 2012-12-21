@@ -50,7 +50,7 @@ namespace XEEN
                 static const uint32 WATER       = 0x40;
 
                 static const uint32 MAP_OUTDOORS        = 0x80000000;
-                static const uint32 MAP_ISDRAK          = 0x40000000;
+                static const uint32 MAP_ISDARK          = 0x40000000;
                 static const uint32 MAP_BLOCKSAVE       = 0x00008000;
                 static const uint32 MAP_BLOCKREST       = 0x00004000;
                 static const uint32 MAP_UNKNOWN1        = 0x00002000;
