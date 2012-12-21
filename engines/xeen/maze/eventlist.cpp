@@ -23,13 +23,15 @@
 
 #include "xeen/game.h"
 #include "xeen/ui/basicwindows.h"
+#include "xeen/event/basicevents.h"
 #include "xeen/utility.h"
 #include "xeen/characters.h"
 
 #include "xeen/maze/eventlist_.h"
+#include "xeen/maze/events_.h"
 #include "xeen/maze/map.h"
 
-XEEN::Maze::EventList::EventList(Map* parent, FilePtr data) : _parent(parent), _data(data), _runningEvent(0), _runningLine(0), _waitingWindow(0)
+XEEN::Maze::EventList::EventList(Valid<Map> parent, FilePtr data) : _parent(parent), _data(data)
 {
     if(_data)
     {
@@ -67,7 +69,7 @@ XEEN::Maze::EventList::EventList(Map* parent, FilePtr data) : _parent(parent), _
     }
 }
 
-void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, Direction facing)
+void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, Direction facing, uint32 line)
 {
     XEEN_VALID();
 
@@ -76,98 +78,69 @@ void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, Direction facing)
     if(_events.contains(key))
     {
         Event& ev = _events[key];
+        EventState state(this, x, y, facing, line);
 
-        debug("\nEVENT START");
-        _runningEvent = &ev;
-        _runningLine = 0;
-        _waitingWindow = 0;
-    }
-}
-
-void XEEN::Maze::EventList::pumpEvent()
-{
-    if(_runningEvent)
-    {
-        if(_waitingWindow && _waitingWindow->isFinished())
+        for(; state.line < ev.lines.size(); state.line ++)
         {
-//            _parent->getGame()->closeWindow();
-            _waitingWindow = 0;
-        }
-
-        if(!_waitingWindow)
-        {
-            if(_runningLine < _runningEvent->lines.size())
+            if(!runEventLine(state, ev.lines[state.line]))
             {
-                runEventLine(_runningEvent->lines[_runningLine]);
-                _runningLine ++;
-            }
-            else
-            {
-                _runningEvent = 0;
-                _runningLine = 0;
+                break;
             }
         }
     }
 }
 
-int32 XEEN::Maze::EventList::runEventLine(int32 off)
+bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
 {
     XEEN_VALID();
 
-    if(valid(_parent))
+    const uint8 opcode = _data->getByteAt(offset + 5);
+
+    switch(opcode)
     {
-        const uint8 length = _data->getByteAt(off);
-        const uint8 opcode = _data->getByteAt(off + 5);
-
-        switch(opcode)
-        {
-            case 0x00: { return evNOP(off); }
-            case 0x01: { return evMESSAGE(off); }
-            case 0x02: { return evMAPTEXT(off); }
-            case 0x03: { return evMAPTEXT(off); }
-            case 0x04: { return evMAPTEXT(off); }
-            case 0x05: { return evNPC(off); }
-            case 0x07: { return evTELEPORT(off); }
-            case 0x08: { return evIF(off); }
-            case 0x09: { return evIF(off); }
-            case 0x0A: { return evIF(off); }
-            case 0x1F: { return evTELEPORT(off); }
-            case 0x27: { return evMAPTEXT(off); }
-            case 0x29: { return evMESSAGE(off); }
-            case 0x35: { return evMESSAGE(off); }
-            default: debug("EV: %02X", opcode); return 1;
-        }
+        case 0x00: { return evNOP(state, offset); }
+        case 0x01: { return evMESSAGE(state, offset); }
+        case 0x02: { return evMAPTEXT(state, offset); }
+        case 0x03: { return evMAPTEXT(state, offset); }
+        case 0x04: { return evMAPTEXT(state, offset); }
+        case 0x05: { return evNPC(state, offset); }
+        case 0x07: { return evTELEPORT(state, offset); }
+        case 0x08: { return evIF(state, offset); }
+        case 0x09: { return evIF(state, offset); }
+        case 0x0A: { return evIF(state, offset); }
+        case 0x1F: { return evTELEPORT(state, offset); }
+        case 0x27: { return evMAPTEXT(state, offset); }
+        case 0x29: { return evMESSAGE(state, offset); }
+        case 0x35: { return evMESSAGE(state, offset); }
+        default: debug("EV: %02X", opcode); return true;
     }
-
-    return 0;
 }
 
-int32 XEEN::Maze::EventList::evNOP(uint32 offset)
+bool XEEN::Maze::EventList::evNOP(const EventState& state, int32 offset)
 {
-    return 1;
+    return true;
 }
 
-int32 XEEN::Maze::EventList::evMAPTEXT(uint32 offset)
+bool XEEN::Maze::EventList::evMAPTEXT(const EventState& state, int32 offset)
 {
     // TODO
     debug("MAPTEXT");
     debug("%s", _parent->getString(_data->getByteAt(offset + 6)));
-    return 1;
+    return true;
 }
 
-int32 XEEN::Maze::EventList::evMESSAGE(uint32 offset)
+bool XEEN::Maze::EventList::evMESSAGE(const EventState& state, int32 offset)
 {
     // TODO
     debug("MESSAGE");
 
     const char* msg = _parent->getString(_data->getByteAt(offset + 6));
-    _waitingWindow = new SmallMessageWindow(_parent->getGame(), msg);
 //    _parent->getGame()->showWindow(_waitingWindow);
 
-    return 1;
+    return true;
 }
 
-int32 XEEN::Maze::EventList::evNPC(uint32 offset)
+bool XEEN::Maze::EventList::evNPC(const EventState& state, int32 offset)
 {
     // TODO
     debug("NPC");
@@ -175,13 +148,12 @@ int32 XEEN::Maze::EventList::evNPC(uint32 offset)
     const char* name = _parent->getString(_data->getByteAt(offset + 6));
     const char* msg = _parent->getString(_data->getByteAt(offset + 7));
 
-    _waitingWindow = new NPCWindow(_parent->getGame(), name, msg);
-//    _parent->getGame()->showWindow(_waitingWindow);
+    _parent->getGame()->setEvent(new NPC(_parent->getGame(), state, name, msg));
 
-    return 1;
+    return false;
 }
 
-int32 XEEN::Maze::EventList::evTELEPORT(uint32 offset)
+bool XEEN::Maze::EventList::evTELEPORT(const EventState& state, int32 offset)
 {
     // TODO
     debug("TELEPORT");
@@ -189,16 +161,16 @@ int32 XEEN::Maze::EventList::evTELEPORT(uint32 offset)
     p->changeMap(_data->getByteAt(offset + 6));
     p->moveTo(Common::Point(_data->getByteAt(offset + 7), _data->getByteAt(offset + 8)), 4);
     
-    return 1;
+    return true;
 }
 
-int32 XEEN::Maze::EventList::evIF(uint32 offset)
+bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 {
     // TODO
     debug("IF");
     uint32 val = produceValue(_data->getByteAt(offset + 6));
 
-    return 1;
+    return true;
 }
 
 uint32 XEEN::Maze::EventList::produceValue(uint32 id)

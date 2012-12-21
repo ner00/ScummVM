@@ -19,35 +19,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-#define XEEN_MAZE_SOURCE //< HACK
 
-#include "xeen/game.h"
-#include "xeen/ui/basicwindows.h"
+#ifndef XEEN_MAZE_EVENTS_H
+#define XEEN_MAZE_EVENTS_H
+
+#include "xeen/utility.h"
+#include "xeen/event/event.h"
 #include "xeen/maze/eventlist_.h"
 
-XEEN::NPCWindow::NPCWindow(Valid<Game> parent, const EventState& state, NonNull<const char> name, NonNull<const char> msg) :
-    Window(parent, Common::Rect(8, 8, 224, 140), true), _state(state), _name(name), _msg(msg)
+namespace XEEN
 {
-    _clickToFinish = true;
-}
+    class Game;
 
-const XEEN::String* XEEN::NPCWindow::getStrings() const
-{
-    XEEN_VALID();
-
-    static const String strings[] = 
+    namespace Maze
     {
-        {0, 1, 0, 30, Font::CENTER},
-        {0, 2, 0, 70, Font::CENTER},
-        {0, 0, 0, 0, 0}
-    };
-    
-    return strings;
+        class EventState;
+
+        class MazeEvent : public Event::Event
+        {
+            public:
+                MazeEvent(Valid<Game> parent, const EventState& state) : Event(parent), _state(state) { }
+
+            protected:
+                EventState _state;
+        };
+
+        class NPC : public MazeEvent
+        {
+            public:
+                NPC(Valid<Game> parent, const Maze::EventState& state, NonNull<const char> name, NonNull<const char> msg);
+                void process();
+        };
+    }
 }
 
-void XEEN::NPCWindow::produceString(unsigned id)
-{
-    XEEN_VALID();
-
-    fillStringBuffer("%s", (id == 1) ? _name : _msg);
-}
+#endif // XEEN_MAZE_EVENTS_H

@@ -39,25 +39,27 @@ namespace XEEN
         const uint32 MAX_MAP_HEIGHT = 256;
     
         class Map;
+
+        class EventState;
     
         // Only accessible by Map
         class EventList : public Validateable
         {
             friend class Map;
+            friend class EventState;
     
             private:
-                EventList(Map* parent, FilePtr data);
-                void runEventAt(uint8 x, uint8 y, Direction facing);
-                void pumpEvent();
+                EventList(Valid<Map> parent, FilePtr data);
+                void runEventAt(uint8 x, uint8 y, Direction facing, uint32 line = 0);
 
             private:
-                int32 runEventLine(int32 off);
-                int32 evNOP(uint32 offset);
-                int32 evMAPTEXT(uint32 offset);
-                int32 evMESSAGE(uint32 offset);
-                int32 evNPC(uint32 offset);
-                int32 evTELEPORT(uint32 offset);
-                int32 evIF(uint32 offset);
+                bool runEventLine(const EventState& state, int32 offset);
+                bool evNOP(const EventState& state, int32 offset);
+                bool evMAPTEXT(const EventState& state, int32 offset);
+                bool evMESSAGE(const EventState& state, int32 offset);
+                bool evNPC(const EventState& state, int32 offset);
+                bool evTELEPORT(const EventState& state, int32 offset);
+                bool evIF(const EventState& state, int32 offset);
     
                 uint32 produceValue(uint32 id);
 
@@ -68,14 +70,30 @@ namespace XEEN
                 };
 
             private:
-                Map* _parent;
+                Valid<Map> _parent;
                 FilePtr _data;
 
-                Event* _runningEvent;
-                uint32 _runningLine;
-                Window* _waitingWindow;
-
                 Common::HashMap<uint32, Event> _events;
+        };
+
+        struct EventState
+        {
+            Valid<EventList> parent;
+            uint32 x;
+            uint32 y;
+            Direction facing;
+            uint32 line;
+
+            EventState(Valid<EventList> aparent, uint32 ax, uint32 ay, Direction afacing, uint32 aline) :
+                parent(aparent), x(ax), y(ay), facing(afacing), line(aline)
+            {
+                
+            }
+
+            void runFrom(uint32 fromLine)
+            {
+                parent->runEventAt(x, y, facing, fromLine);
+            }
         };
     }
 }

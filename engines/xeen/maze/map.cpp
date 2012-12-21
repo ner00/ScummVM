@@ -80,7 +80,7 @@ const char* XEEN::Maze::Map::getString(uint32 id) const
     return valid(_text) ? _text->getString(id) : "";
 }
 
-void XEEN::Maze::Map::runEventAt(uint8 x, uint8 y, Direction facing)
+void XEEN::Maze::Map::runEventAt(uint8 x, uint8 y, Direction facing, uint32 line)
 {
     XEEN_VALID();
 
@@ -178,8 +178,6 @@ bool XEEN::Maze::Map::getObjectAt(const Common::Point& position, ObjectEntry& da
 void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
 {
     XEEN_VALID();
-
-    _events->pumpEvent();
 
     buildOutdoorDrawIndex();
     buildDrawIndex();
