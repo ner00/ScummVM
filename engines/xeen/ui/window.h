@@ -54,7 +54,7 @@ namespace XEEN
         uint32 flags;
     };
 
-    class Window : public Validateable, public GameHolder
+    class Window : public Validateable, public GameHolder, public Common::NonCopyable
     {
         static const unsigned BUTTON_DELAY = 100;
     

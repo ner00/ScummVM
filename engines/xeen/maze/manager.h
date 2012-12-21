@@ -36,7 +36,7 @@ namespace XEEN
         class ObjectData;
         class MonsterData;
 
-        class Manager : public Validateable, public GameHolder
+        class Manager : public Validateable, public GameHolder, public Common::NonCopyable
         {
             friend class XEEN::Game;
         

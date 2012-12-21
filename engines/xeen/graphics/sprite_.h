@@ -36,7 +36,7 @@ namespace XEEN
         class Manager;
         class ImageBuffer;
     
-        class Sprite : public Validateable_Cleanable
+        class Sprite : public Validateable_Cleanable, public Common::NonCopyable
         {
             friend class Manager;
         

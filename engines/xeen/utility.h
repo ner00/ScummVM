@@ -184,6 +184,16 @@ namespace XEEN
         }
     };
 
+    template <typename T>
+    class Ancestor
+    {
+        public:
+            Ancestor(T* ancestor) : _ancestor(ancestor) { }
+            operator T() { return _ancestor; }
+
+        private:
+            Valid<T> _ancestor;
+    };
 
     class Game;
     class GameHolder

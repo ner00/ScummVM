@@ -37,7 +37,7 @@ namespace XEEN
                                             0xAEAE, 0xAEAA, 0xAAAA, 0xAA8A, 0x8A8A, 0x8A88,
                                             0x8888, 0x8880, 0x8080, 0x8000};
 
-        struct ImageBuffer
+        struct ImageBuffer : public Common::NonCopyable
         {
             public:
                 static const uint32 WIDTH = 320;

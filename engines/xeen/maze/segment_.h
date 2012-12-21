@@ -39,7 +39,7 @@ namespace XEEN
         class Manager;
     
         // Only accessible by MapManager and Map
-        class Segment : public Validateable
+        class Segment : public Validateable, public Common::NonCopyable
         {
             friend class Map;
             friend class Manager;

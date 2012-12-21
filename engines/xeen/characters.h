@@ -93,7 +93,7 @@ namespace XEEN
                 FIRE, ELEC, COLD, POISON, ENERGY, MAGIC, STAT_COUNT };
 
     // Stats for a single playable character
-    class Character : public Validateable
+    class Character : public Validateable, public Common::NonCopyable
     {
         friend class Party;
 

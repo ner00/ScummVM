@@ -37,7 +37,7 @@ namespace XEEN
         struct ObjectEntry;
     
         // Only accessible by Map
-        class Objects : public Validateable_Cleanable
+        class Objects : public Validateable_Cleanable, public Common::NonCopyable
         {
             friend class Map;
         

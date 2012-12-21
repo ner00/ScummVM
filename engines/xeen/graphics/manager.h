@@ -35,7 +35,7 @@ namespace XEEN
         class ImageBuffer;
         class Font;
         
-        class Manager : public Validateable
+        class Manager : public Validateable, public GameHolder, public Common::NonCopyable
         {
             static const unsigned MAX_SPRITES = 65536;
             friend class XEEN::Game;
@@ -56,8 +56,6 @@ namespace XEEN
                 const byte* getScreenBitmap() const;
     
             private:
-                Valid<Game> _parent;
-
                 ImageBuffer* _screen;
                 Font* _font;
                 Sprite* _sprites[MAX_SPRITES]; // TODO: <Use a hash table!

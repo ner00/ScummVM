@@ -27,7 +27,7 @@
 
 namespace XEEN
 {
-    struct File : public Common::MemoryReadStream, public Validateable
+    struct File : public Common::MemoryReadStream, public Validateable, public Common::NonCopyable
     {
         public:
             File(CCFileId id, byte* data, uint32 datasize) : Common::MemoryReadStream(data, datasize), _id(id), _size(datasize), _data(data) { }

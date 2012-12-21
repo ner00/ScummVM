@@ -36,7 +36,7 @@ namespace XEEN
         class Map;
     }
 
-    class Party : public Validateable
+    class Party : public Validateable, public Common::NonCopyable
     {
         friend class Game;
 
@@ -70,7 +70,7 @@ namespace XEEN
             void exchangeMember(unsigned slot1, unsigned slot2);
             
             // Manager Maze
-            Maze::Map* getMap() const;
+            Valid<Maze::Map> getMap() const;
 
             void changeMap(uint8 id);
             

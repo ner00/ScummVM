@@ -33,7 +33,7 @@ namespace XEEN
     // Only accessible from Game
     class Game;
 
-    class Archive : public Validateable
+    class Archive : public Validateable, public Common::NonCopyable
     {
         friend class Game;
 

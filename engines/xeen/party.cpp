@@ -209,7 +209,7 @@ void XEEN::Party::exchangeMember(unsigned slot1, unsigned slot2)
     }*/
 }
 
-XEEN::Maze::Map* XEEN::Party::getMap() const
+XEEN::Valid<XEEN::Maze::Map> XEEN::Party::getMap() const
 {
     XEEN_VALID();
     

@@ -30,7 +30,7 @@ namespace XEEN
     // This class is only accessible by Archive.
     class Archive;
 
-    class Toc : public Validateable
+    class Toc : public Validateable, public Common::NonCopyable
     {
         friend class Archive;
 

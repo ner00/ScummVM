@@ -45,7 +45,7 @@ namespace XEEN
     class Character;
     class Font;
 
-    class Game : public Validateable_Cleanable
+    class Game : public Validateable_Cleanable, public Common::NonCopyable
     {
         public:
             enum Type { CLOUDS, DARKSIDE, WORLD };
@@ -64,12 +64,12 @@ namespace XEEN
             void click(const Common::Point& location);
             void key(Common::KeyCode key);
             void draw();
-        
-            FilePtr getFile(CCFileId id, bool fromSave = false);
 
             Valid<Graphics::Manager> getGraphicsManager() const { return _graphicsManager; }
             Valid<Maze::Manager> getMapManager() const { return _mapManager; }
             Valid<Party> getParty() const { return _party; }
+
+            FilePtr getFile(CCFileId id, bool fromSave = false);
 
             Character* getActiveCharacter();
             unsigned getActiveCharacterSlot() const { return _activeCharacterSlot; }
@@ -91,7 +91,6 @@ namespace XEEN
             Font* _font;
 
             CharacterWindow* _portraitWnd;
-            CharacterActionWindow* _charActionWnd;
             GameWindow* _mainWnd;
             MovementWindow* _movementWnd;
     };

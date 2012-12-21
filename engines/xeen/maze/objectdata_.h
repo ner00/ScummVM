@@ -37,7 +37,7 @@ namespace XEEN
         class Map;
 
         // Only accessible by Map and Manager
-        class ObjectData : public Validateable
+        class ObjectData : public Validateable, public Common::NonCopyable
         {
             friend class Manager;
             friend class Map;

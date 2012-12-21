@@ -36,7 +36,7 @@ namespace XEEN
         class Map;
     
         // Only accessible from Map
-        class Text : public Validateable
+        class Text : public Validateable, public Common::NonCopyable
         {
             friend class Map;
     

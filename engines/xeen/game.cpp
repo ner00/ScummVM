@@ -34,7 +34,7 @@
 #include "xeen/maze/map.h"
 
 XEEN::Game::Game() : _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
-                     _portraitWnd(0), _charActionWnd(0), _mainWnd(0), _movementWnd(0)
+                     _portraitWnd(0), _mainWnd(0), _movementWnd(0)
 {
     markInvalid();
 }
@@ -50,6 +50,10 @@ void XEEN::Game::cleanse()
     XEEN_DELETE(_mapManager);
     XEEN_DELETE(_graphicsManager);
     XEEN_DELETE(_assets);
+
+    XEEN_DELETE(_portraitWnd);
+    XEEN_DELETE(_mainWnd);
+    XEEN_DELETE(_movementWnd);
 }
 
 void XEEN::Game::load()
@@ -62,7 +66,6 @@ void XEEN::Game::load()
     _party = new Party(this);
     
     _portraitWnd = new CharacterWindow(this);
-    _charActionWnd = new CharacterActionWindow(this);
     _mainWnd = new GameWindow(this);
     _movementWnd = new MovementWindow(this);
 
@@ -167,17 +170,15 @@ void XEEN::Game::draw()
         if(!_events.top()->isFinished())
         {
             _events.top()->process();
+            _events.top()->processWindows<EvHeartProcessor>(0);
         }
 
         if(_events.top()->isFinished())
         {
-            if(_events.top()->wantsDelete())
+            Event::Event* ev = _events.pop();
+            if(ev->wantsDelete())
             {
-                delete (Event::Event*)_events.pop();
-            }
-            else
-            {
-                _events.pop();
+                delete ev;
             }
         }
     }
@@ -186,37 +187,29 @@ void XEEN::Game::draw()
     _mainWnd->heartbeat();
     _movementWnd->heartbeat();
 
-    if(!_events.empty())
-    {
-        _events.top()->processWindows<EvHeartProcessor>(0);
-    }
-    
+    // Draw    
     _graphicsManager->reset();
+
     _mainWnd->draw();
     _movementWnd->draw();
     _portraitWnd->draw();
-    
-    Maze::Map* m = _party->getMap();
+
+    Valid<Maze::Map> m = _party->getMap();
     m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
+
+    _graphicsManager->setClipArea(Common::Rect(8, 8, 224, 140));    
+    m->draw(_graphicsManager);
+
+    _graphicsManager->setClipArea(XRect::cr(237, 12, 70, 56));
+    m->drawMini(Common::Point(237, 12), _party->getPosition(), _party->getValue(Party::MAZE_FACING), _graphicsManager);
+
+    _graphicsManager->setClipArea(Common::Rect(0, 0, 320, 200));
 
     if(!_events.empty())
     {
         for(uint32 i = 0; i != _events.size(); i ++)
         {
             _events[i]->processWindows<EvDrawProcessor>(0);
-        }
-    }
-    else
-    {                
-        if(valid(m))
-        {
-            _graphicsManager->setClipArea(Common::Rect(8, 8, 224, 140));    
-            m->draw(_graphicsManager);
-
-            _graphicsManager->setClipArea(XRect::cr(237, 12, 70, 56));
-            m->drawMini(Common::Point(237, 12), _party->getPosition(), _party->getValue(Party::MAZE_FACING), _graphicsManager);
-
-            _graphicsManager->setClipArea(Common::Rect(0, 0, 320, 200));
         }
     }
 }

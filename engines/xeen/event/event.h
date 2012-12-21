@@ -32,7 +32,7 @@ namespace XEEN
     {
         typedef Common::List<Valid<Window> > WindowList;
 
-        class Event : public GameHolder
+        class Event : public GameHolder, public Common::NonCopyable
         {
             public:
                 Event(Valid<Game> parent) : GameHolder(parent), _finished(false), _delete(false) { }

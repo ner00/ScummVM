@@ -49,7 +49,7 @@ namespace XEEN
         struct DrawListItem;
 
         // Only constructible by MapManager
-        class Map : public Validateable, public GameHolder
+        class Map : public Validateable, public GameHolder, public Common::NonCopyable
         {
             friend class Manager;
 

@@ -43,7 +43,7 @@ namespace XEEN
         class EventState;
     
         // Only accessible by Map
-        class EventList : public Validateable
+        class EventList : public Validateable, public Common::NonCopyable
         {
             friend class Map;
             friend class EventState;
