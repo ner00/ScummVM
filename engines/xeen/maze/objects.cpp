@@ -54,7 +54,7 @@ XEEN::Maze::Objects::Objects(FilePtr data) : _data(data)
             {
                 _counts[onList] ++;
 
-                if(_data->getByteAt(dataPos + 2) >= 16 || _data->getByteAt(dataPos + 3) >= 4)
+                if(_data->getByteAt(dataPos + 2) >= 16)//TODO: || _data->getByteAt(dataPos + 3) >= 4) (Fails on Winterkill where a monster has facing 6?)
                 {
                     markInvalidAndClean("Maze object ID or Facing invalid?");
                     return;
@@ -79,16 +79,15 @@ void XEEN::Maze::Objects::cleanse()
     memset(_counts, 0xFF, sizeof(_counts));
 }
 
-bool XEEN::Maze::Objects::getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const
+bool XEEN::Maze::Objects::getObjectAt(const Common::Point& pos, ObjectEntry& data) const
 {
     XEEN_VALID();
 
     for(unsigned i = 0; i != _counts[0]; i ++)
     {
-        const uint8 ox = _data->getByteAt(_offsets[0] + (i * 4));
-        const uint8 oy = _data->getByteAt(_offsets[0] + (i * 4) + 1);
+        const Common::Point objPos(_data->getI8At(_offsets[0] + (i * 4)), _data->getI8At(_offsets[0] + (i * 4) + 1));
     
-        if(ox == x && oy == y)
+        if(pos == objPos)
         {
             data.id = _data->getByteAt(_data->getByteAt(_offsets[0] + (i * 4) + 2));
             data.facing = _data->getByteAt(_offsets[0] + (i * 4) + 3);
@@ -100,16 +99,15 @@ bool XEEN::Maze::Objects::getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const
     return false;
 }
 
-uint32 XEEN::Maze::Objects::getMonstersAt(uint8 x, uint8 y, NonNull<ObjectEntry> data) const
+uint32 XEEN::Maze::Objects::getMonstersAt(const Common::Point& pos, NonNull<ObjectEntry> data) const
 {
     uint32 foundMonsters = 0;
 
     for(unsigned i = 0; i != _counts[1] && foundMonsters != 3; i ++)
     {
-        const uint8 ox = _data->getByteAt(_offsets[1] + (i * 4));
-        const uint8 oy = _data->getByteAt(_offsets[1] + (i * 4) + 1);
-
-        if(ox == x && oy == y)
+        const Common::Point objPos(_data->getI8At(_offsets[0] + (i * 4)), _data->getI8At(_offsets[0] + (i * 4) + 1));
+    
+        if(pos == objPos)
         {
             data[foundMonsters++].id = _data->getByteAt(16 + _data->getByteAt(_offsets[1] + (i * 4) + 2));
         }

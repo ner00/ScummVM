@@ -72,9 +72,10 @@ namespace XEEN
             private:
                 Segment(Valid<Manager> parent, FilePtr data);
                 void loadSurrounding();
+                uint16 getSurrounding(Direction dir) const;
     
-                uint16 getWall(uint8 x, uint8 y) const;
-                uint8 getCellFlags(uint8 x, uint8 y) const;
+                uint16 getWall(const Common::Point& pos) const;
+                uint8 getCellFlags(const Common::Point& pos) const;
 
                 uint32 getMapFlags() const;
 

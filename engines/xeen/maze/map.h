@@ -59,7 +59,7 @@ namespace XEEN
 
             public:
                 const char* getString(uint32 id) const;
-                void runEventAt(uint8 x, uint8 y, Direction facing, uint32 line = 0);
+                void runEventAt(const Common::Point& pos, Direction facing, uint32 line = 0);
     
                 bool canMove(const Common::Point& position, Direction dir) const;
 

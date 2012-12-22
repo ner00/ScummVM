@@ -80,13 +80,13 @@ const char* XEEN::Maze::Map::getString(uint32 id) const
     return valid(_text) ? _text->getString(id) : "";
 }
 
-void XEEN::Maze::Map::runEventAt(uint8 x, uint8 y, Direction facing, uint32 line)
+void XEEN::Maze::Map::runEventAt(const Common::Point& pos, Direction facing, uint32 line)
 {
     XEEN_VALID();
 
     if(valid(_events))
     {
-        _events->runEventAt(x, y, facing);
+        _events->runEventAt(pos, facing);
     }
 }
 
@@ -97,7 +97,35 @@ bool XEEN::Maze::Map::canMove(const Common::Point& position, Direction dir) cons
     const uint32 wallNoPass = _base->getValue(Segment::WALLNOPASS);
     if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
     {
+        const Common::Point dest = dir.move(position, 0, 1);
+
         // TODO!
+        if(dest.x < 0)
+        {
+            getGame()->getParty()->changeMap(_base->getSurrounding(Direction::WEST));
+            getGame()->getParty()->moveTo(dest + Common::Point(16, 0), 4);
+            return false;
+        }
+        else if(dest.x >= 16)
+        {
+            getGame()->getParty()->changeMap(_base->getSurrounding(Direction::EAST));
+            getGame()->getParty()->moveTo(dest - Common::Point(16, 0), 4);
+            return false;
+        }
+
+        if(dest.y < 0)
+        {
+            getGame()->getParty()->changeMap(_base->getSurrounding(Direction::SOUTH));
+            getGame()->getParty()->moveTo(dest + Common::Point(0, 16), 4);
+            return false;
+        }
+        else if(dest.y >= 16)
+        {
+            getGame()->getParty()->changeMap(_base->getSurrounding(Direction::NORTH));
+            getGame()->getParty()->moveTo(dest - Common::Point(0, 16), 4);
+            return false;
+        }
+
         return true;
     }
     else
@@ -113,13 +141,13 @@ uint16 XEEN::Maze::Map::getTile(Common::Point position, Direction facing) const
 
     Segment* seg = _base->resolveSegment(position);
     
-    if(position.x < 0 || position.y < 0 || !seg)
+    if(!Common::Rect(0, 0, 16, 16).contains(position) || !seg)
     {
         return 0x8888;
     }
     else
     {
-        uint16 result = seg->getWall(position.x, position.y);
+        uint16 result = seg->getWall(position);
     
         switch(facing)
         {
@@ -139,13 +167,13 @@ uint8 XEEN::Maze::Map::getFlags(Common::Point position) const
 
     Segment* seg = _base->resolveSegment(position);
 
-    if(position.x < 0 || position.y < 0 || !seg)
+    if(!Common::Rect(0, 0, 16, 16).contains(position) || !seg)
     {
         return 0;
     }
     else
     {
-        return seg->getCellFlags(position.x, position.y);
+        return seg->getCellFlags(position);
     }
 }
 
@@ -176,7 +204,7 @@ bool XEEN::Maze::Map::getObjectAt(const Common::Point& position, ObjectEntry& da
 
     if(valid(_objects))
     {
-        return _objects->getObjectAt(position.x, position.y, data);
+        return _objects->getObjectAt(position, data);
     }
 
     return false;

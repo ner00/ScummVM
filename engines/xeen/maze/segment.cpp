@@ -60,16 +60,21 @@ void XEEN::Maze::Segment::loadSurrounding()
     }
 }
 
-uint16 XEEN::Maze::Segment::getWall(uint8 x, uint8 y) const
+uint16 XEEN::Maze::Segment::getSurrounding(Direction dir) const
 {
-    XEEN_VALID();
-    return enforce(x < 16 && y < 16) ? _data->getU16At(OFF_WALLS + (y * 32 + x * 2)) : 0;
+    return _data->getU16At(OFF_SURR_MAZES + dir * 2);
 }
 
-uint8 XEEN::Maze::Segment::getCellFlags(uint8 x, uint8 y) const
+uint16 XEEN::Maze::Segment::getWall(const Common::Point& pos) const
 {
     XEEN_VALID();
-    return enforce(x < 16 && y < 16) ? _data->getByteAt(OFF_CELL_FLAGS + (y * 16 + x)) : 0;
+    return enforce(Common::Rect(0, 0, 16, 16).contains(pos)) ? _data->getU16At(OFF_WALLS + (pos.y * 32 + pos.x * 2)) : 0;
+}
+
+uint8 XEEN::Maze::Segment::getCellFlags(const Common::Point& pos) const
+{
+    XEEN_VALID();
+    return enforce(Common::Rect(0, 0, 16, 16).contains(pos)) ? _data->getByteAt(OFF_CELL_FLAGS + (pos.y * 16 + pos.x)) : 0;
 }
 
 uint32 XEEN::Maze::Segment::getMapFlags() const

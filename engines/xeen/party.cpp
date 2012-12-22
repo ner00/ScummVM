@@ -45,6 +45,7 @@ static const int OFF_GEMS               = 0x282;
 static const int OFF_GOLD_BANK          = 0x286;
 static const int OFF_GEMS_BANK          = 0x28A;
 
+#define GET8S(T)   _mazePTY->getI8At(T)
 #define GET8(T)    _mazePTY->getByteAt(T)
 #define SET8(T, V) _mazePTY->setByteAt(T, V)
 
@@ -131,7 +132,7 @@ Common::Point XEEN::Party::getPosition() const
 {
     XEEN_VALID();
 
-    return Common::Point(GET8(OFF_MAZE_X), GET8(OFF_MAZE_Y));
+    return Common::Point(GET8S(OFF_MAZE_X), GET8S(OFF_MAZE_Y));
 }
 
 XEEN::Direction XEEN::Party::getFacing() const
@@ -226,7 +227,7 @@ void XEEN::Party::changeMap(uint8 id)
 void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
 {
     XEEN_VALID();
-    
+
     SET8(OFF_MAZE_X, position.x);
     SET8(OFF_MAZE_Y, position.y);
     SET8(OFF_MAZE_FACING, (facing <= 3) ? facing : GET8(OFF_MAZE_FACING));

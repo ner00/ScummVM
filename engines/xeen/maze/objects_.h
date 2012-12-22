@@ -44,10 +44,10 @@ namespace XEEN
             private:
                 Objects(FilePtr data);
                 
-                bool getObjectAt(uint8 x, uint8 y, ObjectEntry& data) const;
+                bool getObjectAt(const Common::Point& pos, ObjectEntry& data) const;
 
                 // 'data' must be an array of three ObjectEntry structs
-                uint32 getMonstersAt(uint8 x, uint8 y, NonNull<ObjectEntry> data) const; 
+                uint32 getMonstersAt(const Common::Point& pos, NonNull<ObjectEntry> data) const; 
                 
             protected:
                 void cleanse();

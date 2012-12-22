@@ -69,16 +69,16 @@ XEEN::Maze::EventList::EventList(Valid<Map> parent, FilePtr data) : _parent(pare
     }
 }
 
-void XEEN::Maze::EventList::runEventAt(uint8 x, uint8 y, Direction facing, uint32 line)
+void XEEN::Maze::EventList::runEventAt(const Common::Point& pos, Direction facing, uint32 line)
 {
     XEEN_VALID();
 
-    const uint32 key = (x << 16) | (y << 8);
+    const uint32 key = (pos.x << 16) | (pos.y << 8);
 
     if(_events.contains(key))
     {
         Event& ev = _events[key];
-        EventState state(this, x, y, facing, line, 0);
+        EventState state(this, pos, facing, line, 0);
 
         for(; state.line < ev.lines.size(); state.line ++)
         {

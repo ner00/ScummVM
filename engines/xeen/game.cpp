@@ -150,9 +150,7 @@ void XEEN::Game::key(Common::KeyCode keycode)
         if(keycode == Common::KEYCODE_SPACE)
         {
             Valid<Maze::Map> map = _party->getMap();
-            const Common::Point pos = _party->getPosition();
-
-            map->runEventAt(pos.x, pos.y, _party->getFacing());
+            map->runEventAt(_party->getPosition(), _party->getFacing());
         }
 
         _portraitWnd->key(keycode);

@@ -40,6 +40,7 @@ namespace XEEN
         
             byte getByteAt(uint16 loc)              { return (enforce(loc < _size)) ? _data[loc] : 0; }
             void setByteAt(uint16 loc, byte val)    { if(enforce(loc < _size)) _data[loc] = val; }
+            int8 getI8At(uint16 loc)                { return (enforce(loc < _size)) ? *(int8*)&_data[loc] : 0; }
             byte* getBytePtrAt(uint16 loc)          { return (enforce(loc < _size)) ? &_data[loc] : 0; }
             uint16 getU16At(uint16 loc)             { return getByteAt(loc) | (getByteAt(loc + 1) << 8); }
             void setU16At(uint16 loc, uint16 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); }

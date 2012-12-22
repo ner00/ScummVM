@@ -50,7 +50,7 @@ namespace XEEN
     
             private:
                 EventList(Valid<Map> parent, FilePtr data);
-                void runEventAt(uint8 x, uint8 y, Direction facing, uint32 line = 0);
+                void runEventAt(const Common::Point& pos, Direction facing, uint32 line = 0);
 
             private:
                 bool runEventLine(const EventState& state, int32 offset);
@@ -79,14 +79,13 @@ namespace XEEN
         struct EventState
         {
             Valid<EventList> parent;
-            uint32 x;
-            uint32 y;
+            Common::Point pos;
             Direction facing;
             uint32 line;
             uint32 offset;
 
-            EventState(Valid<EventList> aparent, uint32 ax, uint32 ay, Direction afacing, uint32 aline, uint32 aoffset) :
-                parent(aparent), x(ax), y(ay), facing(afacing), line(aline), offset(aoffset)
+            EventState(Valid<EventList> aparent, const Common::Point& apos, Direction afacing, uint32 aline, uint32 aoffset) :
+                parent(aparent), pos(apos), facing(afacing), line(aline), offset(aoffset)
             {
                 
             }
@@ -98,7 +97,7 @@ namespace XEEN
 
             void runFrom(uint32 fromLine)
             {
-                parent->runEventAt(x, y, facing, fromLine);
+                parent->runEventAt(pos, facing, fromLine);
             }
         };
     }
