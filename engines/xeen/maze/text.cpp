@@ -35,7 +35,7 @@ XEEN::Maze::Text::Text(FilePtr data) : _data(data)
         
         for(int32 offset = 1; offset < _data->size() - 1; offset ++)
         {
-            if(_data->getData()[offset] == 0)
+            if(_data->getByteAt(offset) == 0)
             {
                 _stringOffsets[foundStrings ++] = offset + 1;
             }
@@ -43,7 +43,7 @@ XEEN::Maze::Text::Text(FilePtr data) : _data(data)
     }
     else
     {
-        markInvalid();
+        markInvalid("Text file not found");
     }
 }
 
@@ -53,7 +53,7 @@ const char* XEEN::Maze::Text::getString(uint32 id) const
 
     if(enforce(id < MAX_STRINGS))
     {
-        return (_stringOffsets[id] != 0xFFFF) ? (const char*)(&_data->getData()[_stringOffsets[id]]) : "";
+        return (_stringOffsets[id] != 0xFFFF) ? (const char*)(_data->getBytePtrAt(_stringOffsets[id])) : "";
     }
     
     return "";

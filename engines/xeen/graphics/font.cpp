@@ -43,51 +43,96 @@ XEEN::Graphics::Font::Font(FilePtr data) : _data(data)
     }
 }
 
-void XEEN::Graphics::Font::drawString(NonNull<ImageBuffer> out, Common::Point pen, const char* text, uint32 flags, unsigned width) const
+void XEEN::Graphics::Font::drawString(NonNull<ImageBuffer> out, Common::Point pen, NonNull<const char> text, uint32 flags, unsigned width) const
 {
     XEEN_VALID();
 
+    static const uint8 commandSize[16] = {0, 0, 0, 1, 3, 0, 0, 3, 1, 3, 0, 3, 2, 0, 0};
+
     // TODO: Check centering measurements against real game
-    const byte* btext = (const byte*)text;
-    const unsigned size = measureString(text, flags);
+    const byte* btext = (const byte*)(const char*)text;
 
-    if(flags & CENTER)
-    {
-        pen.x += (width - size) / 2;
-    }
-    else if(flags & ALIGN_RIGHT)
-    {
-        //HACK: Account for right side of window
-        pen.x += (width - 8) - size;
-    }
+    byte line[128];
+    byte word[128];
+    uint32 wordLength = 0;
 
-    for(; *btext; btext ++)
-    {
-        uint32 character = (flags & SMALL) ? *btext + 128 : *btext;
-        uint32 spacing = _data->getByteAt(SPACING_OFFSET + character);
-        uint32 offset = character * CHARACTER_SIZE;
+    memset(line, 0, sizeof(line));
+    memset(word, 0, sizeof(word));
 
-        for(int i = 0; i != 8; i ++, offset += 2)
+    for(uint32 i = 0; btext[i]; i ++)
+    {
+        if(btext[i] <= 0x20)
         {
-            uint8 pixels[8];
-            uint16 line = _data->getU16At(offset);
-
-            for(int j = 0; j != 8; j ++, line >>= 2)
+            if((measureString(line, flags) + measureString(word, flags)) > width)
             {
-                pixels[j] = line & 3;
+                drawLine(out, pen.x, pen.y, line, flags);
+
+                pen.y += 10;
+                memset(line, 0, sizeof(line));
             }
-            out->drawLine<0>(pen.x, pen.y + i, 8, pixels, 0, false);
+
+            word[wordLength] = 0x20;
+            strcat((char*)line, (char*)word);
+            memset(word, 0, sizeof(word));
+            wordLength = 0;
+
+            i += (btext[i] < 0x10) ? commandSize[btext[i]] : 0;
         }
-        
-        pen.x += spacing;
+        else
+        {
+            word[wordLength ++] = btext[i];
+        }
+    }
+
+    if((measureString(line, flags) + measureString(word, flags)) > width)
+    {
+        drawLine(out, pen.x, pen.y, line, flags);
+        drawLine(out, pen.x, pen.y + 10, word, flags);
+    }
+    else
+    {
+        strcat((char*)line, (char*)word);
+        drawLine(out, pen.x, pen.y, line, flags);
     }
 }
 
-unsigned XEEN::Graphics::Font::measureString(const char* text, uint32 flags) const
+void XEEN::Graphics::Font::drawLine(NonNull<ImageBuffer> out, int32 x, int32 y, NonNull<const byte> text, uint32 flags) const
+{
+    const byte* btext = text;
+
+    for(; *btext; btext ++)
+    {
+        const uint32 character = (flags & SMALL) ? *btext + 128 : *btext;
+        const uint32 ascii = character & 0x7F;
+        const uint32 spacing = _data->getByteAt(SPACING_OFFSET + character);
+        uint32 offset = character * CHARACTER_SIZE;
+
+        if(ascii > 0x20)
+        {
+            const uint32 descent = (ascii == 'g' || ascii == 'j' || ascii == 'p' || ascii == 'q' || ascii == 'y') ? 1 : 0;
+
+            for(int i = 0; i != 8; i ++, offset += 2)
+            {
+                uint8 pixels[8];
+                uint16 line = _data->getU16At(offset);
+    
+                for(int j = 0; j != 8; j ++, line >>= 2)
+                {
+                    pixels[j] = line & 3;
+                }
+                out->drawLine<0>(x, y + descent + i, 8, pixels, 0, false);
+            }
+        }
+        
+        x += spacing;
+    }
+}
+
+unsigned XEEN::Graphics::Font::measureString(NonNull<const byte> text, uint32 flags) const
 {
     XEEN_VALID();
 
-    const byte* btext = (const byte*)text;
+    const byte* btext = text;
     uint32 result = 0;
 
     for(; *btext; btext ++)

@@ -42,7 +42,7 @@ namespace XEEN
             
                 static const String strings[] = 
                 {
-                    {0, 1, 0, 30, Font::CENTER},
+//                    {0, 1, 0, 30, Font::CENTER},
                     {0, 2, 0, 70, Font::CENTER},
                     {0, 0, 0, 0, 0}
                 };

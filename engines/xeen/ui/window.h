@@ -97,7 +97,7 @@ namespace XEEN
             bool _clickToFinish;
 
         private:
-            char _stringBuffer[128];
+            char _stringBuffer[512];
 
             Common::Rect _area;
             

@@ -50,8 +50,9 @@ namespace XEEN
             private:
                 Font(FilePtr data);
     
-                void drawString(NonNull<ImageBuffer> out, Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0) const;
-                uint32 measureString(const char* text, uint32 flags) const;
+                void drawString(NonNull<ImageBuffer> out, Common::Point pen, NonNull<const char> text, uint32 flags = 0, uint32 width = 128) const;
+                void drawLine(NonNull<ImageBuffer> out, int32 x, int32 y, NonNull<const byte> text, uint32 flags = 0) const;
+                uint32 measureString(NonNull<const byte> text, uint32 flags) const;
                 
             private:
                 FilePtr _data;
