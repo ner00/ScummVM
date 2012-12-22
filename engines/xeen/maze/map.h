@@ -74,7 +74,7 @@ namespace XEEN
                 void drawMini(const Common::Point& pen, const Common::Point& position, Direction facing, Valid<Graphics::Manager> sprites);
     
             private:
-                void processSurface(const Common::Point& position, Direction facing, DrawListItem** index);
+                void processSurface(const Common::Point& position, Direction facing, bool facingFlip, DrawListItem** index);
                 void processObjects(const Common::Point& position, Direction facing, DrawListItem** index);
                 void processSideWallList(const Common::Point& position, Direction facing, uint32 distance, uint32 count, NonNull<const int32> ids);
     
