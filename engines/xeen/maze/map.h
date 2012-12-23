@@ -85,6 +85,8 @@ namespace XEEN
                 Text* _text;
                 EventList* _events;
                 Objects* _objects;
+
+                const char* _wallType;
         };
     }
 }

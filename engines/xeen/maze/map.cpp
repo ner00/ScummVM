@@ -42,7 +42,7 @@ namespace XEEN
     }
 }
 
-XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(parent->getGame()), _parent(parent), _base(0), _text(0), _events(0), _objects(0)
+XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(parent->getGame()), _parent(parent), _base(0), _text(0), _events(0), _objects(0), _wallType("TOWN")
 {
     _base = _parent->getSegment(mapNumber);
  
@@ -59,6 +59,19 @@ XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(paren
             delete _text;
             delete _events;
             delete _objects;
+        }
+
+        // Get wall type
+        static const char* const types[6] = {"TOWN", "CAVE", "TOWN", "CSTL", "TOWN", "TOWN"};
+        const uint32 wallType = _base->getValue(Segment::WALLTYPE);
+
+        if(wallType < 6)
+        {
+            _wallType = types[wallType];
+        }
+        else
+        {
+            markInvalid("Map has unknown wall type.");
         }
     }
     else
@@ -181,20 +194,16 @@ uint16 XEEN::Maze::Map::getSurface(Common::Point position) const
 {
     XEEN_VALID();
 
-    uint32 flags = getFlags(position);
-
-    if(flags & Segment::WATER)
-    {
-        return 8;
-    }
+    const uint32 flags = getFlags(position);
 
     if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
     {
-        return _base->lookupSurface(getTile(position, 0) & 0xF);
+        const uint32 result = _base->lookupSurface(getTile(position, 0) & 0xF);
+        return ((result == 0) && (flags & Segment::WATER)) ? 8 : result;
     }
     else
     {
-        return _base->lookupSurface(getFlags(position) & 7);
+        return _base->lookupSurface(flags & 7);
     }
 }
 
@@ -231,16 +240,31 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
         outdoorDrawIndex[SKY_TOP]->setFlipped(!facing.isAlongX());
         outdoorDrawIndex[SKY_BOTTOM]->setFlipped(!facing.isAlongX());
     
-        outdoorDrawIndex[GROUND]->sprite = CCFileId("TOWN.GND"); // TODO: Proper sprite?
+        outdoorDrawIndex[GROUND]->sprite = CCFileId("OUTDOOR.GND");
         outdoorDrawIndex[GROUND]->setFlipped(facingFlip);
     
         processSurface(position, facing, facingFlip, outdoorDrawIndex);
         processObjects(position, facing, outdoorDrawIndex);
 
         // WALLS
-        static const uint16 wallmap[16] = {0xFFFF, CCFileId("MOUNT.WAL"), CCFileId("LTREE.WAL"), CCFileId("LAVAMNT.WAL"),
-                                           CCFileId("DTREE.WAL"), CCFileId("DEDLTREE.WAL"), CCFileId("PALM.WAL"),
-                                           CCFileId("SNOMNT.WAL"), CCFileId("SNOTREE.WAL")};
+        static const uint16 wallmap[16] =
+        {
+            0xFFFF,
+            CCFileId("MOUNT.WAL"), 
+            CCFileId("LTREE.WAL"),
+            CCFileId("DTREE.WAL"), 
+            0xFFFF,
+            CCFileId("SNOTREE.WAL"), //?
+            CCFileId("DSNOTREE.WAL"),
+            CCFileId("SNOMNT.WAL"),
+            0xFFFF,
+            0xFFFF,
+            CCFileId("LAVAMNT.WAL"),
+            CCFileId("PALM.WAL"),
+            0xFFFF,
+            CCFileId("DEDLTREE.WAL")
+        };
+
         static const int wall0[3] = {FWALL_0_1L, FWALL_0_CEN, FWALL_0_1R};
         static const int wall1[3] = {FWALL_1_1L, FWALL_1_CEN, FWALL_1_1R};
         static const int wall2[3] = {FWALL_2_1L, FWALL_2_CEN, FWALL_2_1R};
@@ -264,7 +288,7 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
     else
     {    
         // ENVIRONMENT
-        const CCFileId skysprite = (getFlags(position) & Segment::INSIDE) ? CCFileId("TOWN.SKY") : CCFileId("SKY.SKY");
+        const CCFileId skysprite = (getFlags(position) & Segment::INSIDE) ? CCFileId("%s.SKY", _wallType) : CCFileId("SKY.SKY");
     
         indoorDrawIndex[SKY_TOP]->sprite = skysprite;
         indoorDrawIndex[SKY_BOTTOM]->sprite = skysprite;
@@ -272,14 +296,14 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
         indoorDrawIndex[SKY_TOP]->setFlipped(!facing.isAlongX());
         indoorDrawIndex[SKY_BOTTOM]->setFlipped(!facing.isAlongX());
     
-        indoorDrawIndex[GROUND]->sprite = CCFileId("TOWN.GND");
+        indoorDrawIndex[GROUND]->sprite = CCFileId("%s.GND", _wallType);
         indoorDrawIndex[GROUND]->setFlipped(facingFlip);
         
         // SURFACE
         processSurface(position, facing, facingFlip, indoorDrawIndex);
     
         // DISTANT WALL
-        indoorDrawIndex[FWALL_DISTANT]->sprite = CCFileId("FTOWN1.FWL");
+        indoorDrawIndex[FWALL_DISTANT]->sprite = CCFileId("F%s1.FWL", _wallType);
     
         // FACING WALLS
         static const unsigned wallmap[16] = {32, 9, 17, 11, 8, 0, 15, 16, 0, 10, 14, 6, 1, 8, 12, 13};
@@ -293,7 +317,7 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
         static const int wallcount[4] = {3, 3, 5, 9};
         static const int walloffset[4] = {1, 1, 2, 4};
         static const int* const wallbase[] = {wall1, wall2, wall3, wall4};
-        static const uint16 fwlids[4] = {0, CCFileId::fromString("FTOWN3.FWL"), CCFileId::fromString("FTOWN3.FWL"), CCFileId::fromString("FTOWN4.FWL")};
+        const uint16 fwlids[4] = {0, CCFileId("F%s3.FWL", _wallType), CCFileId("F%s3.FWL", _wallType), CCFileId("F%s4.FWL", _wallType)};
         
         // Nearest walls done separately to support being split between two sprites!
         for(int j = 0; j != wallcount[0]; j ++)
@@ -303,7 +327,7 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
             Common::Point cell = facing.move(position, j - walloffset[i], i);
             uint16 wallData = wallmap[_base->lookupWall(getTile(cell, facing) >> 12)];
             
-            indoorDrawIndex[wallbase[i][j]]->sprite = (wallData != 32) ? (wallData < 8) ? CCFileId("FTOWN1.FWL") : CCFileId("FTOWN2.FWL") : CCFileId(0xFFFF);
+            indoorDrawIndex[wallbase[i][j]]->sprite = (wallData != 32) ? (wallData < 8) ? CCFileId("F%s1.FWL", _wallType) : CCFileId("F%s2.FWL", _wallType) : CCFileId(0xFFFF);
             indoorDrawIndex[wallbase[i][j]]->frame = (wallData < 8) ? wallData : wallData - 8;
         }
         
@@ -399,7 +423,7 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
     }
     else
     {
-        const CCFileId sprite = "TOWN.TIL";
+        const CCFileId sprite("%s.TIL", _wallType);
     
         // Draw surface
         // TODO: The surface tile should be draw a few pixels lower, determine how much
@@ -448,7 +472,7 @@ void XEEN::Maze::Map::processSurface(const Common::Point& position, Direction fa
     static const CCFileId surfaceMap[16] = 
     {
         0xFFFF, "DIRT.SRF", "GRASS.SRF", "SNOW.SRF", "SWAMP.SRF", "LAVA.SRF", "DESERT.SRF", "ROAD.SRF",
-        "WATER.SRF", "TFLR.SRF", "SKY.SRF", "CROAD.SRF", "SEWER.SRF", "CLOUD.SRF", "SCOORTCH.SRF", "SPACE.SRF"
+        "WATER.SRF", "TFLR.SRF", "SKY.SRF", "CROAD.SRF", "SEWER.SRF", "CLOUD.SRF", "SCORTCH.SRF", "SPACE.SRF"
     };
 
     // TODO: Check
@@ -525,7 +549,7 @@ void XEEN::Maze::Map::processSideWallList(const Common::Point& position, Directi
         const Common::Point cell = facing.move(position, offset, distance);
         const uint16 wallData = (getTile(cell, facing) >> ((i >= midcount) ? 8 : 0)) & 0xF;
 
-        indoorDrawIndex[ids[i]]->sprite = wallData ? CCFileId("STOWN.SWL") : CCFileId(0xFFFF);
+        indoorDrawIndex[ids[i]]->sprite = wallData ? CCFileId("S%s.SWL", _wallType) : CCFileId(0xFFFF);
         
         // TODO: Frame should alternate between odd-even tiles
         if(wallData == 2 && indoorDrawIndex[ids[i]]->frame < 24)
