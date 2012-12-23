@@ -60,7 +60,7 @@ XEEN::Character::Character(FilePtr data, uint8 index, CCFileId faceSprite) : _da
     }
     else
     {
-        markInvalid();
+        markInvalid("Character index %d out of range.", index);
     }
 }
 

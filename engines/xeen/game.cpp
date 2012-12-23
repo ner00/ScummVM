@@ -36,7 +36,7 @@
 XEEN::Game::Game() : _activeCharacterSlot(0), _assets(0), _graphicsManager(0), _mapManager(0), _party(0),
                      _portraitWnd(0), _mainWnd(0), _movementWnd(0)
 {
-    markInvalid();
+    markInvalid("Create XEEN::Game object.");
 }
 
 XEEN::Game::~Game()
@@ -71,7 +71,7 @@ void XEEN::Game::load()
 
     if(!(valid(_assets) && valid(_graphicsManager) && valid(_mapManager) && valid(_party)))
     {
-        markInvalidAndClean();
+        markInvalidAndClean("Could not create all objects needed by XEEN::Game object.");
         return;
     }
 

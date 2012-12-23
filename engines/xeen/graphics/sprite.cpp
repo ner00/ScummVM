@@ -49,7 +49,7 @@ XEEN::Graphics::Sprite::Sprite(FilePtr file) : _file(file), _cellCount(0), _cell
         }
     }
 
-    markInvalidAndClean();
+    markInvalidAndClean("Sprite file not found."); // TODO: Print name
 }
 
 XEEN::Graphics::Sprite::~Sprite()

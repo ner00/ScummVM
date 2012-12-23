@@ -65,7 +65,7 @@ XEEN::Maze::EventList::EventList(Valid<Map> parent, FilePtr data) : _parent(pare
     else
     {
         _events.clear();
-        markInvalid();
+        markInvalid("Event file not found"); // TODO: Print name
     }
 }
 

@@ -72,7 +72,7 @@ XEEN::Party::Party(Valid<Game> parent) : _parent(parent)
     }
     else
     {
-        markInvalid();
+        markInvalid("Could not find MAZE.PTY and MAZE.CHR in loaded game.");
     }
 }
 

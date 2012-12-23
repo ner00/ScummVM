@@ -39,7 +39,7 @@ XEEN::Graphics::Font::Font(FilePtr data) : _data(data)
     if(!valid(_data))
     {
         _data.reset();
-        markInvalid();
+        markInvalid("Font file not found."); // TODO: Print name
     }
 }
 

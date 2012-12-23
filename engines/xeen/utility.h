@@ -66,12 +66,16 @@ namespace XEEN
     
         protected:
             void markValid() { _valid = true; }
-            void markInvalid(const char* msg = 0)
+            void markInvalid(const char* format, ...)
             {
-                if(msg)
-                {
-                    debug("%s", msg);
-                }
+                char buffer[256];
+                va_list args;
+
+                va_start(args, format);
+                vsnprintf(buffer, 256, format, args);
+                va_end(args);
+
+                debug("%.256s", buffer);
 
                 _valid = false;
             }
@@ -86,9 +90,16 @@ namespace XEEN
             virtual ~Validateable_Cleanable() { };
     
         public:
-            void markInvalidAndClean(const char* msg = 0)
+            void markInvalidAndClean(const char* format, ...)
             {
-                markInvalid(msg);
+                char buffer[256];
+                va_list args;
+
+                va_start(args, format);
+                vsnprintf(buffer, 256, format, args);
+                va_end(args);
+
+                markInvalid(buffer);
                 cleanse();
             }
     

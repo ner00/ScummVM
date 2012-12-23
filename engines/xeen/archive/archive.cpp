@@ -26,9 +26,9 @@ static const uint16 SAVEID[6] = {0x2A0C, 0x2A1C, 0x2A2C, 0x2A3C, 0x284C, 0x2A5C}
 static const uint32 SAVEID_COUNT = 6;
 
 
-XEEN::Archive::Archive(const char* name) : _saveData(0), _saveSize(0)
+XEEN::Archive::Archive(NonNull<const char> name) : _saveData(0), _saveSize(0)
 {
-    if(_file.open(name))
+    if(_file.open((const char*)name))
     {
         _mainToc.read(_file);
         
@@ -60,7 +60,7 @@ XEEN::Archive::Archive(const char* name) : _saveData(0), _saveSize(0)
     }
     else
     {
-        markInvalid();
+        markInvalid("Could not open archive: %s", (const char*)name);
     }
 }
 

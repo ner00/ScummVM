@@ -45,7 +45,7 @@ namespace
 
 XEEN::Toc::Toc() : _entryCount(0), _entries(0)
 {
-    markInvalid();
+    markInvalid("XEEN Toc object created.");
 }
 
 XEEN::Toc::~Toc()
@@ -88,6 +88,6 @@ void XEEN::Toc::read(Common::SeekableReadStream& data)
     else
     {
         XEEN_DELETE_ARRAY(_entries);
-        markInvalid();
+        markInvalid("Could not read TOC information.");
     }   
 }

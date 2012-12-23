@@ -38,7 +38,7 @@ namespace XEEN
         friend class Game;
 
         private:
-            Archive(const char* name);
+            Archive(NonNull<const char> name);
             virtual ~Archive();
             
             FilePtr getFile(CCFileId id, bool inSave);

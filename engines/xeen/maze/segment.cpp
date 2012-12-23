@@ -42,7 +42,7 @@ XEEN::Maze::Segment::Segment(Valid<Manager> parent, FilePtr data) : _parent(pare
     if(!_data)
     {
         _data.reset();
-        markInvalid();
+        markInvalid("MAZE file not found"); // TODO: Print name
     }
 }
 
