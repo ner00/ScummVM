@@ -68,7 +68,7 @@ void XEEN::GameWindow::handleAction(unsigned id)
 
 //
 
-XEEN::GameWindow_YesNo::GameWindow_YesNo(Valid<Game> parent) : Window(parent, Common::Rect(235, 75, 309, 136))
+XEEN::GameWindow_YesNo::GameWindow_YesNo(Valid<Game> parent) : GameWindow(parent)
 {
     
 }

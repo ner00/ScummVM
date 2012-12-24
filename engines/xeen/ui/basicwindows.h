@@ -68,7 +68,7 @@ namespace XEEN
             void handleAction(unsigned id);
     };
 
-    class GameWindow_YesNo : public Window
+    class GameWindow_YesNo : public GameWindow
     {
         public:
             GameWindow_YesNo(Valid<Game> parent);

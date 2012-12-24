@@ -22,6 +22,7 @@ MODULE_OBJS := \
     maze/npc.o \
     maze/message.o \
     maze/ifyesno.o \
+    maze/whowill.o \
     event/castspell.o \
     event/characterstatus.o \
     event/selectspell.o \

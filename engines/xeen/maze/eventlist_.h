@@ -65,6 +65,8 @@ namespace XEEN
                 bool evIFMAPFLAG(const EventState& state);
                 bool evGIVETAKE(const EventState& state);
                 bool evREMOVE(const EventState& state);
+                bool evALTEREVENT(const EventState& state);
+                bool evWHOWILL(const EventState& state);
 
             private:
                 struct Event

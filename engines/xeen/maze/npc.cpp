@@ -65,7 +65,7 @@ namespace XEEN
     class ConfirmWindow : public GameWindow_YesNo
     {
         public:
-            ConfirmWindow(Valid<Game> game, uint32 confirmType) : GameWindow_YesNo(game), action(0), type(confirmType) { }
+            ConfirmWindow(Valid<Game> game) : GameWindow_YesNo(game), action(0) { }
 
         protected:
             void handleAction(unsigned id)
@@ -75,59 +75,65 @@ namespace XEEN
 
         public:
             uint32 action;
-            const uint32 type;
     };
 }
 
-XEEN::Maze::NPC::NPC(Valid<Game> parent, const EventState& state, NonNull<const char> name, NonNull<const char> msg) : MazeEvent(parent, state)
+XEEN::Maze::NPC::NPC(Valid<Game> parent, const EventState& state, NonNull<const char> name, NonNull<const char> msg) : MazeEvent(parent, state), _done(false)
 {
     const uint32 confirmType = _state.getByteAt(9);
-    const bool wantConfirm = confirmType != 1;
 
-    addWindow(new NPCWindow(getGame(), wantConfirm, name, msg));
+    // TODO: Confirm type 2 = don't wait?
 
-    if(wantConfirm)
+    addWindow(new NPCWindow(getGame(), confirmType == 0, name, msg));
+
+    if(confirmType == 0)
     {
-        setCommandWindow(new ConfirmWindow(parent, confirmType));
+        setCommandWindow(new ConfirmWindow(parent));
     }
 }
 
 void XEEN::Maze::NPC::process()
 {
+    const uint32 confirmType = _state.getByteAt(9);
     ConfirmWindow* commands = (ConfirmWindow*)getCommandWindow();
 
-    if(valid(commands))
+    if(!_done)
     {
-        switch(commands->action)
+        if(valid(commands)) // Yes/No
         {
-            case 1: // YES
+            switch(commands->action)
             {
-                _state.runFrom((commands->type == 0) ? _state.getByteAt(10) : _state.line + 1);
-                setFinished(true, true);
-                removeCommandWindow();
-                return;
-            }
-
-            case 2: // NO
-            {
-                if(commands->type == 0)
+                case 1: // YES
+                {
+                    _state.runFrom(_state.getByteAt(10));
+                    setFinished(true, true);
+                }
+    
+                case 2: // NO
                 {
                     _state.runFrom(_state.line + 1);
+                    setFinished(true, true);
                 }
-
-                setFinished(true, true);
-                removeCommandWindow();
+    
                 return;
             }
+        }
+        else if(confirmType == 1) // Wait for key press
+        {
+            if(getWindows().back()->isFinished())
+            {
+                setFinished(true, true);
+                _state.runFrom(_state.line + 1);
+            }
+        }
+        else // No wait
+        {
+            _state.runFrom(_state.line + 1);
+            _done = true;
         }
     }
     else
     {
-        setFinished(getWindows().back()->isFinished(), true);
-
-        if(isFinished())
-        {
-            _state.runFrom(_state.line + 1);
-        }
+        setFinished(true, true);
     }
 }

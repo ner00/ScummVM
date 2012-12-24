@@ -164,12 +164,14 @@ void XEEN::Game::draw()
     XEEN_VALID();
 
     bool haveCommands = false;
+    bool havePortraits = false;
 
     if(!_events.empty())
     {
-        for(uint32 i = 0; i != _events.size() && !haveCommands; i ++)
+        for(uint32 i = 0; i != _events.size() && (!haveCommands || !havePortraits); i ++)
         {
             haveCommands = haveCommands || _events[i]->getCommandWindow();
+            havePortraits = havePortraits || _events[i]->getCharacterWindow();
         }
 
         if(!_events.top()->isFinished())
@@ -180,6 +182,8 @@ void XEEN::Game::draw()
 
         if(_events.top()->isFinished())
         {
+            haveCommands = false;
+            havePortraits = false;
             Event::Event* ev = _events.pop();
             if(ev->wantsDelete())
             {
@@ -188,11 +192,11 @@ void XEEN::Game::draw()
         }
     }
 
-    _portraitWnd->heartbeat();
-    _movementWnd->heartbeat();
-
     // Draw    
     _graphicsManager->reset();
+
+    _movementWnd->heartbeat();
+    _movementWnd->draw();
 
     if(!haveCommands)
     {
@@ -200,8 +204,11 @@ void XEEN::Game::draw()
         _mainWnd->draw();
     }
 
-    _movementWnd->draw();
-    _portraitWnd->draw();
+    if(!havePortraits)
+    {
+        _portraitWnd->heartbeat();
+        _portraitWnd->draw();
+    }
 
     Valid<Maze::Map> m = _party->getMap();
     m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));

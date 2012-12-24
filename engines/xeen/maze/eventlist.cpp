@@ -122,11 +122,11 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x11: { debug("DoTownEvent"); return true; }
         case 0x12: { return false; }
         case 0x13: { debug("AltarMap"); return true; }
-        case 0x14: { debug("XXX"); return true; }
+        case 0x14: { debug("GiveTreasureChest"); return true; }
         case 0x15: { debug("ConfirmWord"); return true; }
         case 0x16: { debug("Damage"); return true; }
         case 0x17: { debug("JmpRnd"); return true; }
-        case 0x18: { debug("AlterEvent"); return true; }
+        case 0x18: { return evALTEREVENT(state); }
         case 0x19: { debug("CallEvent"); return true; }
         case 0x1A: { debug("Return"); return true; }
         case 0x1B: { debug("SetVar"); return true; }
@@ -134,7 +134,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x1D: { debug("TakeOrGive"); return true; }
         case 0x1E: { debug("CutsceneEndClouds"); return true; }
         case 0x1F: { return evTELEPORT(state, offset); }
-        case 0x20: { debug("WhoWill"); return true; }
+        case 0x20: { return evWHOWILL(state); }
         case 0x21: { debug("RndDamage"); return true; }
         case 0x22: { debug("MoveWallObj"); return true; }
         case 0x23: { return evSETCELLFLAGS(state); }
@@ -144,11 +144,11 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x27: { return evMAPTEXT(state, offset); }
         case 0x28: { debug("PlayEventVoc"); return true; }
         case 0x29: { return evMESSAGE(state, offset); }
-        case 0x2A: { debug("IfMapFlag"); return true; }
+        case 0x2A: { return evIFMAPFLAG(state); }
         case 0x2B: { debug("SelRndChar"); return true; }
         case 0x2C: { debug("GiveEnchanted"); return true; }
         case 0x2D: { debug("ItemType"); return true; }
-        case 0x2E: { debug("MakeNothingHere"); return true; }
+        case 0x2E: { evREMOVE(state); }
         case 0x2F: { return true; }
         case 0x30: { debug("ChooseNumeric"); return true; }
         case 0x31: { debug("DisplayBottomTwoLines"); return true; }
@@ -402,10 +402,12 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
 
 bool XEEN::Maze::EventList::evREMOVE(const EventState& state)
 {
+    // TODO: Untested
+    // TODO: Differentiate between 0x0E(Remove) and 0x2E(MakeNothingHere)
     // TODO: How does the real game achieve this. Here I just set every opcode to NOP.
     const uint32 key = (state.pos.x << 16) | (state.pos.y << 8);
 
-    if(_events.contains(key))
+    if(enforce(_events.contains(key)))
     {
         Event& ev = _events[key];
         for(uint32 i = 0; i != ev.lines.size(); i ++)
@@ -415,4 +417,36 @@ bool XEEN::Maze::EventList::evREMOVE(const EventState& state)
     }
 
     return true;
+}
+
+bool XEEN::Maze::EventList::evALTEREVENT(const EventState& state)
+{
+    const uint32 key = (state.pos.x << 16) | (state.pos.y << 8);
+    const uint32 line = state.getByteAt(6);
+    const uint32 newop = state.getByteAt(7);
+
+    if(enforce(_events.contains(key)))
+    {
+        Event& ev = _events[key];
+        if(enforce(line < ev.lines.size()))
+        {
+            const uint32 oldop = _data->getByteAt(ev.lines[line] + 5);
+            _data->setByteAt(ev.lines[line] + 5, newop);
+
+            if(oldop == 0x3C && ev.lines.size() >= line) // PLAY_CD
+            {
+                _data->setByteAt(ev.lines[line + 1], newop);
+            }
+        }
+    }
+
+    return true;
+}
+
+bool XEEN::Maze::EventList::evWHOWILL(const EventState& state)
+{
+    const char* msg = _parent->getString(state.getByteAt(7));
+    _parent->getGame()->setEvent(new WhoWill(_parent->getGame(), state, msg));
+
+    return false;
 }

@@ -25,6 +25,7 @@
 
 #include "xeen/utility.h"
 #include "xeen/ui/window.h"
+#include "xeen/ui/basicwindows.h"
 
 namespace XEEN
 {
@@ -35,11 +36,12 @@ namespace XEEN
         class Event : public Validateable, public GameHolder, public Common::NonCopyable
         {
             public:
-                Event(Valid<Game> parent) : GameHolder(parent), _commandWindow(0), _finished(false), _delete(false) { }
+                Event(Valid<Game> parent) : GameHolder(parent), _commandWindow(0), _characterWindow(0), _finished(false), _delete(false) { }
 
                 virtual ~Event()
                 {
                     removeCommandWindow();
+                    removeCharacterWindow();
                 }
 
                 virtual void process() = 0;
@@ -52,6 +54,11 @@ namespace XEEN
                     if(_commandWindow)
                     {
                         f(_commandWindow);
+                    }
+
+                    if(_characterWindow)
+                    {
+                        f(_characterWindow);
                     }
 
                     for(WindowList::iterator i = _windows.begin(); i != _windows.end() && !_finished; i ++)
@@ -68,17 +75,24 @@ namespace XEEN
                 virtual void handleAction(unsigned id) { }
     
                 WindowList& getWindows() { return _windows; }
-                void addWindow(Valid<Window> window) { _windows.push_back(window); }
+                void addWindow(Valid<Window> window) { _windows.push_back(window); window->show(); }
                 void closeWindow() { _windows.pop_back(); }
-                Window* getCommandWindow() const { return _commandWindow; }
+
+                GameWindow* getCommandWindow() const { return _commandWindow; }
+                CharacterWindow* getCharacterWindow() const { return _characterWindow; }
 
             protected:
-                void setCommandWindow(Valid<Window> commandWindow) { removeCommandWindow(); _commandWindow = commandWindow; }
+                void setCommandWindow(Valid<GameWindow> window) { removeCommandWindow(); _commandWindow = window; window->show(); }
                 void removeCommandWindow() { XEEN_DELETE(_commandWindow); }
+
+                void setCharacterWindow(Valid<CharacterWindow> window) { removeCharacterWindow(); _characterWindow = window; window->show(); }
+                void removeCharacterWindow() { XEEN_DELETE(_characterWindow); }
+
 
             private:
                 WindowList _windows;
-                Window* _commandWindow;
+                XEEN::GameWindow* _commandWindow;
+                XEEN::CharacterWindow* _characterWindow;
 
                 bool _finished;
                 bool _delete;

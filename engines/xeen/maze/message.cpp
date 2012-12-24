@@ -31,7 +31,7 @@ namespace XEEN
     class SmallMessageWindow : public Window
     {
         public:
-            SmallMessageWindow(Valid<Game> parent, NonNull<const char> msg) : Window(parent, Common::Rect(225, 140, 318, 198), true), _msg(msg) { }
+            SmallMessageWindow(Valid<Game> parent, NonNull<const char> msg) : Window(parent, Common::Rect(225, 140, 318, 198)), _msg(msg) { }
 
         protected:
             const String* getStrings() const
@@ -58,7 +58,7 @@ namespace XEEN
     };
 }
 
-XEEN::Maze::Message::Message(Valid<Game> parent, const EventState& state, NonNull<const char> msg) : MazeEvent(parent, state)
+XEEN::Maze::Message::Message(Valid<Game> parent, const EventState& state, NonNull<const char> msg) : MazeEvent(parent, state), _done(false)
 {
     // TODO: Use proper window size
     addWindow(new SmallMessageWindow(getGame(), msg));
@@ -66,10 +66,13 @@ XEEN::Maze::Message::Message(Valid<Game> parent, const EventState& state, NonNul
 
 void XEEN::Maze::Message::process()
 {
-    setFinished(getWindows().back()->isFinished(), true);
-
-    if(isFinished())
+    if(!_done)
     {
         _state.runFrom(_state.line + 1);
+        _done = true;
+    }
+    else
+    {
+        setFinished(true, true);
     }
 }
