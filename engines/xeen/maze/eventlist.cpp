@@ -112,12 +112,12 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x08: { return evIF(state, offset); }
         case 0x09: { return evIF(state, offset); }
         case 0x0A: { return evIF(state, offset); }
-        case 0x0B: { debug("MoveObj"); return true; }
+        case 0x0B: { return evMOVEOBJ(state); }
         case 0x0C: { debug("TakeOrGive"); return true; }
         case 0x0D: { debug("NoAction"); return true; }
         case 0x0E: { debug("Remove"); return true; }
         case 0x0F: { debug("SetChar"); return true; }
-        case 0x10: { debug("Spawn"); return true; }
+        case 0x10: { return evSPAWN(state); }
         case 0x11: { debug("DoTownEvent"); return true; }
         case 0x12: { return false; }
         case 0x13: { debug("AltarMap"); return true; }
@@ -136,7 +136,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x20: { debug("WhoWill"); return true; }
         case 0x21: { debug("RndDamage"); return true; }
         case 0x22: { debug("MoveWallObj"); return true; }
-        case 0x23: { debug("AltarCellFlag"); return true; }
+        case 0x23: { return evSETCELLFLAGS(state); }
         case 0x24: { debug("AlterHed"); return true; }
         case 0x25: { debug("DisplayStat"); return true; }
         case 0x26: { debug("TakeOrGive"); return true; }
@@ -225,6 +225,28 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
         uint32 val = produceValue(_data->getByteAt(offset + 6));
         return true;
     }
+}
+
+bool XEEN::Maze::EventList::evMOVEOBJ(const EventState& state)
+{
+    const Common::Point dest(state.getByteAt(7), state.getByteAt(8));
+    _parent->moveObject(state.getByteAt(6), dest);
+    return true;
+}
+
+bool XEEN::Maze::EventList::evSPAWN(const EventState& state)
+{
+    const Common::Point dest(state.getByteAt(7), state.getByteAt(8));
+    _parent->moveMonster(state.getByteAt(6), dest, true);
+    return true;
+}
+
+bool XEEN::Maze::EventList::evSETCELLFLAGS(const EventState& state)
+{
+    // TODO: I don't think this is right.......
+    const Common::Point dest(state.getByteAt(6), state.getByteAt(7));
+    _parent->setFlags(dest, state.getByteAt(8));
+    return true;
 }
 
 uint32 XEEN::Maze::EventList::produceValue(uint32 id)

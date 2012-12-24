@@ -60,6 +60,9 @@ namespace XEEN
                 bool evNPC(const EventState& state, int32 offset);
                 bool evTELEPORT(const EventState& state, int32 offset);
                 bool evIF(const EventState& state, int32 offset);
+                bool evMOVEOBJ(const EventState& state);
+                bool evSPAWN(const EventState& state);
+                bool evSETCELLFLAGS(const EventState& state);
     
                 uint32 produceValue(uint32 id);
 
@@ -90,7 +93,7 @@ namespace XEEN
                 
             }
 
-            uint8 getByteAt(uint32 off)
+            uint8 getByteAt(uint32 off) const
             {
                 return parent->_data->getByteAt(offset + off);
             }

@@ -79,7 +79,9 @@ namespace XEEN
 
                 uint16 getTile(Common::Point pos, Direction dir) const;
                 void setTile(Common::Point pos, Direction dir, uint16 value);
+
                 uint8 getCellFlags(Common::Point pos) const;
+                void setCellFlags(Common::Point pos, uint8 value);
 
                 uint32 getMapFlags() const;
 

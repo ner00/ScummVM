@@ -45,9 +45,11 @@ namespace XEEN
                 Objects(FilePtr data);
                 
                 bool getObjectAt(const Common::Point& pos, ObjectEntry& data) const;
+                void moveObject(uint32 id, const Common::Point& pos);
 
                 // 'data' must be an array of three ObjectEntry structs
                 uint32 getMonstersAt(const Common::Point& pos, NonNull<ObjectEntry> data) const; 
+                void moveMonster(uint32 id, const Common::Point& pos, bool spawn);
                 
             protected:
                 void cleanse();

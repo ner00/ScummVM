@@ -57,6 +57,12 @@ const uint8* XEEN::Maze::ObjectData::getDataForObject(uint32 id) const
 
     const Game::Type gt = _parent->getGame()->getGameType();
 
+    // This happens at least on Volcano Cave 2 at 8,0 there is an object with 0xFF as its id.
+    if(id == 0xFF)
+    {
+        return 0;
+    }
+
     if(enforce(id < MAX_OBJECTS) && gt == Game::CLOUDS)
     {
         return &_cloudsDAT[id * 12];

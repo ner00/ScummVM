@@ -30,7 +30,7 @@
 XEEN::Maze::Objects::Objects(FilePtr data) : _data(data)
 {
     memset(_offsets, 0xFF, sizeof(_offsets));
-    memset(_counts, 0xFF, sizeof(_counts));
+    memset(_counts, 0, sizeof(_counts));
     
     if(_data)
     {
@@ -99,6 +99,16 @@ bool XEEN::Maze::Objects::getObjectAt(const Common::Point& pos, ObjectEntry& dat
     return false;
 }
 
+void XEEN::Maze::Objects::moveObject(uint32 id, const Common::Point& pos)
+{
+    if(enforce(id < _counts[0]))
+    {
+        const uint32 offset = _offsets[0] + (4 * id);
+        _data->setByteAt(offset + 0, pos.x);
+        _data->setByteAt(offset + 1, pos.y);
+    }
+}
+
 uint32 XEEN::Maze::Objects::getMonstersAt(const Common::Point& pos, NonNull<ObjectEntry> data) const
 {
     uint32 foundMonsters = 0;
@@ -115,3 +125,16 @@ uint32 XEEN::Maze::Objects::getMonstersAt(const Common::Point& pos, NonNull<Obje
 
     return foundMonsters;
 }
+
+void XEEN::Maze::Objects::moveMonster(uint32 id, const Common::Point& pos, bool spawn)
+{
+    if(enforce(id < _counts[1]))
+    {
+        const uint32 offset = _offsets[1] + (4 * id);
+        _data->setByteAt(offset + 0, pos.x);
+        _data->setByteAt(offset + 1, pos.y);
+
+        // TODO: Handle 'spawn'
+    }
+}
+

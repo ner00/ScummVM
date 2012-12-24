@@ -38,13 +38,13 @@ namespace XEEN
     
             const CCFileId& getID( )                { return _id; }
         
-            byte getByteAt(uint16 loc)              { return (enforce(loc < _size)) ? _data[loc] : 0; }
+            byte getByteAt(uint16 loc) const        { return (enforce(loc < _size)) ? _data[loc] : 0; }
             void setByteAt(uint16 loc, byte val)    { if(enforce(loc < _size)) _data[loc] = val; }
-            int8 getI8At(uint16 loc)                { return (enforce(loc < _size)) ? *(int8*)&_data[loc] : 0; }
-            byte* getBytePtrAt(uint16 loc)          { return (enforce(loc < _size)) ? &_data[loc] : 0; }
-            uint16 getU16At(uint16 loc)             { return getByteAt(loc) | (getByteAt(loc + 1) << 8); }
+            int8 getI8At(uint16 loc) const          { return (enforce(loc < _size)) ? *(int8*)&_data[loc] : 0; }
+            byte* getBytePtrAt(uint16 loc) const    { return (enforce(loc < _size)) ? &_data[loc] : 0; }
+            uint16 getU16At(uint16 loc) const       { return getByteAt(loc) | (getByteAt(loc + 1) << 8); }
             void setU16At(uint16 loc, uint16 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); }
-            uint32 getU32At(uint16 loc)             { return getByteAt(loc) | (getByteAt(loc + 1) << 8) | (getByteAt(loc + 2) << 16) | (getByteAt(loc + 3) << 24); }
+            uint32 getU32At(uint16 loc) const       { return getByteAt(loc) | (getByteAt(loc + 1) << 8) | (getByteAt(loc + 2) << 16) | (getByteAt(loc + 3) << 24); }
             void setU32At(uint16 loc, uint32 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); setByteAt(loc + 2, (val >> 16) & 0xFF); setByteAt(loc + 3, (val >> 24) & 0xFF); }
     
         private:

@@ -205,6 +205,12 @@ uint8 XEEN::Maze::Map::getFlags(const Common::Point& pos) const
     return _base->getCellFlags(pos);
 }
 
+void XEEN::Maze::Map::setFlags(const Common::Point& pos, uint8 value)
+{
+    XEEN_VALID();
+    _base->setCellFlags(pos, value);
+}
+
 uint16 XEEN::Maze::Map::getSurface(const Common::Point& pos) const
 {
     XEEN_VALID();
@@ -225,13 +231,19 @@ uint16 XEEN::Maze::Map::getSurface(const Common::Point& pos) const
 bool XEEN::Maze::Map::getObjectAt(const Common::Point& pos, ObjectEntry& data) const
 {
     XEEN_VALID();
+    return _objects->getObjectAt(pos, data);
+}
 
-    if(valid(_objects))
-    {
-        return _objects->getObjectAt(pos, data);
-    }
+void XEEN::Maze::Map::moveObject(uint32 id, const Common::Point& pos)
+{
+    XEEN_VALID();
+    _objects->moveObject(id, pos);
+}
 
-    return false;
+void XEEN::Maze::Map::moveMonster(uint32 id, const Common::Point& pos, bool spawn)
+{
+    XEEN_VALID();
+    _objects->moveMonster(id, pos, spawn);
 }
 
 void XEEN::Maze::Map::fillDrawStruct(const Common::Point& pos, Direction dir)
@@ -552,7 +564,7 @@ void XEEN::Maze::Map::processObjects(const Common::Point& pos, Direction dir, Dr
 
             Direction facing = dir - t.dir;
 
-            if(enforce(data))
+            if(data)
             {
                 index[objOffsets[i].id]->frame = data[facing];
                 index[objOffsets[i].id]->flags &= ~0x8000;

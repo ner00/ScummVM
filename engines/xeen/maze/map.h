@@ -68,9 +68,12 @@ namespace XEEN
                 void setTile(const Common::Point& pos, Direction dir, uint16 value);
 
                 uint8 getFlags(const Common::Point& pos) const;
+                void setFlags(const Common::Point& pos, uint8 value);
                 uint16 getSurface(const Common::Point& pos) const;
 
                 bool getObjectAt(const Common::Point& pos, ObjectEntry& data) const;
+                void moveObject(uint32 id, const Common::Point& pos);
+                void moveMonster(uint32 id, const Common::Point& pos, bool spawn);
                     
                 void fillDrawStruct(const Common::Point& pos, Direction dir);
                 void draw(Valid<Graphics::Manager> sprites);

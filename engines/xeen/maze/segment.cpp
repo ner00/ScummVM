@@ -120,6 +120,17 @@ uint8 XEEN::Maze::Segment::getCellFlags(Common::Point pos) const
     return (Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg)) ? seg->_data->getByteAt(OFF_CELL_FLAGS + (pos.y * 16 + pos.x)) : 0;
 }
 
+void XEEN::Maze::Segment::setCellFlags(Common::Point pos, uint8 value)
+{
+    XEEN_VALID();
+
+    const Segment* const seg = resolveSegment(pos);
+    if((Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg)))
+    {
+        seg->_data->setByteAt(OFF_CELL_FLAGS + (pos.y * 16 + pos.y), value);
+    }
+}
+
 uint32 XEEN::Maze::Segment::getMapFlags() const
 {
     XEEN_VALID();
