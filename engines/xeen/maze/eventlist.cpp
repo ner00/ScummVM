@@ -119,7 +119,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x0F: { debug("SetChar"); return true; }
         case 0x10: { debug("Spawn"); return true; }
         case 0x11: { debug("DoTownEvent"); return true; }
-        case 0x12: { debug("Exit"); return true; }
+        case 0x12: { return false; }
         case 0x13: { debug("AltarMap"); return true; }
         case 0x14: { debug("XXX"); return true; }
         case 0x15: { debug("ConfirmWord"); return true; }
@@ -212,9 +212,19 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 {
     // TODO
     debug("IF");
-    uint32 val = produceValue(_data->getByteAt(offset + 6));
 
-    return true;
+    const uint8 valueID = _data->getByteAt(offset + 6);
+
+    if(valueID == 0x2C) // YES/NO
+    {
+        _parent->getGame()->setEvent(new IfYesNo(_parent->getGame(), state));
+        return false;
+    }
+    else
+    {
+        uint32 val = produceValue(_data->getByteAt(offset + 6));
+        return true;
+    }
 }
 
 uint32 XEEN::Maze::EventList::produceValue(uint32 id)

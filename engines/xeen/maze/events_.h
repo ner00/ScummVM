@@ -51,6 +51,13 @@ namespace XEEN
                 void process();
         };
 
+        class IfYesNo : public MazeEvent
+        {
+            public:
+                IfYesNo(Valid<Game> parent, const Maze::EventState& state);
+                void process();
+        };
+
         class Message : public MazeEvent
         {
             public:
