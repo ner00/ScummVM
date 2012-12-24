@@ -59,8 +59,8 @@ namespace XEEN
 
             public:
                 const char* getString(uint32 id) const;
-                void runEventAt(const Common::Point& pos, Direction facing, uint32 line = 0);
-    
+                void runEventAt(const Common::Point& pos, Direction facing, bool autoExec, uint32 line = 0);
+
                 bool canMove(const Common::Point& position, Direction dir) const;
 
                 uint16 getTile(Common::Point position, Direction facing = Direction::NORTH) const;
@@ -72,6 +72,7 @@ namespace XEEN
                 void fillDrawStruct(Common::Point position, Direction facing);
                 void draw(Valid<Graphics::Manager> sprites);
                 void drawMini(const Common::Point& pen, const Common::Point& position, Direction facing, Valid<Graphics::Manager> sprites);
+                void setSignMessage(const char* message, const Common::Rect& area, uint32 fontFlags);
     
             private:
                 void processSurface(const Common::Point& position, Direction facing, bool facingFlip, DrawListItem** index);
@@ -85,6 +86,10 @@ namespace XEEN
                 Text* _text;
                 EventList* _events;
                 Objects* _objects;
+
+                char* _message;
+                Common::Rect _messageArea;
+                uint32 _messageFlags;
 
                 const char* _wallType;
         };

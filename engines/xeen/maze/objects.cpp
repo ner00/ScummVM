@@ -105,7 +105,7 @@ uint32 XEEN::Maze::Objects::getMonstersAt(const Common::Point& pos, NonNull<Obje
 
     for(unsigned i = 0; i != _counts[1] && foundMonsters != 3; i ++)
     {
-        const Common::Point objPos(_data->getI8At(_offsets[0] + (i * 4)), _data->getI8At(_offsets[0] + (i * 4) + 1));
+        const Common::Point objPos(_data->getI8At(_offsets[1] + (i * 4)), _data->getI8At(_offsets[1] + (i * 4) + 1));
     
         if(pos == objPos)
         {

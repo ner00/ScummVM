@@ -42,7 +42,7 @@ namespace XEEN
     }
 }
 
-XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(parent->getGame()), _parent(parent), _base(0), _text(0), _events(0), _objects(0), _wallType("TOWN")
+XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(parent->getGame()), _parent(parent), _base(0), _text(0), _events(0), _objects(0), _message(0), _messageFlags(0), _wallType("TOWN")
 {
     _base = _parent->getSegment(mapNumber);
  
@@ -93,13 +93,22 @@ const char* XEEN::Maze::Map::getString(uint32 id) const
     return valid(_text) ? _text->getString(id) : "";
 }
 
-void XEEN::Maze::Map::runEventAt(const Common::Point& pos, Direction facing, uint32 line)
+void XEEN::Maze::Map::runEventAt(const Common::Point& pos, Direction facing, bool autoExec, uint32 line)
 {
     XEEN_VALID();
 
     if(valid(_events))
     {
-        _events->runEventAt(pos, facing);
+        if(autoExec)
+        {
+            setSignMessage(0, Common::Rect(), 0);
+        }
+
+        const bool autoExecFlag = (getFlags(pos) & (Segment::AUTOEXECUTE));
+        if((autoExec && autoExecFlag) || (!autoExec && !autoExecFlag))
+        {
+            _events->runEventAt(pos, facing, line);
+        }
     }
 }
 
@@ -387,6 +396,11 @@ void XEEN::Maze::Map::draw(Valid<Graphics::Manager> sprites)
             }
         }
     }
+
+    if(_message)
+    {
+        sprites->drawString(Common::Point(_messageArea.left, _messageArea.top), _message, _messageFlags, _messageArea.width());
+    }
 }
 
 void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& position, Direction facing, Valid<Graphics::Manager> sprites)
@@ -462,6 +476,14 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
             }
         }
     }
+}
+
+void XEEN::Maze::Map::setSignMessage(const char* message, const Common::Rect& area, uint32 fontFlags)
+{
+    free(_message);
+    _message = message ? strdup(message) : 0;
+    _messageArea = area;
+    _messageFlags = fontFlags;
 }
 
 /////

@@ -47,14 +47,8 @@ XEEN::Maze::Text::Text(FilePtr data) : _data(data)
     }
 }
 
-const char* XEEN::Maze::Text::getString(uint32 id) const
+const char* XEEN::Maze::Text::getString(LessThan<uint32, MAX_STRINGS> id) const
 {
     XEEN_VALID();
-
-    if(enforce(id < MAX_STRINGS))
-    {
-        return (_stringOffsets[id] != 0xFFFF) ? (const char*)(_data->getBytePtrAt(_stringOffsets[id])) : "";
-    }
-    
-    return "";
+    return (_stringOffsets[id] != 0xFFFF) ? (const char*)(_data->getBytePtrAt(_stringOffsets[id])) : "";
 }

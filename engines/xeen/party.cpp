@@ -231,6 +231,8 @@ void XEEN::Party::moveTo(const Common::Point& position, uint8 facing)
     SET8(OFF_MAZE_X, position.x);
     SET8(OFF_MAZE_Y, position.y);
     SET8(OFF_MAZE_FACING, (facing <= 3) ? facing : GET8(OFF_MAZE_FACING));
+
+    getMap()->runEventAt(getPosition(), GET8(OFF_MAZE_FACING), true);
 }
 
 void XEEN::Party::moveRelative(Direction dir)

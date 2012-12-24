@@ -44,7 +44,7 @@ namespace XEEN
         
             private:
                 Text(FilePtr data);
-                const char* getString(uint32 id) const;
+                const char* getString(LessThan<uint32, MAX_STRINGS> id) const;
                 
             private:
                 FilePtr _data;

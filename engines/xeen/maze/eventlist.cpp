@@ -54,11 +54,13 @@ XEEN::Maze::EventList::EventList(Valid<Map> parent, FilePtr data) : _parent(pare
 
             Event& ev = _events[key];
 
-            if(enforce(l == ev.lines.size()))
+            if(l != ev.lines.size())
             {
-                ev.lines.push_back(_data->pos() - 5);
+                markInvalid("Event line out of order: Found %d expected %d", l, ev.lines.size());
+                return;
             }
            
+            ev.lines.push_back(_data->pos() - 5);
             _data->seek(_data->pos() + length - 4);
         }
     }
@@ -124,9 +126,8 @@ bool XEEN::Maze::EventList::evNOP(const EventState& state, int32 offset)
 
 bool XEEN::Maze::EventList::evMAPTEXT(const EventState& state, int32 offset)
 {
-    // TODO
-    debug("MAPTEXT");
-    debug("%s", _parent->getString(_data->getByteAt(offset + 6)));
+    // TODO: Add values for each opcode
+    _parent->setSignMessage(_parent->getString(_data->getByteAt(offset + 6)), Common::Rect(8, 8, 200, 100), 0);
     return true;
 }
 

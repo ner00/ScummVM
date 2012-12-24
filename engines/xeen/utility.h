@@ -44,10 +44,12 @@ namespace XEEN
     }
 
     // Like assert but returns true (and safe for side effects)
-    inline bool enforce(bool cond)
+    #define enforce(c) enforce2(c, __FILE__, __LINE__)
+    inline bool enforce2(bool cond, const char* file, uint32 line)
     {
         if(!cond)
         {
+            debug("Enforce fail: %s %d", file, line);
             die();
         }
 
@@ -135,6 +137,22 @@ namespace XEEN
     class Contract
     {
         public:
+            Contract(T _value) : value(contract(_value)) { }
+            operator T&() { return contract(value); }
+//            T& operator.() { return contract(value); }
+
+            operator const T&() const { return contract(value); }
+//            const T& operator->() const { return contract(value); }
+
+        private:
+            C contract;
+            T value;
+    };
+
+    template <typename T, class C>
+    class Contract <T*, C>
+    {
+        public:
             Contract(T* _value) : value(contract(_value)) { }
             operator T*() { return contract(value); }
             T* operator->() { return contract(value); }
@@ -163,12 +181,23 @@ namespace XEEN
             const T* operator()(T* v) const { enforce(valid(v)); return v; }
     };
 
+    template<typename T, uint32 U>
+    class LessThan_Contract
+    {
+        public:
+            T& operator()(T& v) { enforce(v < U); return v; }
+            const T& operator()(const T& v) const { enforce(v < U); return v; }
+    };
+
     // Contract indicating a pointer that may not be null.
     template <typename T>
-    class NonNull : public Contract<T, NonNull_Contract<T> > { public: NonNull(T* v) : Contract<T, NonNull_Contract<T> >(v) { } };
+    class NonNull : public Contract<T*, NonNull_Contract<T> > { public: NonNull(T* v) : Contract<T*, NonNull_Contract<T> >(v) { } };
 
     template <typename T>
-    class Valid : public Contract<T, Valid_Contract<T> > { public: Valid(T* v) : Contract<T, Valid_Contract<T> >(v) { }};
+    class Valid : public Contract<T*, Valid_Contract<T> > { public: Valid(T* v) : Contract<T*, Valid_Contract<T> >(v) { }};
+
+    template <typename T, uint32 U>
+    class LessThan : public Contract<T, LessThan_Contract<T, U> > { public: LessThan(T& v) : Contract<T, LessThan_Contract<T, U> >(v) { }};
 
     // POD rect wrapper
     struct XRect
@@ -193,17 +222,6 @@ namespace XEEN
         {
             return Common::Point(x, y);
         }
-    };
-
-    template <typename T>
-    class Ancestor
-    {
-        public:
-            Ancestor(T* ancestor) : _ancestor(ancestor) { }
-            operator T() { return _ancestor; }
-
-        private:
-            Valid<T> _ancestor;
     };
 
     class Game;
