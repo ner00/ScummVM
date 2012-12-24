@@ -43,6 +43,7 @@ namespace XEEN
         struct ObjectEntry
         {
             uint8 id;
+            Common::Point pos;
             Direction dir;
         };    
 
@@ -71,6 +72,7 @@ namespace XEEN
                 void setFlags(const Common::Point& pos, uint8 value);
                 uint16 getSurface(const Common::Point& pos) const;
 
+                Objects* getObjects() const { return _objects; }
                 bool getObjectAt(const Common::Point& pos, ObjectEntry& data) const;
                 void moveObject(uint32 id, const Common::Point& pos);
                 void moveMonster(uint32 id, const Common::Point& pos, bool spawn);

@@ -44,6 +44,7 @@ static const int OFF_GOLD               = 0x27E;
 static const int OFF_GEMS               = 0x282;
 static const int OFF_GOLD_BANK          = 0x286;
 static const int OFF_GEMS_BANK          = 0x28A;
+static const int OFF_GAME_FLAGS         = 0x293;
 
 #define GET8S(T)   _mazePTY->getI8At(T)
 #define GET8(T)    _mazePTY->getByteAt(T)
@@ -145,6 +146,24 @@ uint8 XEEN::Party::getMemberIdFromSlot(unsigned slot) const
 {
     XEEN_VALID();
     return (enforce(slot < MAX_SLOTS)) ? GET8(OFF_MEMBERS + slot) : 0;
+}
+
+bool XEEN::Party::getGameFlag(LessThan<uint32, 256> id) const
+{
+    // TODO: Handle game sides
+    // TODO: MSB or LSB?
+    const uint32 byte = _mazePTY->getByteAt(OFF_GAME_FLAGS + (id / 8));
+    return byte & (1 << (id & 7));
+}
+
+void XEEN::Party::setGameFlag(LessThan<uint32, 256> id, bool set)
+{
+    // TODO: Handle game sides
+    // TODO: MSB or LSB?
+    uint32 byte = _mazePTY->getByteAt(OFF_GAME_FLAGS + (id / 8));
+    byte &= ~(1 << (id & 7));
+    byte |= set ? (1 << (id & 7)) : 0;
+    _mazePTY->setByteAt(OFF_GAME_FLAGS + (id / 8), byte);
 }
 
 

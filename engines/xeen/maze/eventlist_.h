@@ -54,7 +54,6 @@ namespace XEEN
 
             private:
                 bool runEventLine(const EventState& state, int32 offset);
-                bool evNOP(const EventState& state, int32 offset);
                 bool evMAPTEXT(const EventState& state, int32 offset);
                 bool evMESSAGE(const EventState& state, int32 offset);
                 bool evNPC(const EventState& state, int32 offset);
@@ -63,8 +62,9 @@ namespace XEEN
                 bool evMOVEOBJ(const EventState& state);
                 bool evSPAWN(const EventState& state);
                 bool evSETCELLFLAGS(const EventState& state);
-    
-                uint32 produceValue(uint32 id);
+                bool evIFMAPFLAG(const EventState& state);
+                bool evGIVETAKE(const EventState& state);
+                bool evREMOVE(const EventState& state);
 
             private:
                 struct Event

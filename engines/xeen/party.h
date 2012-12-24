@@ -61,6 +61,9 @@ namespace XEEN
             Direction getFacing() const;
             uint8 getMemberIdFromSlot(unsigned slot) const;            
 
+            bool getGameFlag(LessThan<uint32, 256> id) const;
+            void setGameFlag(LessThan<uint32, 256> id, bool set);
+
             // Manage members
             Character* getMember(uint16 id);
             Character* getMemberInSlot(unsigned slot);            

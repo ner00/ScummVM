@@ -90,6 +90,7 @@ bool XEEN::Maze::Objects::getObjectAt(const Common::Point& pos, ObjectEntry& dat
         if(pos == objPos)
         {
             data.id = _data->getByteAt(_data->getByteAt(_offsets[0] + (i * 4) + 2));
+            data.pos = pos;
             data.dir = _data->getByteAt(_offsets[0] + (i * 4) + 3);
             
             return true;
@@ -97,16 +98,6 @@ bool XEEN::Maze::Objects::getObjectAt(const Common::Point& pos, ObjectEntry& dat
     }
     
     return false;
-}
-
-void XEEN::Maze::Objects::moveObject(uint32 id, const Common::Point& pos)
-{
-    if(enforce(id < _counts[0]))
-    {
-        const uint32 offset = _offsets[0] + (4 * id);
-        _data->setByteAt(offset + 0, pos.x);
-        _data->setByteAt(offset + 1, pos.y);
-    }
 }
 
 uint32 XEEN::Maze::Objects::getMonstersAt(const Common::Point& pos, NonNull<ObjectEntry> data) const
@@ -119,11 +110,40 @@ uint32 XEEN::Maze::Objects::getMonstersAt(const Common::Point& pos, NonNull<Obje
     
         if(pos == objPos)
         {
+            data[foundMonsters  ].pos = pos;
+            data[foundMonsters  ].dir = _data->getByteAt(_offsets[0] + (i * 4) + 3);
             data[foundMonsters++].id = _data->getByteAt(16 + _data->getByteAt(_offsets[1] + (i * 4) + 2));
         }
     }
 
     return foundMonsters;
+}
+
+XEEN::Maze::ObjectEntry XEEN::Maze::Objects::getMonsterData(uint32 id) const
+{
+    ObjectEntry result;
+
+    if(enforce(id < _counts[1]))
+    {
+        const uint32 base = _offsets[1] + (id * 4);
+
+        result.id = _data->getByteAt(16 + _data->getByteAt(base + 2));
+        result.pos.x = _data->getI8At(base + 0);
+        result.pos.y = _data->getI8At(base + 1);
+        result.dir = _data->getByteAt(base + 3);
+    }
+
+    return result;
+}
+
+void XEEN::Maze::Objects::moveObject(uint32 id, const Common::Point& pos)
+{
+    if(enforce(id < _counts[0]))
+    {
+        const uint32 offset = _offsets[0] + (4 * id);
+        _data->setByteAt(offset + 0, pos.x);
+        _data->setByteAt(offset + 1, pos.y);
+    }
 }
 
 void XEEN::Maze::Objects::moveMonster(uint32 id, const Common::Point& pos, bool spawn)

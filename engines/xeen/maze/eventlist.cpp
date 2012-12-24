@@ -28,6 +28,7 @@
 #include "xeen/characters.h"
 
 #include "xeen/maze/eventlist_.h"
+#include "xeen/maze/objects_.h"
 #include "xeen/maze/events_.h"
 #include "xeen/maze/map.h"
 
@@ -101,7 +102,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
 
     switch(opcode)
     {
-        case 0x00: { return evNOP(state, offset); }
+        case 0x00: { return true; }
         case 0x01: { return evMESSAGE(state, offset); }
         case 0x02: { return evMAPTEXT(state, offset); }
         case 0x03: { return evMAPTEXT(state, offset); }
@@ -113,9 +114,9 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x09: { return evIF(state, offset); }
         case 0x0A: { return evIF(state, offset); }
         case 0x0B: { return evMOVEOBJ(state); }
-        case 0x0C: { debug("TakeOrGive"); return true; }
-        case 0x0D: { debug("NoAction"); return true; }
-        case 0x0E: { debug("Remove"); return true; }
+        case 0x0C: { return evGIVETAKE(state); return true; }
+        case 0x0D: { return true; }
+        case 0x0E: { return evREMOVE(state); }
         case 0x0F: { debug("SetChar"); return true; }
         case 0x10: { return evSPAWN(state); }
         case 0x11: { debug("DoTownEvent"); return true; }
@@ -148,7 +149,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x2C: { debug("GiveEnchanted"); return true; }
         case 0x2D: { debug("ItemType"); return true; }
         case 0x2E: { debug("MakeNothingHere"); return true; }
-        case 0x2F: { debug("NoAction"); return true; }
+        case 0x2F: { return true; }
         case 0x30: { debug("ChooseNumeric"); return true; }
         case 0x31: { debug("DisplayBottomTwoLines"); return true; }
         case 0x32: { debug("DisplayLarge"); return true; }
@@ -164,11 +165,6 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x3C: { debug("PlayCD"); return true; }
         default: debug("EV: %02X", opcode); return true;
     }
-}
-
-bool XEEN::Maze::EventList::evNOP(const EventState& state, int32 offset)
-{
-    return true;
 }
 
 bool XEEN::Maze::EventList::evMAPTEXT(const EventState& state, int32 offset)
@@ -222,7 +218,100 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
     }
     else
     {
-        uint32 val = produceValue(_data->getByteAt(offset + 6));
+        Valid<Game> g = _parent->getGame();
+        Character* c = g->getActiveCharacter();
+        Party* p = g->getParty();
+    
+        bool result = false;
+
+        switch(valueID)
+        {
+            case 0x09: result = true; break; // TODO: Compare byte against SP!
+            case 0x14: result = p->getGameFlag(state.getByteAt(7)); break;
+
+
+/*            case 0x03: val = c->getSex(); break;
+            case 0x04: val = c->getRace(); break;
+            case 0x05: val = c->getClass(); break;
+            case 0x08: val = c->getValue(Character::HP) & 0xFF; break; //TODO: ?
+            case 0x0A: debug("AC"); break;
+            case 0x0B: val = c->getStat(LEVEL).getTemp(); break;
+            case 0x0C: debug("AGE"); break;
+            case 0x0D: debug("SKILL"); break;
+            case 0x0F: debug("AWARD"); break;
+            case 0x10: val = c->getValue(Character::EXPERIENCE); break;
+            case 0x11: debug("POISPROT"); break;
+            case 0x12: debug("CONDITION"); break;
+            case 0x13: debug("CANCAST"); break;*/
+
+/*            case 0x15: debug("ITEM"); break;
+            case 0x19: debug("MINS"); break;
+            case 0x22: debug("GOLD"); break;
+            case 0x23: debug("GEMS"); break;
+            case 0x25: val = c->getStat(MIGHT).getTemp(); break;
+            case 0x26: val = c->getStat(INTELLECT).getTemp(); break;
+            case 0x27: val = c->getStat(PERSONALITY).getTemp(); break;
+            case 0x28: val = c->getStat(ENDURANCE).getTemp(); break;
+            case 0x29: val = c->getStat(SPEED).getTemp(); break;
+            case 0x2A: val = c->getStat(ACCURACY).getTemp(); break;
+            case 0x2B: val = c->getStat(LUCK).getTemp(); break;
+            case 0x2C: debug("YESNO"); break;
+            case 0x2D: val = c->getStat(MIGHT).getReal(); break;
+            case 0x2E: val = c->getStat(INTELLECT).getReal(); break;
+            case 0x2F: val = c->getStat(PERSONALITY).getReal(); break;
+            case 0x30: val = c->getStat(ENDURANCE).getReal(); break;
+            case 0x31: val = c->getStat(SPEED).getReal(); break;
+            case 0x32: val = c->getStat(ACCURACY).getReal(); break;
+            case 0x33: val = c->getStat(LUCK).getReal(); break;
+            case 0x34: val = c->getStat(FIRE).getReal(); break;
+            case 0x35: val = c->getStat(ELEC).getReal(); break;
+            case 0x36: val = c->getStat(COLD).getReal(); break;
+            case 0x37: val = c->getStat(POISON).getReal(); break;
+            case 0x38: val = c->getStat(ENERGY).getReal(); break;
+            case 0x39: val = c->getStat(MAGIC).getReal(); break;
+            case 0x3A: val = c->getStat(FIRE).getTemp(); break;
+            case 0x3B: val = c->getStat(ELEC).getTemp(); break;
+            case 0x3C: val = c->getStat(COLD).getTemp(); break;
+            case 0x3D: val = c->getStat(POISON).getTemp(); break;
+            case 0x3E: val = c->getStat(ENERGY).getTemp(); break;
+            case 0x3F: val = c->getStat(MAGIC).getTemp(); break;
+            case 0x40: val = c->getStat(LEVEL).getReal(); break;
+            case 0x41: debug("FOOD"); break;
+            case 0x45: debug("LEVITATE"); break;
+            case 0x46: debug("LIGHT"); break;
+            case 0x47: debug("FIREPROT"); break;
+            case 0x48: debug("ELECPROT"); break;
+            case 0x49: debug("COLDPROT"); break;
+            case 0x4C: debug("DAY"); break;
+            case 0x4D: debug("ACTEMP"); break;
+            case 0x4E: debug("HPFULL"); break;
+            case 0x4F: debug("WIZEYE"); break;
+            case 0x51: debug("SPFULL"); break;
+            case 0x55: debug("YEAR"); break;
+            case 0x56: val = c->getStat(MIGHT).getValue(); break;
+            case 0x57: val = c->getStat(INTELLECT).getValue(); break;
+            case 0x58: val = c->getStat(PERSONALITY).getValue(); break;
+            case 0x59: val = c->getStat(ENDURANCE).getValue(); break;
+            case 0x5A: val = c->getStat(SPEED).getValue(); break;
+            case 0x5B: val = c->getStat(ACCURACY).getValue(); break;
+            case 0x5C: val = c->getStat(LUCK).getValue(); break;
+            case 0x5D: debug("WEEK"); break;
+            case 0x5E: debug("WALKONWATER"); break;
+            case 0x63: debug("SKILL"); break;
+            case 0x66: debug("THIEV"); break;
+            case 0x67: debug("WORLD FLAGS"); break;
+            case 0x68: debug("QUEST FLAG"); break;
+            case 0x69: debug("CREDITS"); break;*/
+            default: debug("Unknown Value ID: %02X", valueID); break;
+        }
+
+        if(result)
+        {
+            EventState oldState = state;
+            oldState.runFrom(state.getByteAt(state.getByteAt(0)));
+            return false;            
+        }
+
         return true;
     }
 }
@@ -249,86 +338,81 @@ bool XEEN::Maze::EventList::evSETCELLFLAGS(const EventState& state)
     return true;
 }
 
-uint32 XEEN::Maze::EventList::produceValue(uint32 id)
+bool XEEN::Maze::EventList::evIFMAPFLAG(const EventState& state)
 {
-    Valid<Game> g = _parent->getGame();
-    Character* c = g->getActiveCharacter();
+    const uint8 id = state.getByteAt(6);
 
-    switch(id)
+    // TODO: Check All
+    if(id == 0xFF)
     {
-        case 0x03: return c->getSex();
-        case 0x04: return c->getRace();
-        case 0x05: return c->getClass();
-        case 0x08: return c->getValue(Character::HP) & 0xFF; //TODO: ?
-        case 0x09: return c->getValue(Character::SP) & 0xFF; //TODO: ?
-        case 0x0A: debug("AC"); return 10;
-        case 0x0B: return c->getStat(LEVEL).getTemp();
-        case 0x0C: debug("AGE"); return 21;
-        case 0x0D: debug("SKILL"); return 0;
-        case 0x0F: debug("AWARD"); return 0;
-        case 0x10: return c->getValue(Character::EXPERIENCE);
-        case 0x11: debug("POISPROT"); return 0;
-        case 0x12: debug("CONDITION"); return 0;
-        case 0x13: debug("CANCAST"); return 0;
-        case 0x14: debug("GAMEFLAG"); return 0;
-        case 0x15: debug("ITEM"); return 0;
-        case 0x19: debug("MINS"); return 0;
-        case 0x22: debug("GOLD"); return 0;
-        case 0x23: debug("GEMS"); return 0;
-        case 0x25: return c->getStat(MIGHT).getTemp();
-        case 0x26: return c->getStat(INTELLECT).getTemp();
-        case 0x27: return c->getStat(PERSONALITY).getTemp();
-        case 0x28: return c->getStat(ENDURANCE).getTemp();
-        case 0x29: return c->getStat(SPEED).getTemp();
-        case 0x2A: return c->getStat(ACCURACY).getTemp();
-        case 0x2B: return c->getStat(LUCK).getTemp();
-        case 0x2C: debug("YESNO"); return 0;
-        case 0x2D: return c->getStat(MIGHT).getReal();
-        case 0x2E: return c->getStat(INTELLECT).getReal();
-        case 0x2F: return c->getStat(PERSONALITY).getReal();
-        case 0x30: return c->getStat(ENDURANCE).getReal();
-        case 0x31: return c->getStat(SPEED).getReal();
-        case 0x32: return c->getStat(ACCURACY).getReal();
-        case 0x33: return c->getStat(LUCK).getReal();
-        case 0x34: return c->getStat(FIRE).getReal();
-        case 0x35: return c->getStat(ELEC).getReal();
-        case 0x36: return c->getStat(COLD).getReal();
-        case 0x37: return c->getStat(POISON).getReal();
-        case 0x38: return c->getStat(ENERGY).getReal();
-        case 0x39: return c->getStat(MAGIC).getReal();
-        case 0x3A: return c->getStat(FIRE).getTemp();
-        case 0x3B: return c->getStat(ELEC).getTemp();
-        case 0x3C: return c->getStat(COLD).getTemp();
-        case 0x3D: return c->getStat(POISON).getTemp();
-        case 0x3E: return c->getStat(ENERGY).getTemp();
-        case 0x3F: return c->getStat(MAGIC).getTemp();
-        case 0x40: return c->getStat(LEVEL).getReal();
-        case 0x41: debug("FOOD"); return 600;
-        case 0x45: debug("LEVITATE"); return 0;
-        case 0x46: debug("LIGHT"); return 0;
-        case 0x47: debug("FIREPROT"); return 0;
-        case 0x48: debug("ELECPROT"); return 0;
-        case 0x49: debug("COLDPROT"); return 0;
-        case 0x4C: debug("DAY"); return 0;
-        case 0x4D: debug("ACTEMP"); return 0;
-        case 0x4E: debug("HPFULL"); return 0;
-        case 0x4F: debug("WIZEYE"); return 0;
-        case 0x51: debug("SPFULL"); return 0;
-        case 0x55: debug("YEAR"); return 100;
-        case 0x56: return c->getStat(MIGHT).getValue();
-        case 0x57: return c->getStat(INTELLECT).getValue();
-        case 0x58: return c->getStat(PERSONALITY).getValue();
-        case 0x59: return c->getStat(ENDURANCE).getValue();
-        case 0x5A: return c->getStat(SPEED).getValue();
-        case 0x5B: return c->getStat(ACCURACY).getValue();
-        case 0x5C: return c->getStat(LUCK).getValue();
-        case 0x5D: debug("WEEK"); return 0;
-        case 0x5E: debug("WALKONWATER"); return 0;
-        case 0x63: debug("SKILL"); return 0;
-        case 0x66: debug("THIEV"); return 0;
-        case 0x67: debug("WORLD FLAGS"); return 0;
-        case 0x68: debug("QUEST FLAG"); return 0;
-        case 0x69: debug("CREDITS"); return 0;
-        default: debug("Unknown Value ID: %02X", id); return 0;
+        return true;
     }
+
+    Valid<Objects> objs = _parent->getObjects();
+    const ObjectEntry oe = objs->getMonsterData(id);
+
+    // TODO: Check proper lower range
+    if(oe.pos.x >= 0x20 && oe.pos.y >= 0x20)
+    {
+        EventState oldState = state;
+        oldState.runFrom(state.getByteAt(7));
+        return false;
+    }
+
+    return true;
+}
+
+bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
+{
+    static const uint8 valSize[0x70] =
+    {
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1,
+        1, 1, 4, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    };
+
+    const uint32 take = state.getByteAt(6);
+    const uint32 giveOffset = 7 + ((take < 0x70) ? valSize[take] : 1);
+    const uint32 give = state.getByteAt(giveOffset);
+
+    Valid<Game> g = _parent->getGame();
+    Character* const c = g->getActiveCharacter();
+    Party* const p = g->getParty();
+
+    switch(take)
+    {
+        case 0x00: break;
+        case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), false); break;
+        default: debug("Unknown Take ID: %02X", take); break;
+    }
+
+    switch(give)
+    {
+        case 0x00: break;
+        case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), true); break;
+        default: debug("Unknown Give ID: %02X", give); break;
+    }
+
+    return true;
+}
+
+bool XEEN::Maze::EventList::evREMOVE(const EventState& state)
+{
+    // TODO: How does the real game achieve this. Here I just set every opcode to NOP.
+    const uint32 key = (state.pos.x << 16) | (state.pos.y << 8);
+
+    if(_events.contains(key))
+    {
+        Event& ev = _events[key];
+        for(uint32 i = 0; i != ev.lines.size(); i ++)
+        {
+            _data->setByteAt(ev.lines[i] + 5, 0);
+        }
+    }
+
+    return true;
 }
