@@ -254,3 +254,17 @@ void XEEN::Party::turn(bool left)
     XEEN_VALID();
     moveTo(getPosition(), Direction(GET8(OFF_MAZE_FACING)).turn(left));
 }
+
+void XEEN::Party::bash()
+{
+    XEEN_VALID();
+
+    const Common::Point pos = getPosition();
+    const Direction dir = getValue(MAZE_FACING);
+
+    if(getMap()->tryBash(pos, dir))
+    {
+        moveTo(dir.move(pos, 0, 1), dir);
+    }
+}
+

@@ -93,7 +93,7 @@ const char* XEEN::Maze::Map::getString(uint32 id) const
     return valid(_text) ? _text->getString(id) : "";
 }
 
-void XEEN::Maze::Map::runEventAt(const Common::Point& pos, Direction facing, bool autoExec, uint32 line)
+void XEEN::Maze::Map::runEventAt(const Common::Point& pos, Direction dir, bool autoExec, uint32 line)
 {
     XEEN_VALID();
 
@@ -101,113 +101,119 @@ void XEEN::Maze::Map::runEventAt(const Common::Point& pos, Direction facing, boo
     {
         if(autoExec)
         {
+            // Traverse off side of outdoor map.
+            if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
+            {
+                // TODO!
+                if(pos.x < 0)
+                {
+                    getGame()->getParty()->changeMap(_base->getSurrounding(Direction::WEST));
+                    getGame()->getParty()->moveTo(pos + Common::Point(16, 0), 4);
+                }
+                else if(pos.x >= 16)
+                {
+                    getGame()->getParty()->changeMap(_base->getSurrounding(Direction::EAST));
+                    getGame()->getParty()->moveTo(pos - Common::Point(16, 0), 4);
+                }
+        
+                if(pos.y < 0)
+                {
+                    getGame()->getParty()->changeMap(_base->getSurrounding(Direction::SOUTH));
+                    getGame()->getParty()->moveTo(pos + Common::Point(0, 16), 4);
+                }
+                else if(pos.y >= 16)
+                {
+                    getGame()->getParty()->changeMap(_base->getSurrounding(Direction::NORTH));
+                    getGame()->getParty()->moveTo(pos - Common::Point(0, 16), 4);
+                }
+            }
+
+            // Reset sign message
             setSignMessage(0, Common::Rect(), 0);
         }
 
         const bool autoExecFlag = (getFlags(pos) & (Segment::AUTOEXECUTE));
         if((autoExec && autoExecFlag) || (!autoExec && !autoExecFlag))
         {
-            _events->runEventAt(pos, facing, line);
+            _events->runEventAt(pos, dir, line);
         }
     }
 }
 
-bool XEEN::Maze::Map::canMove(const Common::Point& position, Direction dir) const
+bool XEEN::Maze::Map::canMove(const Common::Point& pos, Direction dir) const
 {
     XEEN_VALID();
 
     const uint32 wallNoPass = _base->getValue(Segment::WALLNOPASS);
     if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
     {
-        const Common::Point dest = dir.move(position, 0, 1);
-
-        // TODO!
-        if(dest.x < 0)
-        {
-            getGame()->getParty()->changeMap(_base->getSurrounding(Direction::WEST));
-            getGame()->getParty()->moveTo(dest + Common::Point(16, 0), 4);
-            return false;
-        }
-        else if(dest.x >= 16)
-        {
-            getGame()->getParty()->changeMap(_base->getSurrounding(Direction::EAST));
-            getGame()->getParty()->moveTo(dest - Common::Point(16, 0), 4);
-            return false;
-        }
-
-        if(dest.y < 0)
-        {
-            getGame()->getParty()->changeMap(_base->getSurrounding(Direction::SOUTH));
-            getGame()->getParty()->moveTo(dest + Common::Point(0, 16), 4);
-            return false;
-        }
-        else if(dest.y >= 16)
-        {
-            getGame()->getParty()->changeMap(_base->getSurrounding(Direction::NORTH));
-            getGame()->getParty()->moveTo(dest - Common::Point(0, 16), 4);
-            return false;
-        }
-
+        const Common::Point dest = dir.move(pos, 0, 1);
         return true;
     }
     else
     {
-        const uint32 tile = getTile(position, dir);
+        const uint32 tile = getTile(pos, dir);
         return (tile >> 12) < wallNoPass;
     }
 }
 
-uint16 XEEN::Maze::Map::getTile(Common::Point position, Direction facing) const
+bool XEEN::Maze::Map::tryBash(const Common::Point& pos, Direction dir)
 {
-    XEEN_VALID();
+    // TODO: Return whether or not damage should be take
+    // TODO: Calculate strength and chance
+    // TODO: Perfect checking on whether a bash is possible.
+    // TODO: Handle indoor/outdoor differences.
 
-    Segment* seg = _base->resolveSegment(position);
-    
-    if(!Common::Rect(0, 0, 16, 16).contains(position) || !seg)
+    if(canMove(pos, dir))
     {
-        return 0x8888;
+        return true;
     }
     else
     {
-        uint16 result = seg->getWall(position);
-    
-        switch(facing)
-        {
-            case 0: return result;
-            case 1: return (result >> 12) | (result << 4);
-            case 2: return (result >> 8) | (result << 8);
-            case 3: return (result >> 4) | (result << 12);
-        }
+//      if(getFlags(pos) & Segment::GRATE)
+//      {
+            const uint32 tile = _base->getTile(pos, dir);
+            if(((tile >> 12) & 0xF) == 9) // TODO: Magic 9=Wall type GRATE
+            {
+                _base->setWall(pos, dir, 3u); // TODO: 3=Bashed Wall
 
-        return result;
+                dir.turnAround();
+                _base->setWall(dir.move(pos, 0, -1), dir, 3u);
+                return true;
+            }
+//      }
+
+        return false;
     }
 }
 
-uint8 XEEN::Maze::Map::getFlags(Common::Point position) const
+uint16 XEEN::Maze::Map::getTile(const Common::Point& pos, Direction dir) const
 {
     XEEN_VALID();
-
-    Segment* seg = _base->resolveSegment(position);
-
-    if(!Common::Rect(0, 0, 16, 16).contains(position) || !seg)
-    {
-        return 0;
-    }
-    else
-    {
-        return seg->getCellFlags(position);
-    }
+    return _base->getTile(pos, dir);
 }
 
-uint16 XEEN::Maze::Map::getSurface(Common::Point position) const
+void XEEN::Maze::Map::setTile(const Common::Point& pos, Direction dir, uint16 value)
+{
+    XEEN_VALID();
+    _base->setTile(pos, dir, value);
+}
+
+uint8 XEEN::Maze::Map::getFlags(const Common::Point& pos) const
+{
+    XEEN_VALID();
+    return _base->getCellFlags(pos);
+}
+
+uint16 XEEN::Maze::Map::getSurface(const Common::Point& pos) const
 {
     XEEN_VALID();
 
-    const uint32 flags = getFlags(position);
+    const uint32 flags = getFlags(pos);
 
     if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
     {
-        const uint32 result = _base->lookupSurface(getTile(position, 0) & 0xF);
+        const uint32 result = _base->lookupSurface(getTile(pos, 0) & 0xF);
         return ((result == 0) && (flags & Segment::WATER)) ? 8 : result;
     }
     else
@@ -216,19 +222,19 @@ uint16 XEEN::Maze::Map::getSurface(Common::Point position) const
     }
 }
 
-bool XEEN::Maze::Map::getObjectAt(const Common::Point& position, ObjectEntry& data) const
+bool XEEN::Maze::Map::getObjectAt(const Common::Point& pos, ObjectEntry& data) const
 {
     XEEN_VALID();
 
     if(valid(_objects))
     {
-        return _objects->getObjectAt(position, data);
+        return _objects->getObjectAt(pos, data);
     }
 
     return false;
 }
 
-void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
+void XEEN::Maze::Map::fillDrawStruct(const Common::Point& pos, Direction dir)
 {
     XEEN_VALID();
 
@@ -236,7 +242,7 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
     buildDrawIndex();
 
     // TODO: Check
-    const bool facingFlip = (position.x + position.y + (facing.isAlongX() ? 1 : 0)) & 1;
+    const bool facingFlip = (pos.x + pos.y + (dir.isAlongX() ? 1 : 0)) & 1;
 
     if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
     {
@@ -246,14 +252,14 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
         outdoorDrawIndex[SKY_TOP]->sprite = skysprite;
         outdoorDrawIndex[SKY_BOTTOM]->sprite = skysprite;
     
-        outdoorDrawIndex[SKY_TOP]->setFlipped(!facing.isAlongX());
-        outdoorDrawIndex[SKY_BOTTOM]->setFlipped(!facing.isAlongX());
+        outdoorDrawIndex[SKY_TOP]->setFlipped(!dir.isAlongX());
+        outdoorDrawIndex[SKY_BOTTOM]->setFlipped(!dir.isAlongX());
     
         outdoorDrawIndex[GROUND]->sprite = CCFileId("OUTDOOR.GND");
         outdoorDrawIndex[GROUND]->setFlipped(facingFlip);
     
-        processSurface(position, facing, facingFlip, outdoorDrawIndex);
-        processObjects(position, facing, outdoorDrawIndex);
+        processSurface(pos, dir, facingFlip, outdoorDrawIndex);
+        processObjects(pos, dir, outdoorDrawIndex);
 
         // WALLS
         static const uint16 wallmap[16] =
@@ -288,7 +294,7 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
         {
             for(int j = 0; j != wallcount[i]; j ++)
             {
-                Common::Point cell = facing.move(position, j - walloffset[i], i);
+                Common::Point cell = dir.move(pos, j - walloffset[i], i);
                 outdoorDrawIndex[wallbase[i][j]]->sprite = wallmap[(getTile(cell, 0) >> 4) & 0xF];
             }
         }
@@ -297,19 +303,19 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
     else
     {    
         // ENVIRONMENT
-        const CCFileId skysprite = (getFlags(position) & Segment::INSIDE) ? CCFileId("%s.SKY", _wallType) : CCFileId("SKY.SKY");
+        const CCFileId skysprite = (getFlags(pos) & Segment::INSIDE) ? CCFileId("%s.SKY", _wallType) : CCFileId("SKY.SKY");
     
         indoorDrawIndex[SKY_TOP]->sprite = skysprite;
         indoorDrawIndex[SKY_BOTTOM]->sprite = skysprite;
     
-        indoorDrawIndex[SKY_TOP]->setFlipped(!facing.isAlongX());
-        indoorDrawIndex[SKY_BOTTOM]->setFlipped(!facing.isAlongX());
+        indoorDrawIndex[SKY_TOP]->setFlipped(!dir.isAlongX());
+        indoorDrawIndex[SKY_BOTTOM]->setFlipped(!dir.isAlongX());
     
         indoorDrawIndex[GROUND]->sprite = CCFileId("%s.GND", _wallType);
         indoorDrawIndex[GROUND]->setFlipped(facingFlip);
         
         // SURFACE
-        processSurface(position, facing, facingFlip, indoorDrawIndex);
+        processSurface(pos, dir, facingFlip, indoorDrawIndex);
     
         // DISTANT WALL
         indoorDrawIndex[FWALL_DISTANT]->sprite = CCFileId("F%s1.FWL", _wallType);
@@ -333,8 +339,8 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
         {
             const int i = 0;
         
-            Common::Point cell = facing.move(position, j - walloffset[i], i);
-            uint16 wallData = wallmap[_base->lookupWall(getTile(cell, facing) >> 12)];
+            Common::Point cell = dir.move(pos, j - walloffset[i], i);
+            uint16 wallData = wallmap[_base->lookupWall(getTile(cell, dir) >> 12)];
             
             indoorDrawIndex[wallbase[i][j]]->sprite = (wallData != 32) ? (wallData < 8) ? CCFileId("F%s1.FWL", _wallType) : CCFileId("F%s2.FWL", _wallType) : CCFileId(0xFFFF);
             indoorDrawIndex[wallbase[i][j]]->frame = (wallData < 8) ? wallData : wallData - 8;
@@ -344,8 +350,8 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
         {
             for(int j = 0; j != wallcount[i]; j ++)
             {
-                Common::Point cell = facing.move(position, j - walloffset[i], i);
-                uint16 wallData = wallmap[getTile(cell, facing) >> 12];
+                Common::Point cell = dir.move(pos, j - walloffset[i], i);
+                uint16 wallData = wallmap[getTile(cell, dir) >> 12];
                 
                 indoorDrawIndex[wallbase[i][j]]->sprite = (wallData != 32) ? fwlids[i] : 0xFFFF;
                 indoorDrawIndex[wallbase[i][j]]->frame = baseframe[i] + ((wallData > 6) ? wallData - 1 : wallData);
@@ -361,14 +367,14 @@ void XEEN::Maze::Map::fillDrawStruct(Common::Point position, Direction facing)
         static const int swl4_id[8] = {SWALL_4_4L, SWALL_4_3L, SWALL_4_2L, SWALL_4_1L, 
                                        SWALL_4_1R, SWALL_4_2R, SWALL_4_3R, SWALL_4_4R};
     
-        processSideWallList(position, facing, 0, 2, swl0_id);
-        processSideWallList(position, facing, 1, 2, swl1_id);
-        processSideWallList(position, facing, 2, 4, swl2_id);
-        processSideWallList(position, facing, 3, 8, swl3_id);
-        processSideWallList(position, facing, 4, 8, swl4_id);
+        processSideWallList(pos, dir, 0, 2, swl0_id);
+        processSideWallList(pos, dir, 1, 2, swl1_id);
+        processSideWallList(pos, dir, 2, 4, swl2_id);
+        processSideWallList(pos, dir, 3, 8, swl3_id);
+        processSideWallList(pos, dir, 4, 8, swl4_id);
     
         // OBJECTS
-        processObjects(position, facing, indoorDrawIndex);
+        processObjects(pos, dir, indoorDrawIndex);
     }
 }
 
@@ -403,7 +409,7 @@ void XEEN::Maze::Map::draw(Valid<Graphics::Manager> sprites)
     }
 }
 
-void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& position, Direction facing, Valid<Graphics::Manager> sprites)
+void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& pos, Direction dir, Valid<Graphics::Manager> sprites)
 {
     XEEN_VALID();
 
@@ -416,7 +422,7 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
             for(int j = 0; j != 7; j ++)
             {
                 const Common::Point tilepen = pen + Common::Point(j * 10, (6 - i) * 8);
-                const uint16 tile = getTile(position + Common::Point(j - 3, i - 3), 0);
+                const uint16 tile = getTile(pos + Common::Point(j - 3, i - 3), 0);
 
                 sprites->draw(sprite, tilepen, _base->lookupSurface(tile & 0xF));
 
@@ -445,7 +451,7 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
         {
             for(int j = 0; j != 7; j ++)
             {
-                const uint32 sur = getSurface(position + Common::Point(j - 3, i - 3));
+                const uint32 sur = getSurface(pos + Common::Point(j - 3, i - 3));
                 sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), sur ? 36 + sur : 0);
             }
         }
@@ -455,7 +461,7 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
         {
             for(int j = 0; j != 7; j ++)
             {
-                const uint16 wallData = getTile(position + Common::Point(j - 3, i - 3), 0);
+                const uint16 wallData = getTile(pos + Common::Point(j - 3, i - 3), 0);
     
                 if(wallData != 0x8888)
                 {
@@ -489,7 +495,7 @@ void XEEN::Maze::Map::setSignMessage(const char* message, const Common::Rect& ar
 /////
 // List processing
 /////
-void XEEN::Maze::Map::processSurface(const Common::Point& position, Direction facing, bool facingFlip, DrawListItem** index)
+void XEEN::Maze::Map::processSurface(const Common::Point& pos, Direction dir, bool facingFlip, DrawListItem** index)
 {
     static const CCFileId surfaceMap[16] = 
     {
@@ -516,7 +522,7 @@ void XEEN::Maze::Map::processSurface(const Common::Point& position, Direction fa
     {
         for(uint32 j = 0; j != linelength[i]; j ++, surfaceTile ++)
         {
-            Common::Point cell = facing.move(position, xoffsets[i][j], 4 - i);
+            Common::Point cell = dir.move(pos, xoffsets[i][j], 4 - i);
             index[surfaceTile]->sprite = surfaceMap[getSurface(cell)];
             index[surfaceTile]->frame = flipTable[facingFlip][surfaceTile - SURF00];
             index[surfaceTile]->setFlipped(facingFlip);
@@ -524,7 +530,7 @@ void XEEN::Maze::Map::processSurface(const Common::Point& position, Direction fa
     }
 }
 
-void XEEN::Maze::Map::processObjects(const Common::Point& position, Direction facing, DrawListItem** index)
+void XEEN::Maze::Map::processObjects(const Common::Point& pos, Direction dir, DrawListItem** index)
 {
     // OBJECTS
     const ObjectData* const od = _parent->getObjectData();
@@ -539,18 +545,18 @@ void XEEN::Maze::Map::processObjects(const Common::Point& position, Direction fa
     for(int i = 0; i != 12; i ++)
     {
         ObjectEntry t;
-        if(getObjectAt(facing.move(position, objOffsets[i].xOff, objOffsets[i].yOff), t))
+        if(getObjectAt(dir.move(pos, objOffsets[i].xOff, objOffsets[i].yOff), t))
         {
             index[objOffsets[i].id]->sprite = CCFileId("%03d.%sBJ", t.id, (t.id < 100) ? "O" : "0");
             const uint8* const data = od->getDataForObject(t.id);
 
-            Direction dir = facing - t.facing;
+            Direction facing = dir - t.dir;
 
             if(enforce(data))
             {
-                index[objOffsets[i].id]->frame = data[dir];
+                index[objOffsets[i].id]->frame = data[facing];
                 index[objOffsets[i].id]->flags &= ~0x8000;
-                index[objOffsets[i].id]->flags |= data[4 + dir] ? 0x8000 : 0;
+                index[objOffsets[i].id]->flags |= data[4 + facing] ? 0x8000 : 0;
             }
         }
         else
@@ -560,7 +566,7 @@ void XEEN::Maze::Map::processObjects(const Common::Point& position, Direction fa
     }
 }
 
-void XEEN::Maze::Map::processSideWallList(const Common::Point& position, Direction facing, uint32 distance, uint32 count, NonNull<const int32> ids)
+void XEEN::Maze::Map::processSideWallList(const Common::Point& pos, Direction dir, uint32 distance, uint32 count, NonNull<const int32> ids)
 {
     uint32 midcount = count / 2;
 
@@ -568,8 +574,8 @@ void XEEN::Maze::Map::processSideWallList(const Common::Point& position, Directi
     {
         const int32 offset = (i < midcount) ? (0 - midcount) + i + 1 : i - midcount; // For count = 8: -3, -2, -1, 0, 0, 1, 2, 3
 
-        const Common::Point cell = facing.move(position, offset, distance);
-        const uint16 wallData = (getTile(cell, facing) >> ((i >= midcount) ? 8 : 0)) & 0xF;
+        const Common::Point cell = dir.move(pos, offset, distance);
+        const uint16 wallData = (getTile(cell, dir) >> ((i >= midcount) ? 8 : 0)) & 0xF;
 
         indoorDrawIndex[ids[i]]->sprite = wallData ? CCFileId("S%s.SWL", _wallType) : CCFileId(0xFFFF);
         

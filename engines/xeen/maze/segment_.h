@@ -48,6 +48,7 @@ namespace XEEN
                 static const uint32 INSIDE      = 0x08;
                 static const uint32 AUTOEXECUTE = 0x10;
                 static const uint32 WATER       = 0x40;
+                static const uint32 GRATE       = 0x80;
 
                 static const uint32 MAP_OUTDOORS        = 0x80000000;
                 static const uint32 MAP_ISDARK          = 0x40000000;
@@ -74,8 +75,11 @@ namespace XEEN
                 void loadSurrounding();
                 uint16 getSurrounding(Direction dir) const;
     
-                uint16 getWall(const Common::Point& pos) const;
-                uint8 getCellFlags(const Common::Point& pos) const;
+                void setWall(Common::Point pos, Direction dir, LessThan<uint32, 16> type);
+
+                uint16 getTile(Common::Point pos, Direction dir) const;
+                void setTile(Common::Point pos, Direction dir, uint16 value);
+                uint8 getCellFlags(Common::Point pos) const;
 
                 uint32 getMapFlags() const;
 
@@ -84,7 +88,7 @@ namespace XEEN
 
                 uint32 getValue(SegmentValue val) const;
 
-                Segment* resolveSegment(Common::Point& position);
+                Segment* resolveSegment(Common::Point& pos) const;
     
             protected:
                 Valid<Manager> _parent;

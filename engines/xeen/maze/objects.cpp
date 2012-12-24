@@ -90,7 +90,7 @@ bool XEEN::Maze::Objects::getObjectAt(const Common::Point& pos, ObjectEntry& dat
         if(pos == objPos)
         {
             data.id = _data->getByteAt(_data->getByteAt(_offsets[0] + (i * 4) + 2));
-            data.facing = _data->getByteAt(_offsets[0] + (i * 4) + 3);
+            data.dir = _data->getByteAt(_offsets[0] + (i * 4) + 3);
             
             return true;
         }

@@ -77,6 +77,7 @@ namespace XEEN
             void moveTo(const Common::Point& position, uint8 facing);
             void moveRelative(Direction dir);
             void turn(bool left);
+            void bash();
                 
         private:
             Valid<Game> _parent;

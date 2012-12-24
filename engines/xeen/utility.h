@@ -197,7 +197,7 @@ namespace XEEN
     class Valid : public Contract<T*, Valid_Contract<T> > { public: Valid(T* v) : Contract<T*, Valid_Contract<T> >(v) { }};
 
     template <typename T, uint32 U>
-    class LessThan : public Contract<T, LessThan_Contract<T, U> > { public: LessThan(T& v) : Contract<T, LessThan_Contract<T, U> >(v) { }};
+    class LessThan : public Contract<T, LessThan_Contract<T, U> > { public: LessThan(const T& v) : Contract<T, LessThan_Contract<T, U> >(v) { }};
 
     // POD rect wrapper
     struct XRect

@@ -59,6 +59,7 @@ void XEEN::GameWindow::handleAction(unsigned id)
     switch(id)
     {
         case  1: getGame()->setEvent(new Event::CastSpell(getGame())); break;
+        case  3: getGame()->getParty()->bash(); break;
 //        case  4: getGame()->showWindow(Game::CHARACTION); break;
         case  7: getGame()->setEvent(new Event::GameInfo(getGame())); break;
         case  8: getGame()->setEvent(new Event::QuickReference(getGame())); break;

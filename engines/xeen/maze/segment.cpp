@@ -65,16 +65,59 @@ uint16 XEEN::Maze::Segment::getSurrounding(Direction dir) const
     return _data->getU16At(OFF_SURR_MAZES + dir * 2);
 }
 
-uint16 XEEN::Maze::Segment::getWall(const Common::Point& pos) const
+void XEEN::Maze::Segment::setWall(Common::Point pos, Direction dir, LessThan<uint32, 16> type)
 {
-    XEEN_VALID();
-    return enforce(Common::Rect(0, 0, 16, 16).contains(pos)) ? _data->getU16At(OFF_WALLS + (pos.y * 32 + pos.x * 2)) : 0;
+    static const uint8 shiftTable[4] = {12, 8, 4, 0};
+    const uint8 shift = shiftTable[dir];
+
+    uint16 val = getTile(pos, Direction::NORTH);
+    val &= ~(0xF << shift);
+    val |= type << shift;
+    setTile(pos, Direction::NORTH, val);
 }
 
-uint8 XEEN::Maze::Segment::getCellFlags(const Common::Point& pos) const
+uint16 XEEN::Maze::Segment::getTile(Common::Point pos, Direction dir) const
 {
     XEEN_VALID();
-    return enforce(Common::Rect(0, 0, 16, 16).contains(pos)) ? _data->getByteAt(OFF_CELL_FLAGS + (pos.y * 16 + pos.x)) : 0;
+
+    const Segment* const seg = resolveSegment(pos);
+
+    if(Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg))
+    {
+        uint16 result = seg->_data->getU16At(OFF_WALLS + (pos.y * 32 + pos.x * 2));
+    
+        switch(dir)
+        {
+            case Direction::NORTH: return result;
+            case Direction::EAST:  return (result >> 12) | (result << 4);
+            case Direction::SOUTH: return (result >> 8) | (result << 8);
+            case Direction::WEST:  return (result >> 4) | (result << 12);
+        }
+    }
+
+    return (getMapFlags() & MAP_OUTDOORS) ? 0xFFFF : 0x8888;
+}
+
+void XEEN::Maze::Segment::setTile(Common::Point pos, Direction dir, uint16 value)
+{
+    XEEN_VALID();
+
+    // TODO: Handle rotate!
+
+    Segment* const seg = resolveSegment(pos);
+
+    if((Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg)))
+    {
+        seg->_data->setU16At(OFF_WALLS + (pos.y * 32 + pos.x * 2), value);
+    }
+}
+
+uint8 XEEN::Maze::Segment::getCellFlags(Common::Point pos) const
+{
+    XEEN_VALID();
+
+    const Segment* const seg = resolveSegment(pos);
+    return (Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg)) ? seg->_data->getByteAt(OFF_CELL_FLAGS + (pos.y * 16 + pos.x)) : 0;
 }
 
 uint32 XEEN::Maze::Segment::getMapFlags() const
@@ -101,28 +144,28 @@ uint32 XEEN::Maze::Segment::getValue(SegmentValue val) const
     return enforce(val < MAX_VALUE) ? _data->getByteAt(OFF_VALUES + val) : 0;
 }
 
-XEEN::Maze::Segment* XEEN::Maze::Segment::resolveSegment(Common::Point& position)
+XEEN::Maze::Segment* XEEN::Maze::Segment::resolveSegment(Common::Point& pos) const
 {
     XEEN_VALID();
 
-    Segment* activeSegment = this;
+    Segment* activeSegment = const_cast<Segment*>(this);
 
-    for(; valid(activeSegment) && position.y >= 16; position.y -= 16)
+    for(; valid(activeSegment) && pos.y >= 16; pos.y -= 16)
     {
         activeSegment = activeSegment->_surrMazes[0];
     }
 
-    for(; valid(activeSegment) && position.x >= 16; position.x -= 16)
+    for(; valid(activeSegment) && pos.x >= 16; pos.x -= 16)
     {
         activeSegment = activeSegment->_surrMazes[1];
     }
 
-    for(; valid(activeSegment) && position.y < 0; position.y += 16)
+    for(; valid(activeSegment) && pos.y < 0; pos.y += 16)
     {
         activeSegment = activeSegment->_surrMazes[2];
     }
     
-    for(; valid(activeSegment) && position.x < 0; position.x += 16)
+    for(; valid(activeSegment) && pos.x < 0; pos.x += 16)
     {
         activeSegment = activeSegment->_surrMazes[3];
     }

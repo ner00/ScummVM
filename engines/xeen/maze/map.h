@@ -43,7 +43,7 @@ namespace XEEN
         struct ObjectEntry
         {
             uint8 id;
-            Direction facing;
+            Direction dir;
         };    
 
         struct DrawListItem;
@@ -59,25 +59,28 @@ namespace XEEN
 
             public:
                 const char* getString(uint32 id) const;
-                void runEventAt(const Common::Point& pos, Direction facing, bool autoExec, uint32 line = 0);
+                void runEventAt(const Common::Point& pos, Direction dir, bool autoExec, uint32 line = 0);
 
-                bool canMove(const Common::Point& position, Direction dir) const;
+                bool canMove(const Common::Point& pos, Direction dir) const;
+                bool tryBash(const Common::Point& pos, Direction dir);
 
-                uint16 getTile(Common::Point position, Direction facing = Direction::NORTH) const;
-                uint8 getFlags(Common::Point position) const;
-                uint16 getSurface(Common::Point position) const;
+                uint16 getTile(const Common::Point& pos, Direction dir = Direction::NORTH) const;
+                void setTile(const Common::Point& pos, Direction dir, uint16 value);
 
-                bool getObjectAt(const Common::Point& position, ObjectEntry& data) const;
+                uint8 getFlags(const Common::Point& pos) const;
+                uint16 getSurface(const Common::Point& pos) const;
+
+                bool getObjectAt(const Common::Point& pos, ObjectEntry& data) const;
                     
-                void fillDrawStruct(Common::Point position, Direction facing);
+                void fillDrawStruct(const Common::Point& pos, Direction dir);
                 void draw(Valid<Graphics::Manager> sprites);
-                void drawMini(const Common::Point& pen, const Common::Point& position, Direction facing, Valid<Graphics::Manager> sprites);
+                void drawMini(const Common::Point& pen, const Common::Point& pos, Direction dir, Valid<Graphics::Manager> sprites);
                 void setSignMessage(const char* message, const Common::Rect& area, uint32 fontFlags);
     
             private:
-                void processSurface(const Common::Point& position, Direction facing, bool facingFlip, DrawListItem** index);
-                void processObjects(const Common::Point& position, Direction facing, DrawListItem** index);
-                void processSideWallList(const Common::Point& position, Direction facing, uint32 distance, uint32 count, NonNull<const int32> ids);
+                void processSurface(const Common::Point& pos, Direction dir, bool facingFlip, DrawListItem** index);
+                void processObjects(const Common::Point& pos, Direction dir, DrawListItem** index);
+                void processSideWallList(const Common::Point& pos, Direction dir, uint32 distance, uint32 count, NonNull<const int32> ids);
     
             private:
                 Valid<Manager> _parent;
