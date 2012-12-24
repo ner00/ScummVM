@@ -163,8 +163,15 @@ void XEEN::Game::draw()
 {   
     XEEN_VALID();
 
+    bool haveCommands = false;
+
     if(!_events.empty())
     {
+        for(uint32 i = 0; i != _events.size() && !haveCommands; i ++)
+        {
+            haveCommands = haveCommands || _events[i]->getCommandWindow();
+        }
+
         if(!_events.top()->isFinished())
         {
             _events.top()->process();
@@ -182,13 +189,17 @@ void XEEN::Game::draw()
     }
 
     _portraitWnd->heartbeat();
-    _mainWnd->heartbeat();
     _movementWnd->heartbeat();
 
     // Draw    
     _graphicsManager->reset();
 
-    _mainWnd->draw();
+    if(!haveCommands)
+    {
+        _mainWnd->heartbeat();
+        _mainWnd->draw();
+    }
+
     _movementWnd->draw();
     _portraitWnd->draw();
 

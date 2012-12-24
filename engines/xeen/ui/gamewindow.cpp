@@ -65,3 +65,24 @@ void XEEN::GameWindow::handleAction(unsigned id)
         case  8: getGame()->setEvent(new Event::QuickReference(getGame())); break;
     }
 }
+
+//
+
+XEEN::GameWindow_YesNo::GameWindow_YesNo(Valid<Game> parent) : Window(parent, Common::Rect(235, 75, 309, 136))
+{
+    
+}
+
+const XEEN::Button* XEEN::GameWindow_YesNo::getButtons() const
+{
+    XEEN_VALID();
+
+    static const Button buttons[] = 
+    {
+        {"MAIN.ICN",  0,  1, {  0,   0, 24, 20}, 1, Common::KEYCODE_y},
+        {"MAIN.ICN",  2,  3, { 25,   0, 24, 20}, 2, Common::KEYCODE_n},
+        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+    };
+    
+    return buttons;
+}

@@ -107,14 +107,61 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x03: { return evMAPTEXT(state, offset); }
         case 0x04: { return evMAPTEXT(state, offset); }
         case 0x05: { return evNPC(state, offset); }
+        case 0x06: { debug("PlayFX"); return true; }
         case 0x07: { return evTELEPORT(state, offset); }
         case 0x08: { return evIF(state, offset); }
         case 0x09: { return evIF(state, offset); }
         case 0x0A: { return evIF(state, offset); }
+        case 0x0B: { debug("MoveObj"); return true; }
+        case 0x0C: { debug("TakeOrGive"); return true; }
+        case 0x0D: { debug("NoAction"); return true; }
+        case 0x0E: { debug("Remove"); return true; }
+        case 0x0F: { debug("SetChar"); return true; }
+        case 0x10: { debug("Spawn"); return true; }
+        case 0x11: { debug("DoTownEvent"); return true; }
+        case 0x12: { debug("Exit"); return true; }
+        case 0x13: { debug("AltarMap"); return true; }
+        case 0x14: { debug("XXX"); return true; }
+        case 0x15: { debug("ConfirmWord"); return true; }
+        case 0x16: { debug("Damage"); return true; }
+        case 0x17: { debug("JmpRnd"); return true; }
+        case 0x18: { debug("AlterEvent"); return true; }
+        case 0x19: { debug("CallEvent"); return true; }
+        case 0x1A: { debug("Return"); return true; }
+        case 0x1B: { debug("SetVar"); return true; }
+        case 0x1C: { debug("TakeOrGive"); return true; }
+        case 0x1D: { debug("TakeOrGive"); return true; }
+        case 0x1E: { debug("CutsceneEndClouds"); return true; }
         case 0x1F: { return evTELEPORT(state, offset); }
+        case 0x20: { debug("WhoWill"); return true; }
+        case 0x21: { debug("RndDamage"); return true; }
+        case 0x22: { debug("MoveWallObj"); return true; }
+        case 0x23: { debug("AltarCellFlag"); return true; }
+        case 0x24: { debug("AlterHed"); return true; }
+        case 0x25: { debug("DisplayStat"); return true; }
+        case 0x26: { debug("TakeOrGive"); return true; }
         case 0x27: { return evMAPTEXT(state, offset); }
+        case 0x28: { debug("PlayEventVoc"); return true; }
         case 0x29: { return evMESSAGE(state, offset); }
+        case 0x2A: { debug("IfMapFlag"); return true; }
+        case 0x2B: { debug("SelRndChar"); return true; }
+        case 0x2C: { debug("GiveEnchanted"); return true; }
+        case 0x2D: { debug("ItemType"); return true; }
+        case 0x2E: { debug("MakeNothingHere"); return true; }
+        case 0x2F: { debug("NoAction"); return true; }
+        case 0x30: { debug("ChooseNumeric"); return true; }
+        case 0x31: { debug("DisplayBottomTwoLines"); return true; }
+        case 0x32: { debug("DisplayLarge"); return true; }
+        case 0x33: { debug("ExchObj"); return true; }
+        case 0x34: { debug("FallToMap"); return true; }
         case 0x35: { return evMESSAGE(state, offset); }
+        case 0x36: { debug("GOTO"); return true; }
+        case 0x37: { debug("ConfirmWord2"); return true; }
+        case 0x38: { debug("GotoRandom"); return true; }
+        case 0x39: { debug("CutsceneEndDarkside"); return true; }
+        case 0x3A: { debug("CutsceneEndWorld"); return true; }
+        case 0x3B: { debug("FlipWorld"); return true; }
+        case 0x3C: { debug("PlayCD"); return true; }
         default: debug("EV: %02X", opcode); return true;
     }
 }

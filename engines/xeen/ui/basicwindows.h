@@ -68,6 +68,15 @@ namespace XEEN
             void handleAction(unsigned id);
     };
 
+    class GameWindow_YesNo : public Window
+    {
+        public:
+            GameWindow_YesNo(Valid<Game> parent);
+
+        protected:
+            const Button* getButtons() const;
+    };
+
     class MovementWindow : public Window
     {
         public:

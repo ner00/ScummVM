@@ -31,8 +31,8 @@ namespace XEEN
     class NPCWindow : public Window
     {
         public:
-            NPCWindow(Valid<Game> parent, NonNull<const char> name, NonNull<const char> msg) : 
-                Window(parent, Common::Rect(8, 8, 224, 140), true), _name(name), _msg(msg) { }
+            NPCWindow(Valid<Game> parent, bool wantConfirm, NonNull<const char> name, NonNull<const char> msg) : 
+                Window(parent, Common::Rect(8, 8, 224, 140), !wantConfirm), _name(name), _msg(msg) { }
 
 
         protected:
@@ -61,19 +61,73 @@ namespace XEEN
             NonNull<const char> _name;
             NonNull<const char> _msg;
     };
+
+    class ConfirmWindow : public GameWindow_YesNo
+    {
+        public:
+            ConfirmWindow(Valid<Game> game, uint32 confirmType) : GameWindow_YesNo(game), action(0), type(confirmType) { }
+
+        protected:
+            void handleAction(unsigned id)
+            {
+                action = id;
+            }
+
+        public:
+            uint32 action;
+            const uint32 type;
+    };
 }
 
 XEEN::Maze::NPC::NPC(Valid<Game> parent, const EventState& state, NonNull<const char> name, NonNull<const char> msg) : MazeEvent(parent, state)
 {
-    addWindow(new NPCWindow(getGame(), name, msg));
+    const uint32 confirmType = _state.getByteAt(9);
+    const bool wantConfirm = confirmType != 1;
+
+    addWindow(new NPCWindow(getGame(), wantConfirm, name, msg));
+
+    if(wantConfirm)
+    {
+        setCommandWindow(new ConfirmWindow(parent, confirmType));
+    }
 }
 
 void XEEN::Maze::NPC::process()
 {
-    setFinished(getWindows().back()->isFinished(), true);
+    ConfirmWindow* commands = (ConfirmWindow*)getCommandWindow();
 
-    if(isFinished())
+    if(valid(commands))
     {
-        _state.runFrom(_state.line + 1);
+        switch(commands->action)
+        {
+            case 1: // YES
+            {
+                _state.runFrom((commands->type == 0) ? _state.getByteAt(10) : _state.line + 1);
+                setFinished(true, true);
+                removeCommandWindow();
+                return;
+            }
+
+            case 2: // NO
+            {
+                if(commands->type == 0)
+                {
+                    _state.runFrom(_state.line + 1);
+                }
+
+                setFinished(true, true);
+                removeCommandWindow();
+                return;
+            }
+        }
+    }
+    else
+    {
+        setFinished(getWindows().back()->isFinished(), true);
+
+        if(isFinished())
+        {
+            _state.runFrom(_state.line + 1);
+        }
     }
 }

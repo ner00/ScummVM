@@ -32,11 +32,15 @@ namespace XEEN
     {
         typedef Common::List<Valid<Window> > WindowList;
 
-        class Event : public GameHolder, public Common::NonCopyable
+        class Event : public Validateable, public GameHolder, public Common::NonCopyable
         {
             public:
-                Event(Valid<Game> parent) : GameHolder(parent), _finished(false), _delete(false) { }
-                virtual ~Event() { }
+                Event(Valid<Game> parent) : GameHolder(parent), _commandWindow(0), _finished(false), _delete(false) { }
+
+                virtual ~Event()
+                {
+                    removeCommandWindow();
+                }
 
                 virtual void process() = 0;
 
@@ -44,6 +48,12 @@ namespace XEEN
                 void processWindows(ARGUMENT a)
                 {
                     FUNCTOR f(a);
+
+                    if(_commandWindow)
+                    {
+                        f(_commandWindow);
+                    }
+
                     for(WindowList::iterator i = _windows.begin(); i != _windows.end() && !_finished; i ++)
                     {
                         f(*i);
@@ -60,9 +70,15 @@ namespace XEEN
                 WindowList& getWindows() { return _windows; }
                 void addWindow(Valid<Window> window) { _windows.push_back(window); }
                 void closeWindow() { _windows.pop_back(); }
-    
+                Window* getCommandWindow() const { return _commandWindow; }
+
+            protected:
+                void setCommandWindow(Valid<Window> commandWindow) { removeCommandWindow(); _commandWindow = commandWindow; }
+                void removeCommandWindow() { XEEN_DELETE(_commandWindow); }
+
             private:
                 WindowList _windows;
+                Window* _commandWindow;
 
                 bool _finished;
                 bool _delete;
