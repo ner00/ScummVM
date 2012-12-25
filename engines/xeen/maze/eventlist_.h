@@ -67,6 +67,7 @@ namespace XEEN
                 bool evREMOVE(const EventState& state);
                 bool evALTEREVENT(const EventState& state);
                 bool evWHOWILL(const EventState& state);
+                bool evCALL(const EventState& state);
 
             private:
                 struct Event

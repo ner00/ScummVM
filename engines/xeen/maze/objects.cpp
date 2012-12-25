@@ -148,7 +148,8 @@ void XEEN::Maze::Objects::moveObject(uint32 id, const Common::Point& pos)
 
 void XEEN::Maze::Objects::moveMonster(uint32 id, const Common::Point& pos, bool spawn)
 {
-    if(enforce(id < _counts[1]))
+    // TODO: The game spawns monsters with ids greater than max right outside vertigo.
+    if(id < _counts[1])
     {
         const uint32 offset = _offsets[1] + (4 * id);
         _data->setByteAt(offset + 0, pos.x);

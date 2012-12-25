@@ -100,6 +100,34 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
 
     const uint8 opcode = _data->getByteAt(offset + 5);
 
+    const char* const names[0x3D] = 
+    {
+        "NOP", "Display0x01", "DoorTextSml", "DoorTextLrg", 
+        "SignTextLrg", "NPC", "PlayFX", "Teleport",
+        "If", "If", "If", "MoveObj",
+        "TakeOrGive", "NoAction", "Remove", "SetChar",
+        "Spawn", "DoTownEvent", "Exit", "AlterMap",
+        "GiveTreasureChest", "ConfirmWord", "Damage", "JumpRnd",
+        "AlterEvent", "CallEvent", "Return", "SetVar", 
+        "TakeOrGive", "TakeOrGive", "EndClouds", "Teleport",
+        "WhoWill", "RndDamage", "MoveWallObj", "AlterCellFlag",
+        "AlterHed", "DisplayStat", "TakeOrGive", "SignTextSml",
+        "PlayEventVoc", "DisplayBottom", "IfMapFlag", "SelRndChar",
+        "GiveEnchanted", "ItemType", "MakeNothingHere", "NoAction",
+        "ChooseNumeric", "DisplayBottomTwoLines", "DisplayLarge", "ExchObj",
+        "FallToMap", "DisplayMain", "Goto", "ConfirmWord2",
+        "GotoRandom", "EndDarkside", "EndWorld", "FlipWorld",
+        "PlayCD"
+    };
+
+    debugN("%24s: ", (opcode < 0x3D) ? names[opcode] : "UNK");
+    debugN("%02X  %02X %02X %02X  %02X  ", state.getByteAt(0), state.getByteAt(1), state.getByteAt(2), state.getByteAt(3), state.getByteAt(4));
+    for(int i = 0; i != state.getByteAt(0) - 4; i ++)
+    {
+        debugN("%02X ", state.getByteAt(5 + i));
+    }
+    debugN("\n");
+
     switch(opcode)
     {
         case 0x00: { return true; }
@@ -108,62 +136,62 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x03: { return evMAPTEXT(state, offset); }
         case 0x04: { return evMAPTEXT(state, offset); }
         case 0x05: { return evNPC(state, offset); }
-        case 0x06: { debug("PlayFX"); return true; }
+        case 0x06: { return true; }
         case 0x07: { return evTELEPORT(state, offset); }
         case 0x08: { return evIF(state, offset); }
         case 0x09: { return evIF(state, offset); }
         case 0x0A: { return evIF(state, offset); }
         case 0x0B: { return evMOVEOBJ(state); }
-        case 0x0C: { return evGIVETAKE(state); return true; }
+        case 0x0C: { return evGIVETAKE(state); }
         case 0x0D: { return true; }
         case 0x0E: { return evREMOVE(state); }
-        case 0x0F: { debug("SetChar"); return true; }
+        case 0x0F: { return true; }
         case 0x10: { return evSPAWN(state); }
-        case 0x11: { debug("DoTownEvent"); return true; }
+        case 0x11: { return true; }
         case 0x12: { return false; }
-        case 0x13: { debug("AltarMap"); return true; }
-        case 0x14: { debug("GiveTreasureChest"); return true; }
-        case 0x15: { debug("ConfirmWord"); return true; }
-        case 0x16: { debug("Damage"); return true; }
-        case 0x17: { debug("JmpRnd"); return true; }
+        case 0x13: { return true; }
+        case 0x14: { return true; }
+        case 0x15: { return true; }
+        case 0x16: { return true; }
+        case 0x17: { return true; }
         case 0x18: { return evALTEREVENT(state); }
-        case 0x19: { debug("CallEvent"); return true; }
-        case 0x1A: { debug("Return"); return true; }
-        case 0x1B: { debug("SetVar"); return true; }
-        case 0x1C: { debug("TakeOrGive"); return true; }
-        case 0x1D: { debug("TakeOrGive"); return true; }
-        case 0x1E: { debug("CutsceneEndClouds"); return true; }
+        case 0x19: { return evCALL(state); }
+        case 0x1A: { return false; }
+        case 0x1B: { return true; }
+        case 0x1C: { return true; }
+        case 0x1D: { return true; }
+        case 0x1E: { return true; }
         case 0x1F: { return evTELEPORT(state, offset); }
         case 0x20: { return evWHOWILL(state); }
-        case 0x21: { debug("RndDamage"); return true; }
-        case 0x22: { debug("MoveWallObj"); return true; }
+        case 0x21: { return true; }
+        case 0x22: { return true; }
         case 0x23: { return evSETCELLFLAGS(state); }
-        case 0x24: { debug("AlterHed"); return true; }
-        case 0x25: { debug("DisplayStat"); return true; }
-        case 0x26: { debug("TakeOrGive"); return true; }
+        case 0x24: { return true; }
+        case 0x25: { return true; }
+        case 0x26: { return true; }
         case 0x27: { return evMAPTEXT(state, offset); }
-        case 0x28: { debug("PlayEventVoc"); return true; }
+        case 0x28: { return true; }
         case 0x29: { return evMESSAGE(state, offset); }
         case 0x2A: { return evIFMAPFLAG(state); }
-        case 0x2B: { debug("SelRndChar"); return true; }
-        case 0x2C: { debug("GiveEnchanted"); return true; }
-        case 0x2D: { debug("ItemType"); return true; }
-        case 0x2E: { evREMOVE(state); }
+        case 0x2B: { return true; }
+        case 0x2C: { return true; }
+        case 0x2D: { return true; }
+        case 0x2E: { return evREMOVE(state); }
         case 0x2F: { return true; }
-        case 0x30: { debug("ChooseNumeric"); return true; }
-        case 0x31: { debug("DisplayBottomTwoLines"); return true; }
-        case 0x32: { debug("DisplayLarge"); return true; }
-        case 0x33: { debug("ExchObj"); return true; }
-        case 0x34: { debug("FallToMap"); return true; }
+        case 0x30: { return true; }
+        case 0x31: { return true; }
+        case 0x32: { return true; }
+        case 0x33: { return true; }
+        case 0x34: { return true; }
         case 0x35: { return evMESSAGE(state, offset); }
-        case 0x36: { debug("GOTO"); return true; }
-        case 0x37: { debug("ConfirmWord2"); return true; }
-        case 0x38: { debug("GotoRandom"); return true; }
-        case 0x39: { debug("CutsceneEndDarkside"); return true; }
-        case 0x3A: { debug("CutsceneEndWorld"); return true; }
-        case 0x3B: { debug("FlipWorld"); return true; }
-        case 0x3C: { debug("PlayCD"); return true; }
-        default: debug("EV: %02X", opcode); return true;
+        case 0x36: { return true; }
+        case 0x37: { return true; }
+        case 0x38: { return true; }
+        case 0x39: { return true; }
+        case 0x3A: { return true; }
+        case 0x3B: { return true; }
+        case 0x3C: { return true; }
+        default: return true;
     }
 }
 
@@ -184,8 +212,6 @@ bool XEEN::Maze::EventList::evMESSAGE(const EventState& state, int32 offset)
 bool XEEN::Maze::EventList::evNPC(const EventState& state, int32 offset)
 {
     // TODO
-    debug("NPC");
-
     const char* name = _parent->getString(_data->getByteAt(offset + 6));
     const char* msg = _parent->getString(_data->getByteAt(offset + 7));
 
@@ -207,8 +233,6 @@ bool XEEN::Maze::EventList::evTELEPORT(const EventState& state, int32 offset)
 bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 {
     // TODO
-    debug("IF");
-
     const uint8 valueID = _data->getByteAt(offset + 6);
 
     if(valueID == 0x2C) // YES/NO
@@ -448,5 +472,34 @@ bool XEEN::Maze::EventList::evWHOWILL(const EventState& state)
     const char* msg = _parent->getString(state.getByteAt(7));
     _parent->getGame()->setEvent(new WhoWill(_parent->getGame(), state, msg));
 
+    return false;
+}
+
+bool XEEN::Maze::EventList::evCALL(const EventState& state)
+{
+    struct CallEvent : public MazeEvent
+    {
+        bool done;
+
+        CallEvent(Valid<Game> parent, const EventState& istate) : MazeEvent(parent, istate), done(false) { }
+        void process()
+        {
+            if(!done)
+            {
+                done = true;
+
+                const Common::Point pos(_state.getByteAt(6), _state.getByteAt(7));
+                const Direction dir = _state.getByteAt(8);
+                _state.parent->runEventAt(pos, dir);
+            }
+            else
+            {
+                setFinished(true, true);
+                _state.runFrom(_state.line + 1);
+            }
+        }
+    };
+
+    _parent->getGame()->setEvent(new CallEvent(_parent->getGame(), state));
     return false;
 }
