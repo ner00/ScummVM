@@ -149,7 +149,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x10: { return evSPAWN(state); }
         case 0x11: { return true; }
         case 0x12: { return false; }
-        case 0x13: { return true; }
+        case 0x13: { return evALTERMAP(state); }
         case 0x14: { return true; }
         case 0x15: { return true; }
         case 0x16: { return true; }
@@ -232,6 +232,27 @@ bool XEEN::Maze::EventList::evTELEPORT(const EventState& state, int32 offset)
 
 bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 {
+    struct Comparinator
+    {
+        uint32 _type;
+
+        Comparinator(uint32 type) : _type(type) { }
+        bool operator()(int32 actual, int32 script) const
+        {
+            // TODO: Check logic
+            switch(_type)
+            {
+                case 0x08: return actual > script;
+                case 0x09: return actual == script;
+                case 0x0A: return actual <= script;
+            }
+
+            assert(false);
+        }
+    };
+
+    const Comparinator comparer(state.getByteAt(5));
+
     // TODO
     const uint8 valueID = _data->getByteAt(offset + 6);
 
@@ -250,16 +271,58 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 
         switch(valueID)
         {
+            case 0x03: result = comparer(c->getSex(), state.getByteAt(7)); break;
+            case 0x04: result = comparer(c->getRace(), state.getByteAt(7)); break;
+            case 0x05: result = comparer(c->getClass(), state.getByteAt(7)); break;
+            case 0x08: result = comparer(c->getValue(Character::HP), state.getByteAt(7)); break;
             case 0x09: result = true; break; // TODO: Compare byte against SP!
+            case 0x0B: result = comparer(c->getStat(LEVEL).getTemp(), state.getByteAt(7));
             case 0x14: result = p->getGameFlag(state.getByteAt(7)); break;
 
+            case 0x22: result = comparer(p->getValue(Party::GOLD), state.getByteAt(7)); break; //TODO: Size?
+            case 0x23: result = comparer(p->getValue(Party::GEMS), state.getByteAt(7)); break; //TODO: Size?
 
-/*            case 0x03: val = c->getSex(); break;
-            case 0x04: val = c->getRace(); break;
-            case 0x05: val = c->getClass(); break;
-            case 0x08: val = c->getValue(Character::HP) & 0xFF; break; //TODO: ?
+            case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
+            {
+                Statistic stat = c->getStat((Stat)(valueID - 0x25));
+                result = comparer(stat.getTemp(), state.getByteAt(7));
+                break;
+            }
+    
+            case 0x2D: case 0x2E: case 0x2F: case 0x30: case 0x31: case 0x32: case 0x33:
+            {
+                Statistic stat = c->getStat((Stat)(valueID - 0x2D));
+                result = comparer(stat.getReal(), state.getByteAt(7));
+                break;
+            }
+
+            case 0x34: case 0x35: case 0x36: case 0x37: case 0x38: case 0x39:
+            {
+                Statistic stat = c->getStat((Stat)(FIRE + (valueID - 0x34)));
+                result = comparer(stat.getReal(), state.getByteAt(7));
+                break;
+            }
+
+            case 0x3A: case 0x3B: case 0x3C: case 0x3D: case 0x3E: case 0x3F:
+            {
+                Statistic stat = c->getStat((Stat)(FIRE + (valueID - 0x3A)));
+                result = comparer(stat.getTemp(), state.getByteAt(7));
+                break;
+            }
+
+            case 0x40: result = comparer(c->getStat(LEVEL).getReal(), state.getByteAt(7)); break;
+            case 0x41: result = comparer(p->getValue(Party::FOOD), state.getByteAt(7)); break; //TODO: Size?
+
+            case 0x56: case 0x57: case 0x58: case 0x59: case 0x5A: case 0x5B: case 0x5C:
+            {
+                Statistic stat = c->getStat((Stat)(valueID - 0x56));
+                result = comparer(stat.getValue(), state.getByteAt(7));
+                break;
+            }
+
+
+/*          
             case 0x0A: debug("AC"); break;
-            case 0x0B: val = c->getStat(LEVEL).getTemp(); break;
             case 0x0C: debug("AGE"); break;
             case 0x0D: debug("SKILL"); break;
             case 0x0F: debug("AWARD"); break;
@@ -270,37 +333,6 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 
 /*            case 0x15: debug("ITEM"); break;
             case 0x19: debug("MINS"); break;
-            case 0x22: debug("GOLD"); break;
-            case 0x23: debug("GEMS"); break;
-            case 0x25: val = c->getStat(MIGHT).getTemp(); break;
-            case 0x26: val = c->getStat(INTELLECT).getTemp(); break;
-            case 0x27: val = c->getStat(PERSONALITY).getTemp(); break;
-            case 0x28: val = c->getStat(ENDURANCE).getTemp(); break;
-            case 0x29: val = c->getStat(SPEED).getTemp(); break;
-            case 0x2A: val = c->getStat(ACCURACY).getTemp(); break;
-            case 0x2B: val = c->getStat(LUCK).getTemp(); break;
-            case 0x2C: debug("YESNO"); break;
-            case 0x2D: val = c->getStat(MIGHT).getReal(); break;
-            case 0x2E: val = c->getStat(INTELLECT).getReal(); break;
-            case 0x2F: val = c->getStat(PERSONALITY).getReal(); break;
-            case 0x30: val = c->getStat(ENDURANCE).getReal(); break;
-            case 0x31: val = c->getStat(SPEED).getReal(); break;
-            case 0x32: val = c->getStat(ACCURACY).getReal(); break;
-            case 0x33: val = c->getStat(LUCK).getReal(); break;
-            case 0x34: val = c->getStat(FIRE).getReal(); break;
-            case 0x35: val = c->getStat(ELEC).getReal(); break;
-            case 0x36: val = c->getStat(COLD).getReal(); break;
-            case 0x37: val = c->getStat(POISON).getReal(); break;
-            case 0x38: val = c->getStat(ENERGY).getReal(); break;
-            case 0x39: val = c->getStat(MAGIC).getReal(); break;
-            case 0x3A: val = c->getStat(FIRE).getTemp(); break;
-            case 0x3B: val = c->getStat(ELEC).getTemp(); break;
-            case 0x3C: val = c->getStat(COLD).getTemp(); break;
-            case 0x3D: val = c->getStat(POISON).getTemp(); break;
-            case 0x3E: val = c->getStat(ENERGY).getTemp(); break;
-            case 0x3F: val = c->getStat(MAGIC).getTemp(); break;
-            case 0x40: val = c->getStat(LEVEL).getReal(); break;
-            case 0x41: debug("FOOD"); break;
             case 0x45: debug("LEVITATE"); break;
             case 0x46: debug("LIGHT"); break;
             case 0x47: debug("FIREPROT"); break;
@@ -312,13 +344,6 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
             case 0x4F: debug("WIZEYE"); break;
             case 0x51: debug("SPFULL"); break;
             case 0x55: debug("YEAR"); break;
-            case 0x56: val = c->getStat(MIGHT).getValue(); break;
-            case 0x57: val = c->getStat(INTELLECT).getValue(); break;
-            case 0x58: val = c->getStat(PERSONALITY).getValue(); break;
-            case 0x59: val = c->getStat(ENDURANCE).getValue(); break;
-            case 0x5A: val = c->getStat(SPEED).getValue(); break;
-            case 0x5B: val = c->getStat(ACCURACY).getValue(); break;
-            case 0x5C: val = c->getStat(LUCK).getValue(); break;
             case 0x5D: debug("WEEK"); break;
             case 0x5E: debug("WALKONWATER"); break;
             case 0x63: debug("SKILL"); break;
@@ -411,6 +436,22 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
     {
         case 0x00: break;
         case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), false); break;
+
+        case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
+        {
+            Statistic stat = c->getStat((Stat)(take - 0x25));
+            stat.modifyTemp(0 - state.getByteAt(7));
+            break;
+        }
+
+        case 0x2D: case 0x2E: case 0x2F: case 0x30: case 0x31: case 0x32: case 0x33:
+        {
+            Statistic stat = c->getStat((Stat)(take - 0x2D));
+            stat.modifyReal(0 - state.getByteAt(7));
+            break;
+        }
+
+
         default: debug("Unknown Take ID: %02X", take); break;
     }
 
@@ -418,6 +459,21 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
     {
         case 0x00: break;
         case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), true); break;
+
+        case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
+        {
+            Statistic stat = c->getStat((Stat)(give - 0x25));
+            stat.modifyTemp(state.getByteAt(giveOffset + 1));
+            break;
+        }
+
+        case 0x2D: case 0x2E: case 0x2F: case 0x30: case 0x31: case 0x32: case 0x33:
+        {
+            Statistic stat = c->getStat((Stat)(give - 0x2D));
+            stat.modifyReal(state.getByteAt(giveOffset + 1));
+            break;
+        }
+
         default: debug("Unknown Give ID: %02X", give); break;
     }
 
@@ -502,4 +558,19 @@ bool XEEN::Maze::EventList::evCALL(const EventState& state)
 
     _parent->getGame()->setEvent(new CallEvent(_parent->getGame(), state));
     return false;
+}
+
+bool XEEN::Maze::EventList::evALTERMAP(const EventState& state)
+{
+    // TODO: Test
+    const Common::Point pos(state.getByteAt(6), state.getByteAt(7));
+    const Direction dir = state.getByteAt(8);
+    const uint32 value = state.getByteAt(9);
+
+    if(enforce(value < 0x10))
+    {
+        _parent->setTile(pos, dir, value);
+    }
+
+    return true;
 }
