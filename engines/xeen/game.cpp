@@ -99,7 +99,7 @@ void XEEN::Game::load()
         byte mouseImage[16*16];
 
         _graphicsManager->fillRect(Common::Rect(0, 0, 16, 16), 0);
-        _graphicsManager->draw("MOUSE.ICN", Common::Point(0, 0), 0);
+        _graphicsManager->draw(CCSpriteId("MOUSE.ICN"), Common::Point(0, 0));
 
         const byte* buf = _graphicsManager->getScreenBitmap();
         

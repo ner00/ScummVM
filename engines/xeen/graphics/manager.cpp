@@ -67,12 +67,8 @@ void XEEN::Graphics::Manager::fillRect(Common::Rect area, uint8 color)
 
 void XEEN::Graphics::Manager::draw(const CCSpriteId& id, const Common::Point& pen)
 {
-    draw(id, pen, id._frame);
-}
-
-void XEEN::Graphics::Manager::draw(const CCFileId& id, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
-{
-    XEEN_VALID();
+    const uint64 time = g_system->getMillis() / 250;
+    const uint32 count = id._count ? id._count : 1;
 
     if(!_sprites[id])
     {
@@ -81,7 +77,7 @@ void XEEN::Graphics::Manager::draw(const CCFileId& id, const Common::Point& pen,
 
     if(valid(_sprites[id]))
     {
-        _sprites[id]->drawCell(_screen, pen, frame, flip, scale);
+        _sprites[id]->drawCell(_screen, pen, id._frame + (time % count), id._flip, id._scale);
     }
 }
 

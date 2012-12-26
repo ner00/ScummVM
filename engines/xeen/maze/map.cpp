@@ -400,7 +400,8 @@ void XEEN::Maze::Map::draw(Valid<Graphics::Manager> sprites)
         {
             if(outdoorDrawList[i].sprite != 0xFFFF)
             {
-                sprites->draw(outdoorDrawList[i].sprite, Common::Point(outdoorDrawList[i].x, outdoorDrawList[i].y), outdoorDrawList[i].frame, outdoorDrawList[i].flags & 0x8000, outdoorDrawList[i].scale);
+                const CCSpriteId sp(outdoorDrawList[i].sprite, outdoorDrawList[i].frame, outdoorDrawList[i].count, outdoorDrawList[i].flags & 0x8000, outdoorDrawList[i].scale);
+                sprites->draw(sp, Common::Point(outdoorDrawList[i].x, outdoorDrawList[i].y));
             }
         }
     }
@@ -410,7 +411,8 @@ void XEEN::Maze::Map::draw(Valid<Graphics::Manager> sprites)
         {
             if(indoorDrawList[i].sprite != 0xFFFF)
             {
-                sprites->draw(indoorDrawList[i].sprite, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y), indoorDrawList[i].frame, indoorDrawList[i].flags & 0x8000, indoorDrawList[i].scale);
+                const CCSpriteId sp(indoorDrawList[i].sprite, indoorDrawList[i].frame, indoorDrawList[i].count, indoorDrawList[i].flags & 0x8000, indoorDrawList[i].scale);
+                sprites->draw(sp, Common::Point(indoorDrawList[i].x, indoorDrawList[i].y));
             }
         }
     }
@@ -436,17 +438,17 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
                 const Common::Point tilepen = pen + Common::Point(j * 10, (6 - i) * 8);
                 const uint16 tile = getTile(pos + Common::Point(j - 3, i - 3), 0);
 
-                sprites->draw(sprite, tilepen, _base->lookupSurface(tile & 0xF));
+//                sprites->draw(sprite, tilepen, _base->lookupSurface(tile & 0xF));
 
                 uint32 wall = _base->lookupWall((tile >> 4) & 0xF);
                 if(wall)
                 {
-                    sprites->draw(sprite, tilepen, 16 + wall);
+//                    sprites->draw(sprite, tilepen, 16 + wall);
                 }
 
                 if(tile & 0xF00)
                 {
-                    sprites->draw(sprite, tilepen, 32 + ((tile >> 8) & 0xF));
+//                    sprites->draw(sprite, tilepen, 32 + ((tile >> 8) & 0xF));
                 }
 
                 // TODO: Overlay?
@@ -464,7 +466,7 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
             for(int j = 0; j != 7; j ++)
             {
                 const uint32 sur = getSurface(pos + Common::Point(j - 3, i - 3));
-                sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), sur ? 36 + sur : 0);
+//                sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), sur ? 36 + sur : 0);
             }
         }
     
@@ -479,17 +481,17 @@ void XEEN::Maze::Map::drawMini(const Common::Point& pen, const Common::Point& po
                 {
                     if(wallData & 0xF000)
                     {
-                        sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 2);
+//                        sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 2);
                     }
     
                     if(wallData & 0xF)
                     {
-                        sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 3);
+//                        sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 3);
                     }
                 }
                 else
                 {
-                    sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 1);
+//                    sprites->draw(sprite, pen + Common::Point(j * 10, (6 - i) * 8), 1);
                 }
             }
         }
@@ -567,6 +569,7 @@ void XEEN::Maze::Map::processObjects(const Common::Point& pos, Direction dir, Dr
             if(data)
             {
                 index[objOffsets[i].id]->frame = data[facing];
+                index[objOffsets[i].id]->count = (data[8 + facing] - data[facing]) + 1;
                 index[objOffsets[i].id]->flags &= ~0x8000;
                 index[objOffsets[i].id]->flags |= data[4 + facing] ? 0x8000 : 0;
             }

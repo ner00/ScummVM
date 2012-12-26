@@ -36,13 +36,26 @@ namespace XEEN
 
 
         protected:
+            const Button* getButtons() const
+            {
+                XEEN_VALID();
+
+                static const Button buttons[] = 
+                {
+                    {CCSpriteId("FACE01.FAC", 0, 4), CCSpriteId("FACE01.FAC", 0, 4), {16, 16, 62, 40}, 0, Common::KEYCODE_INVALID},
+                    {0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+                };
+
+                return buttons;
+            }
+
             const String* getStrings() const
             {
                 XEEN_VALID();
             
                 static const String strings[] = 
                 {
-                    {0, 1, 0, 30, Font::CENTER},
+//                    {0, 1, 0, 30, Font::CENTER},
                     {0, 2, 0, 70, Font::CENTER},
                     {0, 0, 0, 0, 0}
                 };

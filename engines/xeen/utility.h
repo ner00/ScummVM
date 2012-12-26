@@ -338,11 +338,13 @@ namespace XEEN
 
     struct CCSpriteId : public CCFileId
     {
-        CCSpriteId(CCFileId id, uint32 frame = 0, uint32 count = 0) : CCFileId(id), _frame(frame), _count(count) { }
-        CCSpriteId(uint16 id = 0) : CCFileId(id) { }
+        CCSpriteId(CCFileId id, uint32 frame = 0, uint32 count = 1, bool flip = false, uint8 scale = 0) : CCFileId(id), _frame(frame), _count(count), _flip(flip), _scale(scale) { }
+        CCSpriteId(uint16 id = 0) : CCFileId(id), _frame(0), _count(1), _flip(false), _scale(0) { }
 
         uint32 _frame;
         uint32 _count;
+        bool _flip;
+        uint8 _scale;
     };
 
     struct CCFileData;
