@@ -18,7 +18,6 @@ MODULE_OBJS := \
     maze/objectdata.o \
     maze/monsterdata.o \
     maze/segment.o \
-    maze/text.o \
     maze/npc.o \
     maze/message.o \
     maze/ifyesno.o \

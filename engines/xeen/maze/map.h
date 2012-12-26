@@ -35,7 +35,6 @@ namespace XEEN
     namespace Maze
     {
         class Segment;
-        class Text;
         class EventList;
         class Objects;
         class Manager;
@@ -91,9 +90,10 @@ namespace XEEN
                 Valid<Manager> _parent;
 
                 Segment* _base;
-                Text* _text;
                 EventList* _events;
                 Objects* _objects;
+
+                FilePtr _text;
 
                 char* _message;
                 Common::Rect _messageArea;

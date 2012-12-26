@@ -29,7 +29,6 @@
 
 #include "xeen/maze/map.h"
 #include "xeen/maze/eventlist_.h"
-#include "xeen/maze/text_.h"
 #include "xeen/maze/segment_.h"
 #include "xeen/maze/objectdata_.h"
 #include "xeen/maze/monsterdata_.h"
@@ -42,21 +41,20 @@ namespace XEEN
     }
 }
 
-XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(parent->getGame()), _parent(parent), _base(0), _text(0), _events(0), _objects(0), _message(0), _messageFlags(0), _wallType("TOWN")
+XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(parent->getGame()), _parent(parent), _base(0), _events(0), _objects(0), _message(0), _messageFlags(0), _wallType("TOWN")
 {
     _base = _parent->getSegment(mapNumber);
  
     if(valid(_base))
     {
         // Load Maze Data
-        _text = new Text(_parent->getGame()->getFile(CCFileId("AAZE%s%03d.TXT", (mapNumber < 100) ? "0" : "X", mapNumber), false));
+        _text = _parent->getGame()->getFile(CCFileId("AAZE%s%03d.TXT", (mapNumber < 100) ? "0" : "X", mapNumber), false);
         _events = new EventList(this, _parent->getGame()->getFile(CCFileId("MAZE%s%03d.EVT", (mapNumber < 100) ? "0" : "X", mapNumber), true));
         _objects = new Objects(_parent->getGame()->getFile(CCFileId("MAZE%s%03d.MOB", (mapNumber < 100) ? "0" : "X", mapNumber), true));
 
         if(!(valid(_text) && valid(_events) && valid(_objects)))
         {
             markInvalid("Failed to open maps required objects.");
-            delete _text;
             delete _events;
             delete _objects;
         }
@@ -82,7 +80,6 @@ XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(paren
 
 XEEN::Maze::Map::~Map()
 {
-    delete _text;
     delete _events;
     delete _objects;
 }
@@ -90,7 +87,26 @@ XEEN::Maze::Map::~Map()
 const char* XEEN::Maze::Map::getString(uint32 id) const
 {
     XEEN_VALID();
-    return valid(_text) ? _text->getString(id) : "";
+
+    uint32 result = 0;
+    for(uint32 offset = 0; offset != _text->getSize() && id; offset ++)
+    {
+        if(_text->getByteAt(offset) == 0)
+        {
+            result = offset + 1;
+            id --;
+        }
+    }
+
+    if(result < _text->getSize())
+    {
+        return _text->getPtrAt<const char>(result);
+    }
+    else
+    {
+        debug("Invalid String ID on Map"); // TODO: Details
+        return "";
+    }
 }
 
 void XEEN::Maze::Map::runEventAt(const Common::Point& pos, Direction dir, bool autoExec, uint32 line)

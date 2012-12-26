@@ -38,6 +38,9 @@ namespace XEEN
     
             const CCFileId& getID( )                { return _id; }
         
+            template<typename T>
+            T* getPtrAt(uint32 loc)                 { return (enforce(loc < _size)) ? (T*)&_data[loc] : 0; }
+
             byte getByteAt(uint16 loc) const        { return (enforce(loc < _size)) ? _data[loc] : 0; }
             void setByteAt(uint16 loc, byte val)    { if(enforce(loc < _size)) _data[loc] = val; }
             int8 getI8At(uint16 loc) const          { return (enforce(loc < _size)) ? *(int8*)&_data[loc] : 0; }
