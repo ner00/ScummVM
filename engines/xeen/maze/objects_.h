@@ -46,12 +46,11 @@ namespace XEEN
 
             public:
                 bool getObjectAt(const Common::Point& pos, ObjectEntry& data) const;
+                ObjectEntry getObjectData(uint32 id) const;
+                void moveObject(uint32 id, const Common::Point& pos);
 
                 uint32 getMonstersAt(const Common::Point& pos, NonNull<ObjectEntry> data) const; // 'data' must be an array of three ObjectEntry structs
                 ObjectEntry getMonsterData(uint32 id) const;
-
-            private:                
-                void moveObject(uint32 id, const Common::Point& pos);
                 void moveMonster(uint32 id, const Common::Point& pos, bool spawn);
                 
             protected:

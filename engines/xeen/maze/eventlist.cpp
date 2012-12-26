@@ -181,7 +181,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x30: { return true; }
         case 0x31: { return true; }
         case 0x32: { return true; }
-        case 0x33: { return true; }
+        case 0x33: { return evMOVEOBJ(state); }
         case 0x34: { return true; }
         case 0x35: { return evMESSAGE(state, offset); }
         case 0x36: { return true; }
@@ -275,7 +275,7 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
             case 0x04: result = comparer(c->getRace(), state.getByteAt(7)); break;
             case 0x05: result = comparer(c->getClass(), state.getByteAt(7)); break;
             case 0x08: result = comparer(c->getValue(Character::HP), state.getByteAt(7)); break;
-            case 0x09: result = true; break; // TODO: Compare byte against SP!
+            case 0x09: result = comparer(c->getValue(Character::SP), state.getByteAt(7)); break;
             case 0x0B: result = comparer(c->getStat(LEVEL).getTemp(), state.getByteAt(7));
             case 0x14: result = p->getGameFlag(state.getByteAt(7)); break;
 
@@ -367,8 +367,24 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 
 bool XEEN::Maze::EventList::evMOVEOBJ(const EventState& state)
 {
-    const Common::Point dest(state.getByteAt(7), state.getByteAt(8));
-    _parent->moveObject(state.getByteAt(6), dest);
+    if(state.getByteAt(5) == 0x0B)
+    {
+        const Common::Point dest(state.getByteAt(7), state.getByteAt(8));
+        _parent->moveObject(state.getByteAt(6), dest);
+    }
+    else
+    {
+        Valid<Objects> objs = _parent->getObjects();
+
+        const uint32 firstID = state.getByteAt(6);
+        const uint32 secondID = state.getByteAt(7);
+
+        const ObjectEntry first = objs->getObjectData(firstID);
+        const ObjectEntry second = objs->getObjectData(secondID);
+
+        objs->moveObject(firstID, second.pos);
+        objs->moveObject(secondID, first.pos);
+    }
     return true;
 }
 
@@ -451,6 +467,19 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
             break;
         }
 
+        case 0x34: case 0x35: case 0x36: case 0x37: case 0x38: case 0x39:
+        {
+            Statistic stat = c->getStat((Stat)(FIRE + (take - 0x34)));
+            stat.modifyReal(0 - state.getByteAt(7));
+            break;
+        }
+
+        case 0x3A: case 0x3B: case 0x3C: case 0x3D: case 0x3E: case 0x3F:
+        {
+            Statistic stat = c->getStat((Stat)(FIRE + (take - 0x3A)));
+            stat.modifyTemp(state.getByteAt(7));
+            break;
+        }
 
         default: debug("Unknown Take ID: %02X", take); break;
     }
@@ -471,6 +500,20 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
         {
             Statistic stat = c->getStat((Stat)(give - 0x2D));
             stat.modifyReal(state.getByteAt(giveOffset + 1));
+            break;
+        }
+
+        case 0x34: case 0x35: case 0x36: case 0x37: case 0x38: case 0x39:
+        {
+            Statistic stat = c->getStat((Stat)(FIRE + (give - 0x34)));
+            stat.modifyReal(state.getByteAt(giveOffset + 1));
+            break;
+        }
+
+        case 0x3A: case 0x3B: case 0x3C: case 0x3D: case 0x3E: case 0x3F:
+        {
+            Statistic stat = c->getStat((Stat)(FIRE + (give - 0x3A)));
+            stat.modifyTemp(state.getByteAt(giveOffset + 1));
             break;
         }
 
