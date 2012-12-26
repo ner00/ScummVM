@@ -28,10 +28,10 @@
 
 namespace XEEN
 {
-    class SmallMessageWindow : public Window
+    class MessageWindow : public Window
     {
         public:
-            SmallMessageWindow(Valid<Game> parent, NonNull<const char> msg) : Window(parent, Common::Rect(225, 140, 318, 198)), _msg(msg) { }
+            MessageWindow(Valid<Game> parent, const Common::Rect& area, NonNull<const char> msg) : Window(parent, area), _msg(msg) { }
 
         protected:
             const String* getStrings() const
@@ -60,8 +60,13 @@ namespace XEEN
 
 XEEN::Maze::Message::Message(Valid<Game> parent, const EventState& state, NonNull<const char> msg) : MazeEvent(parent, state), _done(false)
 {
-    // TODO: Use proper window size
-    addWindow(new SmallMessageWindow(getGame(), msg));
+    // TODO: Check window sizes, add other message types
+    switch(_state.getByteAt(5))
+    {
+        case 0x01: addWindow(new MessageWindow(getGame(), Common::Rect(225, 140, 318, 198), msg)); break;
+        case 0x29: addWindow(new MessageWindow(getGame(), Common::Rect(  8, 140, 318, 198), msg)); break;
+        case 0x35: addWindow(new MessageWindow(getGame(), Common::Rect(  8,   8, 224, 140), msg)); break;
+    }
 }
 
 void XEEN::Maze::Message::process()
