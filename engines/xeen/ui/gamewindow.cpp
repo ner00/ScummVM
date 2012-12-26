@@ -36,17 +36,17 @@ const XEEN::Button* XEEN::GameWindow::getButtons() const
 
     static const Button buttons[] = 
     {
-        {"MAIN.ICN",  0,  1, {  0,   0, 24, 20}, 0, Common::KEYCODE_s},
-        {"MAIN.ICN",  2,  3, { 25,   0, 24, 20}, 1, Common::KEYCODE_c}, 
-        {"MAIN.ICN",  4,  5, { 51,   0, 24, 20}, 2, Common::KEYCODE_r}, 
-        {"MAIN.ICN",  6,  7, {  0,  21, 24, 20}, 3, Common::KEYCODE_b}, 
-        {"MAIN.ICN",  8,  9, { 25,  21, 24, 20}, 4, Common::KEYCODE_d}, 
-        {"MAIN.ICN", 10, 11, { 51,  21, 24, 20}, 5, Common::KEYCODE_v}, 
-        {"MAIN.ICN", 12, 13, {  0,  42, 24, 20}, 6, Common::KEYCODE_m}, 
-        {"MAIN.ICN", 14, 15, { 25,  42, 24, 20}, 7, Common::KEYCODE_i},
-        {"MAIN.ICN", 16, 17, { 51,  42, 24, 20}, 8, Common::KEYCODE_q},  
+        {CCSpriteId("MAIN.ICN",  0), CCSpriteId("MAIN.ICN",  1), {  0,   0, 24, 20}, 0, Common::KEYCODE_s},
+        {CCSpriteId("MAIN.ICN",  2), CCSpriteId("MAIN.ICN",  3), { 25,   0, 24, 20}, 1, Common::KEYCODE_c}, 
+        {CCSpriteId("MAIN.ICN",  4), CCSpriteId("MAIN.ICN",  5), { 51,   0, 24, 20}, 2, Common::KEYCODE_r}, 
+        {CCSpriteId("MAIN.ICN",  6), CCSpriteId("MAIN.ICN",  7), {  0,  21, 24, 20}, 3, Common::KEYCODE_b}, 
+        {CCSpriteId("MAIN.ICN",  8), CCSpriteId("MAIN.ICN",  9), { 25,  21, 24, 20}, 4, Common::KEYCODE_d}, 
+        {CCSpriteId("MAIN.ICN", 10), CCSpriteId("MAIN.ICN", 11), { 51,  21, 24, 20}, 5, Common::KEYCODE_v}, 
+        {CCSpriteId("MAIN.ICN", 12), CCSpriteId("MAIN.ICN", 13), {  0,  42, 24, 20}, 6, Common::KEYCODE_m}, 
+        {CCSpriteId("MAIN.ICN", 14), CCSpriteId("MAIN.ICN", 15), { 25,  42, 24, 20}, 7, Common::KEYCODE_i},
+        {CCSpriteId("MAIN.ICN", 16), CCSpriteId("MAIN.ICN", 17), { 51,  42, 24, 20}, 8, Common::KEYCODE_q},  
 
-        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+        {0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
     
     return buttons;
@@ -79,9 +79,9 @@ const XEEN::Button* XEEN::GameWindow_YesNo::getButtons() const
 
     static const Button buttons[] = 
     {
-        {"MAIN.ICN",  0,  1, {  0,   0, 24, 20}, 1, Common::KEYCODE_y},
-        {"MAIN.ICN",  2,  3, { 25,   0, 24, 20}, 2, Common::KEYCODE_n},
-        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+        {CCSpriteId("MAIN.ICN", 0), CCSpriteId("MAIN.ICN", 1), {  0,   0, 24, 20}, 1, Common::KEYCODE_y},
+        {CCSpriteId("MAIN.ICN", 0), CCSpriteId("MAIN.ICN", 1), { 25,   0, 24, 20}, 2, Common::KEYCODE_n},
+        {0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
     
     return buttons;

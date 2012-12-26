@@ -34,9 +34,9 @@ const XEEN::Button* XEEN::CharacterActionWindow::getButtons() const
 
     static const Button buttons[] = 
     {
-        {"ESC.ICN",  0,  1, {175, 8, 24, 20}, 0, Common::KEYCODE_ESCAPE},
+        {CCSpriteId("ESC.ICN", 0), CCSpriteId("ESC.ICN", 1), {175, 8, 24, 20}, 0, Common::KEYCODE_ESCAPE},
 
-        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+        {0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
     
     return buttons;

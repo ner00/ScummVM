@@ -46,11 +46,11 @@ namespace XEEN
                 
                     static const Button buttons[] = 
                     {
-                        {"CAST.ICN",  0,  1, { 8, 108, 24, 20}, 1, Common::KEYCODE_c},
-                        {"CAST.ICN",  2,  3, {35, 108, 24, 20}, 2, Common::KEYCODE_n},
-                        {"CAST.ICN",  4,  5, {62, 108, 24, 20}, 3, Common::KEYCODE_ESCAPE},
+                        {CCSpriteId("CAST.ICN", 0), CCSpriteId("CAST.ICN", 1), { 8, 108, 24, 20}, 1, Common::KEYCODE_c},
+                        {CCSpriteId("CAST.ICN", 2), CCSpriteId("CAST.ICN", 3), {35, 108, 24, 20}, 2, Common::KEYCODE_n},
+                        {CCSpriteId("CAST.ICN", 4), CCSpriteId("CAST.ICN", 5), {62, 108, 24, 20}, 3, Common::KEYCODE_ESCAPE},
                 
-                        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+                        {0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
                     };
                     
                     return buttons;

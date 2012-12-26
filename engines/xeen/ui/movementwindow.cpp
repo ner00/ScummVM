@@ -35,15 +35,15 @@ const XEEN::Button* XEEN::MovementWindow::getButtons() const
 
     static const Button buttons[] = 
     {
-        {"MAIN.ICN", 18, 19, {109, 137, 24, 20}, 1, Common::KEYCODE_TAB}, //TODO: SIZE?
-        {"MAIN.ICN", 20, 21, {235, 148, 24, 20}, 2, Common::KEYCODE_LEFT}, 
-        {"MAIN.ICN", 22, 23, {260, 148, 24, 20}, 3, Common::KEYCODE_UP}, 
-        {"MAIN.ICN", 24, 25, {286, 148, 24, 20}, 4, Common::KEYCODE_RIGHT}, 
-        {"MAIN.ICN", 26, 27, {235, 169, 24, 20}, 5, Common::KEYCODE_INVALID}, //TODO: Direct left 
-        {"MAIN.ICN", 28, 29, {260, 169, 24, 20}, 6, Common::KEYCODE_DOWN}, 
-        {"MAIN.ICN", 30, 31, {286, 169, 24, 20}, 7, Common::KEYCODE_INVALID}, //TODO: Direct right
+        {CCSpriteId("MAIN.ICN", 18), CCSpriteId("MAIN.ICN", 19), {109, 137, 24, 20}, 1, Common::KEYCODE_TAB}, //TODO: SIZE?
+        {CCSpriteId("MAIN.ICN", 20), CCSpriteId("MAIN.ICN", 21), {235, 148, 24, 20}, 2, Common::KEYCODE_LEFT}, 
+        {CCSpriteId("MAIN.ICN", 22), CCSpriteId("MAIN.ICN", 23), {260, 148, 24, 20}, 3, Common::KEYCODE_UP}, 
+        {CCSpriteId("MAIN.ICN", 24), CCSpriteId("MAIN.ICN", 25), {286, 148, 24, 20}, 4, Common::KEYCODE_RIGHT}, 
+        {CCSpriteId("MAIN.ICN", 26), CCSpriteId("MAIN.ICN", 27), {235, 169, 24, 20}, 5, Common::KEYCODE_INVALID}, //TODO: Direct left 
+        {CCSpriteId("MAIN.ICN", 28), CCSpriteId("MAIN.ICN", 29), {260, 169, 24, 20}, 6, Common::KEYCODE_DOWN}, 
+        {CCSpriteId("MAIN.ICN", 30), CCSpriteId("MAIN.ICN", 31), {286, 169, 24, 20}, 7, Common::KEYCODE_INVALID}, //TODO: Direct right
 
-        {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+        {0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
     };
     
     return buttons;

@@ -50,6 +50,7 @@ namespace XEEN
 
                 void fillRect(Common::Rect area, uint8 color);
 
+                void draw(const CCSpriteId& id, const Common::Point& pen);
                 void draw(const CCFileId& id, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
                 void drawString(Common::Point pen, const char* text, uint32 flags = 0, uint32 width = 0);
 

@@ -336,6 +336,15 @@ namespace XEEN
             char _name[16];
     };
 
+    struct CCSpriteId : public CCFileId
+    {
+        CCSpriteId(CCFileId id, uint32 frame = 0, uint32 count = 0) : CCFileId(id), _frame(frame), _count(count) { }
+        CCSpriteId(uint16 id = 0) : CCFileId(id) { }
+
+        uint32 _frame;
+        uint32 _count;
+    };
+
     struct CCFileData;
     typedef Common::SharedPtr<CCFileData> CCFilePtr;
 }

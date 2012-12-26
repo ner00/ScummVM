@@ -41,21 +41,21 @@ namespace XEEN
             {
                 static const Button buttons[] = 
                 {
-                    {"VIEW.ICN",  0,  1, { 10,  24, 24, 20},  1, Common::KEYCODE_INVALID}, {"VIEW.ICN", 10, 11, { 61,  24, 24, 20},  2, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN", 20, 21, {112,  24, 24, 20},  3, Common::KEYCODE_INVALID}, {"VIEW.ICN", 30, 31, {177,  24, 24, 20},  4, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN",  2,  3, { 10,  47, 24, 20},  5, Common::KEYCODE_INVALID}, {"VIEW.ICN", 12, 13, { 61,  47, 24, 20},  6, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN", 22, 23, {112,  47, 24, 20},  7, Common::KEYCODE_INVALID}, {"VIEW.ICN", 32, 33, {177,  47, 24, 20},  8, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN",  4,  5, { 10,  70, 24, 20},  9, Common::KEYCODE_INVALID}, {"VIEW.ICN", 14, 15, { 61,  70, 24, 20}, 10, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN", 24, 25, {112,  70, 24, 20}, 11, Common::KEYCODE_INVALID}, {"VIEW.ICN", 34, 35, {177,  70, 24, 20}, 12, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN",  6,  7, { 10,  93, 24, 20}, 13, Common::KEYCODE_INVALID}, {"VIEW.ICN", 16, 17, { 61,  93, 24, 20}, 14, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN", 26, 27, {112,  93, 24, 20}, 15, Common::KEYCODE_INVALID}, {"VIEW.ICN", 36, 37, {177,  93, 24, 20}, 16, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN",  8,  9, { 10, 116, 24, 20}, 17, Common::KEYCODE_INVALID}, {"VIEW.ICN", 18, 19, { 61, 116, 24, 20}, 18, Common::KEYCODE_INVALID},
-                    {"VIEW.ICN", 28, 29, {112, 116, 24, 20}, 19, Common::KEYCODE_INVALID}, {"VIEW.ICN", 38, 39, {177, 116, 24, 20}, 20, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN",  0), CCSpriteId("VIEW.ICN",  1), { 10,  24, 24, 20},  1, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 10), CCSpriteId("VIEW.ICN", 11), { 61,  24, 24, 20},  2, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN", 20), CCSpriteId("VIEW.ICN", 21), {112,  24, 24, 20},  3, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 30), CCSpriteId("VIEW.ICN", 31), {177,  24, 24, 20},  4, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN",  2), CCSpriteId("VIEW.ICN",  3), { 10,  47, 24, 20},  5, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 12), CCSpriteId("VIEW.ICN", 13), { 61,  47, 24, 20},  6, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN", 22), CCSpriteId("VIEW.ICN", 23), {112,  47, 24, 20},  7, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 32), CCSpriteId("VIEW.ICN", 33), {177,  47, 24, 20},  8, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN",  4), CCSpriteId("VIEW.ICN",  5), { 10,  70, 24, 20},  9, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 14), CCSpriteId("VIEW.ICN", 15), { 61,  70, 24, 20}, 10, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN", 24), CCSpriteId("VIEW.ICN", 25), {112,  70, 24, 20}, 11, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 34), CCSpriteId("VIEW.ICN", 35), {177,  70, 24, 20}, 12, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN",  6), CCSpriteId("VIEW.ICN",  7), { 10,  93, 24, 20}, 13, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 16), CCSpriteId("VIEW.ICN", 17), { 61,  93, 24, 20}, 14, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN", 26), CCSpriteId("VIEW.ICN", 27), {112,  93, 24, 20}, 15, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 36), CCSpriteId("VIEW.ICN", 37), {177,  93, 24, 20}, 16, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN",  8), CCSpriteId("VIEW.ICN",  9), { 10, 116, 24, 20}, 17, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 18), CCSpriteId("VIEW.ICN", 19), { 61, 116, 24, 20}, 18, Common::KEYCODE_INVALID},
+                    {CCSpriteId("VIEW.ICN", 28), CCSpriteId("VIEW.ICN", 29), {112, 116, 24, 20}, 19, Common::KEYCODE_INVALID}, {CCSpriteId("VIEW.ICN", 38), CCSpriteId("VIEW.ICN", 39), {177, 116, 24, 20}, 20, Common::KEYCODE_INVALID},
             
-                    {"VIEW.ICN", 40, 41, {285,  11, 24, 20}, 21, Common::KEYCODE_i},       {"VIEW.ICN", 42, 43, {285,  43, 24, 20}, 22, Common::KEYCODE_q},
-                    {"VIEW.ICN", 44, 45, {285,  75, 24, 20}, 23, Common::KEYCODE_e},       {"VIEW.ICN", 46, 47, {285, 107, 24, 20}, 24, Common::KEYCODE_ESCAPE},
+                    {CCSpriteId("VIEW.ICN", 40), CCSpriteId("VIEW.ICN", 41), {285,  11, 24, 20}, 21, Common::KEYCODE_i},       {CCSpriteId("VIEW.ICN", 42), CCSpriteId("VIEW.ICN", 43), {285,  43, 24, 20}, 22, Common::KEYCODE_q},
+                    {CCSpriteId("VIEW.ICN", 44), CCSpriteId("VIEW.ICN", 45), {285,  75, 24, 20}, 23, Common::KEYCODE_e},       {CCSpriteId("VIEW.ICN", 46), CCSpriteId("VIEW.ICN", 47), {285, 107, 24, 20}, 24, Common::KEYCODE_ESCAPE},
             
-                    {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+                    {0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
                 };
                 
                 return buttons;

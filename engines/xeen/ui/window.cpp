@@ -53,13 +53,13 @@ void XEEN::Window::draw()
     // Background: TODO: Get correct color; draw border.
     graphics->fillRect(_area, 21);
     
-    // Draw buttons    
-    for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)
+    // Draw buttons (TODO: Look only for actionID)
+    for(const Button* button = getButtons(); button && (button->normalFrame || button->actionID); button ++)
     {
-        if(button->sprite)
+        if(button->normalFrame)
         {
-            const uint32 frame = (button == _pressedButton) ? button->pressedFrame : button->normalFrame;
-            graphics->draw(button->sprite, location + button->area, frame);
+            const CCSpriteId& frame = (button == _pressedButton) ? button->pressedFrame : button->normalFrame;
+            graphics->draw(frame, location + button->area);
         }
     }
     
@@ -97,7 +97,7 @@ bool XEEN::Window::click(const Common::Point& point)
     Common::Point target = point - Common::Point(_area.left, _area.top);
 
     // Check buttons
-    for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)
+    for(const Button* button = getButtons(); button && (button->normalFrame || button->actionID); button ++)
     {
         const Common::Rect r = button->area;
     
@@ -123,7 +123,7 @@ bool XEEN::Window::key(Common::KeyCode code)
     XEEN_VALID();
 
     // Check buttons
-    for(const Button* button = getButtons(); button && (button->sprite || button->actionID); button ++)
+    for(const Button* button = getButtons(); button && (button->normalFrame || button->actionID); button ++)
     {
         if(code == button->key)
         {

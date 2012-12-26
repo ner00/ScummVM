@@ -33,9 +33,8 @@ namespace XEEN
     {
         static const uint32 NOACTION = 0xFFFFFFFF;
     
-        CCFileId sprite;
-        uint32 normalFrame;
-        uint32 pressedFrame;
+        CCSpriteId normalFrame;
+        CCSpriteId pressedFrame;
 
         XRect area;
         

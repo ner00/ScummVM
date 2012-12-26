@@ -65,6 +65,11 @@ void XEEN::Graphics::Manager::fillRect(Common::Rect area, uint8 color)
     _screen->fillRect(area, color);
 }
 
+void XEEN::Graphics::Manager::draw(const CCSpriteId& id, const Common::Point& pen)
+{
+    draw(id, pen, id._frame);
+}
+
 void XEEN::Graphics::Manager::draw(const CCFileId& id, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
 {
     XEEN_VALID();

@@ -42,8 +42,8 @@ namespace XEEN
                 static const Button buttons[] = 
                 {
                     // TODO: Fill proper values; check HP bar size
-                    {"MAIN.ICN",  0,  0, { 10, 150, 32, 32}, 1, Common::KEYCODE_ESCAPE},
-                    {(uint16)0, 0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
+                    {CCSpriteId("MAIN.ICN", 0, 0), CCSpriteId("MAIN.ICN", 0, 0), { 10, 150, 32, 32}, 1, Common::KEYCODE_ESCAPE},
+                    {0, 0, {0, 0, 0, 0}, 0, Common::KEYCODE_INVALID}
                 };
 
                 return buttons;            
