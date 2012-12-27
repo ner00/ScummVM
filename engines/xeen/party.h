@@ -57,6 +57,8 @@ namespace XEEN
         public:
             // Read basic values
             uint32 getValue(PartyValue val) const;
+            void setValue(PartyValue val, uint32 data);
+
             Common::Point getPosition() const;
             Direction getFacing() const;
             uint8 getMemberIdFromSlot(unsigned slot) const;            
@@ -83,6 +85,11 @@ namespace XEEN
             void moveRelative(Direction dir);
             void turn(bool left);
             void bash();
+
+        public:
+            template <typename T>
+            void modifyValue(PartyValue val, uint32 data) { T modify; setValue(val, modify(getValue(val), data)); }
+
                 
         private:
             Valid<Game> _parent;

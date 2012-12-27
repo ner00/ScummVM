@@ -64,11 +64,12 @@ namespace XEEN
         class Message : public MazeEvent
         {
             public:
-                Message(Valid<Game> parent, const Maze::EventState& state, NonNull<const char> msg);
+                Message(Valid<Game> parent, const Maze::EventState& state, NonNull<const char> msg, bool wait = false);
                 void process();
 
             private:
                 bool _done;
+                bool _wait;
         };
 
         class WhoWill : public MazeEvent

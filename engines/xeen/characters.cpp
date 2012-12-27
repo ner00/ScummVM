@@ -222,7 +222,7 @@ uint32 XEEN::Character::getSkillCount() const
     const byte* skills = _data->getPtrAt<byte>(_index * 354 + OFF_SKILLS);
     uint32 result = 0;
 
-    for(int i = 0; i != MAX_SKILL; i ++)
+    for(uint32 i = 0; i != MAX_SKILL; i ++)
     {
         result += skills[i] ? 1 : 0;
     }
@@ -235,7 +235,7 @@ uint32 XEEN::Character::getAwardCount() const
     const byte* awards = _data->getPtrAt<byte>(_index * 354 + OFF_AWARDS);
     uint32 result = 0;
 
-    for(int i = 0; i != MAX_AWARD; i ++)
+    for(uint32 i = 0; i != MAX_AWARD; i ++)
     {
         result += (awards[i] & 0xF) ? 1 : 0;
         result += (awards[i] & 0xF0) ? 1 : 0;

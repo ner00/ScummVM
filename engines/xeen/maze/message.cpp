@@ -31,7 +31,7 @@ namespace XEEN
     class MessageWindow : public Window
     {
         public:
-            MessageWindow(Valid<Game> parent, const Common::Rect& area, NonNull<const char> msg) : Window(parent, area), _msg(msg) { }
+            MessageWindow(Valid<Game> parent, const Common::Rect& area, NonNull<const char> msg, bool wait) : Window(parent, area, wait), _msg(msg) { }
 
         protected:
             const String* getStrings() const
@@ -58,26 +58,34 @@ namespace XEEN
     };
 }
 
-XEEN::Maze::Message::Message(Valid<Game> parent, const EventState& state, NonNull<const char> msg) : MazeEvent(parent, state), _done(false)
+XEEN::Maze::Message::Message(Valid<Game> parent, const EventState& state, NonNull<const char> msg, bool wait) : MazeEvent(parent, state), _done(false), _wait(wait)
 {
-    // TODO: Check window sizes, add other message types
+    // TODO: Check window sizes, add other message types, check font offsets
     switch(_state.getByteAt(5))
     {
-        case 0x01: addWindow(new MessageWindow(getGame(), Common::Rect(225, 140, 318, 198), msg)); break;
-        case 0x29: addWindow(new MessageWindow(getGame(), Common::Rect(  8, 140, 318, 198), msg)); break;
-        case 0x35: addWindow(new MessageWindow(getGame(), Common::Rect(  8,   8, 224, 140), msg)); break;
+        case 0x01: addWindow(new MessageWindow(getGame(), Common::Rect(225, 140, 318, 198), msg, wait)); break;
+        case 0x0C: addWindow(new MessageWindow(getGame(), Common::Rect( 52, 149, 267, 196), msg, wait)); break;
+        case 0x29: addWindow(new MessageWindow(getGame(), Common::Rect(  8, 140, 318, 198), msg, wait)); break;
+        case 0x35: addWindow(new MessageWindow(getGame(), Common::Rect(  8,   8, 224, 140), msg, wait)); break;
     }
 }
 
 void XEEN::Maze::Message::process()
 {
-    if(!_done)
+    if(!_wait)
     {
-        _state.runFrom(_state.line + 1);
-        _done = true;
+        if(!_done)
+        {
+            _state.runFrom(_state.line + 1);
+            _done = true;
+        }
+        else
+        {
+            setFinished(true, true);
+        }
     }
     else
     {
-        setFinished(true, true);
+        setFinished(getWindows().back()->isFinished(), true);
     }
 }

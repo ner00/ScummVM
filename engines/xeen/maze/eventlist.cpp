@@ -158,8 +158,8 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x19: { return evCALL(state); }
         case 0x1A: { return false; }
         case 0x1B: { return true; }
-        case 0x1C: { return true; }
-        case 0x1D: { return true; }
+        case 0x1C: { debug("UNSUPPORTED OP"); return true; }
+        case 0x1D: { debug("UNSUPPORTED OP"); return true; }
         case 0x1E: { return true; }
         case 0x1F: { return evTELEPORT(state, offset); }
         case 0x20: { return evWHOWILL(state); }
@@ -168,7 +168,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x23: { return evSETCELLFLAGS(state); }
         case 0x24: { return true; }
         case 0x25: { return true; }
-        case 0x26: { return true; }
+        case 0x26: { debug("UNSUPPORTED OP"); return true; }
         case 0x27: { return evMAPTEXT(state, offset); }
         case 0x28: { return true; }
         case 0x29: { return evMESSAGE(state, offset); }
@@ -279,8 +279,8 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
             case 0x0B: result = comparer(c->getStat(LEVEL).getTemp(), state.getByteAt(7)); break;
             case 0x0D: result = c->hasSkill(state.getByteAt(7)); break;
             case 0x0F: result = c->hasAward(state.getByteAt(7)); break;
+            case 0x10: result = comparer(c->getValue(Character::EXPERIENCE), state.getU32At(7)); break;
             case 0x14: result = p->getGameFlag(state.getByteAt(7)); break;
-
             case 0x22: result = comparer(p->getValue(Party::GOLD), state.getByteAt(7)); break; //TODO: Size?
             case 0x23: result = comparer(p->getValue(Party::GEMS), state.getByteAt(7)); break; //TODO: Size?
 
@@ -326,9 +326,6 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 /*          
             case 0x0A: debug("AC"); break;
             case 0x0C: debug("AGE"); break;
-            case 0x0D: debug("SKILL"); break;
-            case 0x0F: debug("AWARD"); break;
-            case 0x10: val = c->getValue(Character::EXPERIENCE); break;
             case 0x11: debug("POISPROT"); break;
             case 0x12: debug("CONDITION"); break;
             case 0x13: debug("CANCAST"); break;*/
@@ -461,6 +458,27 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
         case 0x10: c->modifyValue<Subtract>(Character::EXPERIENCE, state.getU32At(7)); break;
         case 0x14: p->setGameFlag(state.getByteAt(7), false); break;
 
+        case 0x22: case 0x23:
+        {
+            const Party::PartyValue moddedVal = (take == 0x22) ? Party::GOLD : Party::GEMS;
+            const uint32 current = p->getValue(moddedVal);
+            const uint32 modifier = (take == 0x22) ? state.getU32At(7) : state.getU16At(7);
+
+            if(modifier <= current)
+            {
+                p->setValue(moddedVal, current - modifier);
+            }
+            else
+            {
+                // TODO: Check messages, don't hardcode them here
+                static const char* const messages[2] = {
+                    "Not enough Gold in the party!", "Not enough Gems in the party!"
+                };
+                _parent->getGame()->setEvent(new Message(_parent->getGame(), state, messages[(take == 0x22) ? 0 : 1], true));
+                return false;
+            }
+        }
+
         case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
         {
             Statistic stat = c->getStat((Stat)(take - 0x25));
@@ -504,6 +522,8 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
         case 0x0F: c->setAward(state.getByteAt(giveOffset + 1), true); break;
         case 0x10: c->modifyValue<Add>(Character::EXPERIENCE, state.getU32At(giveOffset + 1)); break;
         case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), true); break;
+        case 0x22: p->modifyValue<Add>(Party::GOLD, state.getU32At(giveOffset + 1)); break;
+        case 0x23: p->modifyValue<Add>(Party::GEMS, state.getU16At(giveOffset + 1)); break;
 
         case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
         {

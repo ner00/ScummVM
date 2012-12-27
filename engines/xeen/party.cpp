@@ -46,6 +46,28 @@ static const int OFF_GOLD_BANK          = 0x286;
 static const int OFF_GEMS_BANK          = 0x28A;
 static const int OFF_GAME_FLAGS         = 0x293;
 
+static const struct
+{
+    int offset;
+    int size;
+}   partyValues[] =
+{
+    { OFF_PARTY_COUNT, 1 },
+    { OFF_GOLD, 4 },
+    { OFF_GOLD_BANK, 4 },
+    { OFF_GEMS, 4 },
+    { OFF_GEMS_BANK, 4 },
+    { OFF_FOOD, 2 },
+    { OFF_MAZE_ID, 1 },
+    { OFF_MAZE_X, 1 },
+    { OFF_MAZE_Y, 1 },
+    { OFF_MAZE_FACING, 1 },
+    { OFF_DAY, 2 },
+    { OFF_YEAR, 2 },
+    { OFF_MINUTES, 2 }
+};
+
+
 #define GET8S(T)   _mazePTY->getI8At(T)
 #define GET8(T)    _mazePTY->getByteAt(T)
 #define SET8(T, V) _mazePTY->setByteAt(T, V)
@@ -88,45 +110,43 @@ XEEN::Party::~Party()
 uint32 XEEN::Party::getValue(PartyValue val) const
 {
     XEEN_VALID();
-
-    static const struct
-    {
-        int offset;
-        int size;
-    }   values[] =
-    {
-        { OFF_PARTY_COUNT, 1 },
-        { OFF_GOLD, 4 },
-        { OFF_GOLD_BANK, 4 },
-        { OFF_GEMS, 4 },
-        { OFF_GEMS_BANK, 4 },
-        { OFF_FOOD, 2 },
-        { OFF_MAZE_ID, 1 },
-        { OFF_MAZE_X, 1 },
-        { OFF_MAZE_Y, 1 },
-        { OFF_MAZE_FACING, 1 },
-        { OFF_DAY, 2 },
-        { OFF_YEAR, 2 },
-        { OFF_MINUTES, 2 }
-    };
         
     if(enforce(val < PARTY_VALUE_MAX))
     {
-        if(values[val].size == 4)
+        if(partyValues[val].size == 4)
         {
-            return GET32(values[val].offset);
+            return GET32(partyValues[val].offset);
         }
-        else if(values[val].size == 2)
+        else if(partyValues[val].size == 2)
         {
-            return GET16(values[val].offset);
+            return GET16(partyValues[val].offset);
         }
         else
         {
-            return GET8(values[val].offset);
+            return GET8(partyValues[val].offset);
         }
     }
     
     return 0;
+}
+
+void XEEN::Party::setValue(PartyValue val, uint32 data)
+{
+    if(enforce(val < PARTY_VALUE_MAX))
+    {
+        if(partyValues[val].size == 4)
+        {
+            _mazePTY->setU32At(partyValues[val].offset, data);
+        }
+        else if(partyValues[val].size == 2)
+        {
+            _mazePTY->setU16At(partyValues[val].offset, data);
+        }
+        else
+        {
+            _mazePTY->setByteAt(partyValues[val].offset, data);
+        }
+    }
 }
 
 Common::Point XEEN::Party::getPosition() const
