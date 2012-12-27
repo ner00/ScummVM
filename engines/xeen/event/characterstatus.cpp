@@ -129,8 +129,8 @@ namespace XEEN
                         
                         case 21:
                         {
-                            fillStringBuffer("%s : %s %s %s", character->getName(), getSexName(character->getSex()),
-                                     getRaceName(character->getRace()), getClassName(character->getClass()));
+                            fillStringBuffer("%s : %s %s %s", character->getName(), character->getSexName(),
+                                     character->getRaceName(), character->getClassName());
                             break;
                         }
                     }

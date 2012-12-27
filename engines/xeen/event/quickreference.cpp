@@ -78,7 +78,7 @@ namespace XEEN
                 if(id >= 13 && id <= 18)
                 {
                     Character* character = party->getMemberInSlot(id - 13);
-                    fillStringBuffer("%.3s", valid(character) ? getClassName(character->getClass()) : "");
+                    fillStringBuffer("%.3s", valid(character) ? character->getClassName() : "");
                     return;
                 }
             }

@@ -30,49 +30,6 @@ namespace XEEN
 {
     class Party;
 
-    enum Sex {MALE, FEMALE};
-    inline const char* getSexName(Sex sex)
-    {
-        return (sex == MALE) ? "Male" : "Female";
-    }
-
-    enum Race {HUMAN, ELF, DWARF, GNOME, HALFORC};
-
-    inline const char* getRaceName(Race race)
-    {
-        switch(race)
-        {
-            case HUMAN: return "Human";
-            case ELF: return "Elf";
-            case DWARF: return "Dwarf";
-            case GNOME: return "Gnome";
-            case HALFORC: return "Half-orc";
-            default: return "BAD RACE VALUE";
-        }
-    }
-
-
-    enum Side {CLOUDS, DARKSIDE};
-    enum Class {KNIGHT, PALADIN, ARCHER, CLERIC, SORCERER, ROBBER, NINJA, BARBARIAN, DRUID, RANGER};
-    
-    inline const char* getClassName(Class clazz)
-    {
-        switch(clazz)
-        {
-            case KNIGHT: return "Knight";
-            case PALADIN: return "Paladin";
-            case ARCHER: return "Archer";
-            case CLERIC: return "Cleric";
-            case SORCERER: return "Sorcerer";
-            case ROBBER: return "Robber";
-            case NINJA: return "Ninja";
-            case BARBARIAN: return "Barbarian";
-            case DRUID: return "Druid";
-            case RANGER: return "Ranger";
-            default: return "BAD CLASS VALUE";
-        }
-    }    
-
     struct Statistic
     {        
         Statistic(int8* realv, int8* tempv) : real(realv), temp(tempv) {}
@@ -89,6 +46,8 @@ namespace XEEN
             int8* temp;
     };
 
+    enum Side  { CLOUDS, DARKSIDE };
+
     enum Stat { MIGHT, INTELLECT, PERSONALITY, ENDURANCE, SPEED, ACCURACY, LUCK, LEVEL, 
                 FIRE, ELEC, COLD, POISON, ENERGY, MAGIC, STAT_COUNT };
 
@@ -98,25 +57,40 @@ namespace XEEN
         friend class Party;
 
         public:
-            enum Value {
-                HP, SP, EXPERIENCE, VALUE_MAX};
-        
+            enum Value { HP, SP, SEX, CLASS, RACE, EXPERIENCE, VALUE_MAX };
+            enum Sex   { MALE, FEMALE, MAX_SEX };
+            enum Race  { HUMAN, ELF, DWARF, GNOME, HALFORC, MAX_RACE };
+            enum Class { KNIGHT, PALADIN, ARCHER, CLERIC, SORCERER, ROBBER, NINJA, BARBARIAN, DRUID, RANGER, MAX_CLASS };
+
+            static const char* const sexNames[];
+            static const char* const raceNames[];
+            static const char* const classNames[];
+
     
         private:
             Character(FilePtr data, uint8 index, CCFileId faceSprite);
         
         public:
             uint32 getValue(Value val) const;
+            void setValue(Value val, uint32 data);
         
             const char* getName() const;
+
             Statistic getStat(Stat stat) const;
-            
-            Sex getSex() const;
-            Class getClass() const;
-            Race getRace() const;
         
             bool hasSpell(uint32 id) const;
             static const char* getSpellName(uint32 id);
+
+        public:
+            template <typename T>
+            void modifyValue(Value val, uint32 data) { T modify; setValue(val, modify(getValue(val), data)); }
+
+
+        public:
+            const char* getSexName() const { const uint32 sex = getValue(SEX); return (enforce(sex < MAX_SEX)) ? sexNames[sex] : "BAD SEX"; }
+            const char* getRaceName() const { const uint32 race = getValue(RACE); return (enforce(race < MAX_RACE)) ? raceNames[race] : "BAD RACE"; }
+            const char* getClassName() const { const uint32 clazz = getValue(CLASS); return (enforce(clazz < MAX_CLASS)) ? classNames[clazz] : "BAD CLASS"; }
+
 
         public:
             FilePtr _data;

@@ -271,9 +271,9 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 
         switch(valueID)
         {
-            case 0x03: result = comparer(c->getSex(), state.getByteAt(7)); break;
-            case 0x04: result = comparer(c->getRace(), state.getByteAt(7)); break;
-            case 0x05: result = comparer(c->getClass(), state.getByteAt(7)); break;
+            case 0x03: result = comparer(c->getValue(Character::SEX), state.getByteAt(7)); break;
+            case 0x04: result = comparer(c->getValue(Character::RACE), state.getByteAt(7)); break;
+            case 0x05: result = comparer(c->getValue(Character::CLASS), state.getByteAt(7)); break;
             case 0x08: result = comparer(c->getValue(Character::HP), state.getByteAt(7)); break;
             case 0x09: result = comparer(c->getValue(Character::SP), state.getByteAt(7)); break;
             case 0x0B: result = comparer(c->getStat(LEVEL).getTemp(), state.getByteAt(7));
@@ -427,6 +427,9 @@ bool XEEN::Maze::EventList::evIFMAPFLAG(const EventState& state)
     return true;
 }
 
+struct Add      { uint32 operator()(uint32 orig, uint32 mod) { return orig + mod; } };
+struct Subtract { uint32 operator()(uint32 orig, uint32 mod) { return orig - mod; } };
+
 bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
 {
     static const uint8 valSize[0x70] =
@@ -451,6 +454,9 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
     switch(take)
     {
         case 0x00: break;
+        case 0x08: c->modifyValie<Subtract>(Character::HP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x09: c->modifyValie<Subtract>(Character::SP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x10: c->modifyValue<Subtract>(Character::EXPERIENCE, state.getU32At(7)); break;
         case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), false); break;
 
         case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
@@ -487,6 +493,9 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
     switch(give)
     {
         case 0x00: break;
+        case 0x08: c->modifyValie<Add>(Character::HP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x09: c->modifyValie<Add>(Character::SP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x10: c->modifyValue<Add>(Character::EXPERIENCE, state.getU32At(giveOffset + 1)); break;
         case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), true); break;
 
         case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:

@@ -26,7 +26,8 @@
 
 static const int OFF_SEX        = 0x010;
 static const int OFF_RACE       = 0x011;
-static const int OFF_CLASS      = 0x012;
+static const int OFF_SIDE       = 0x012;
+static const int OFF_CLASS      = 0x013;
 static const int OFF_STATS      = 0x014;
 static const int OFF_LEVEL      = 0x023;
 static const int OFF_SPELLS     = 0x079;
@@ -34,6 +35,25 @@ static const int OFF_RESIST     = 0x137;
 static const int OFF_HP         = 0x156;
 static const int OFF_SP         = 0x158;
 static const int OFF_EXPERIENCE = 0x15C;
+
+static const struct
+{
+    int offset;
+    int size;
+}   valueList[] =
+{
+    { OFF_HP, 2 },
+    { OFF_SP, 2 },
+    { OFF_SEX, 1 },
+    { OFF_CLASS, 1 },
+    { OFF_RACE, 1 },
+    { OFF_EXPERIENCE, 4 }
+};
+
+
+const char* const XEEN::Character::sexNames[] =   { "Male", "Female" };
+const char* const XEEN::Character::raceNames[] =  { "Human", "Elf", "Dwarf", "Gnome", "Half-orc" };
+const char* const XEEN::Character::classNames[] = { "Knight", "Paladin", "Archer", "Cleric", "Sorcerer", "Robber", "Ninja", "Barbarian", "Druid", "Ranger" };
 
 static const char* const spellNames[] = 
 {
@@ -67,37 +87,48 @@ XEEN::Character::Character(FilePtr data, uint8 index, CCFileId faceSprite) : _da
 uint32 XEEN::Character::getValue(Value val) const
 {
     XEEN_VALID();
-
-    static const struct
-    {
-        int offset;
-        int size;
-    }   values[] =
-    {
-        { OFF_HP, 2 },
-        { OFF_SP, 2 },
-        { OFF_EXPERIENCE, 4 }
-    };
         
     if(enforce(val < VALUE_MAX))
     {
-        if(values[val].size == 4)
+        if(valueList[val].size == 4)
         {
-            return _data->getU32At((_index * 354) + values[val].offset);
+            return _data->getU32At((_index * 354) + valueList[val].offset);
         }
-        else if(values[val].size == 2)
+        else if(valueList[val].size == 2)
         {
-            return _data->getU16At((_index * 354) + values[val].offset);
+            return _data->getU16At((_index * 354) + valueList[val].offset);
         }
         else
         {
-            return _data->getByteAt((_index * 354) + values[val].offset);
+            return _data->getByteAt((_index * 354) + valueList[val].offset);
         }
     }
     
     return 0;
 }
 
+void XEEN::Character::setValue(Value val, uint32 data)
+{
+    XEEN_VALID();
+        
+    if(enforce(val < VALUE_MAX))
+    {
+        if(valueList[val].size == 4)
+        {
+            _data->setU32At((_index * 354) + valueList[val].offset, data);
+        }
+        else if(valueList[val].size == 2)
+        {
+            _data->setU16At((_index * 354) + valueList[val].offset, data);
+        }
+        else
+        {
+            _data->setByteAt((_index * 354) + valueList[val].offset, data);
+        }
+    }
+    
+    return;
+}
 
 const char* XEEN::Character::getName() const
 {
@@ -133,24 +164,6 @@ XEEN::Statistic XEEN::Character::getStat(Stat stat) const
     }
 
     return Statistic(0, 0);
-}
-
-XEEN::Sex XEEN::Character::getSex() const
-{
-    XEEN_VALID();    
-    return (Sex)_data->getByteAt((_index * 354) + OFF_SEX);
-}
-
-XEEN::Class XEEN::Character::getClass() const
-{
-    XEEN_VALID();    
-    return (Class)_data->getByteAt((_index * 354) + OFF_CLASS);
-}
-
-XEEN::Race XEEN::Character::getRace() const
-{
-    XEEN_VALID();
-    return (Race)_data->getByteAt((_index * 354) + OFF_RACE);
 }
 
 bool XEEN::Character::hasSpell(uint32 id) const

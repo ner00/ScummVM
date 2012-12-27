@@ -97,10 +97,9 @@ namespace XEEN
                 
             }
 
-            uint8 getByteAt(uint32 off) const
-            {
-                return parent->_data->getByteAt(offset + off);
-            }
+            uint8  getByteAt(uint32 off) const { return parent->_data->getByteAt(offset + off); }
+            uint16 getU16At(uint32 off) const { return parent->_data->getU16At(offset + off); }
+            uint32 getU32At(uint32 off) const { return parent->_data->getU32At(offset + off); }
 
             void runFrom(uint32 fromLine)
             {
