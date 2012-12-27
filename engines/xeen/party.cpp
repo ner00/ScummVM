@@ -169,13 +169,13 @@ void XEEN::Party::setGameFlag(LessThan<uint32, 256> id, bool set)
 
 // Manage Members
 
-XEEN::Character* XEEN::Party::getMember(uint16 id)
+XEEN::Character* XEEN::Party::getMember(uint16 id) const
 {
     XEEN_VALID();
     return (enforce(id < MAX_CHARACTERS)) ? _characters[id] : 0;
 }
 
-XEEN::Character* XEEN::Party::getMemberInSlot(unsigned slot)
+XEEN::Character* XEEN::Party::getMemberInSlot(unsigned slot) const
 {
     XEEN_VALID();
     return getMember(getMemberIdFromSlot(slot));
@@ -227,6 +227,29 @@ void XEEN::Party::exchangeMember(unsigned slot1, unsigned slot2)
             _members[slot2] = t;
         }
     }*/
+}
+
+bool XEEN::Party::hasSkill(uint32 skill) const
+{
+    XEEN_VALID();
+
+    if(enforce(skill < Character::MAX_SKILL))
+    {
+        const uint32 partyCount = getValue(PARTY_COUNT);
+        uint32 count = 0;
+    
+        for(uint32 i = 0; i != partyCount; i ++)
+        {
+            count += getMemberInSlot(i)->hasSkill(skill) ? 1 : 0;
+        }
+
+        // NOTE: Path finder and Mountaineer require two members to work, a one person party
+        // cannot use the skills.
+        static const uint8 counts[] = {1, 1, 1, 1, 1, 0, 1, 1, 1, 2, 1, 2, 1, 1, 0, 1, 1, 1, 1};    
+        return (counts[skill] == 0) ? count == partyCount : count >= counts[skill];
+    }
+
+    return false;
 }
 
 XEEN::Valid<XEEN::Maze::Map> XEEN::Party::getMap() const

@@ -65,13 +65,15 @@ namespace XEEN
             void setGameFlag(LessThan<uint32, 256> id, bool set);
 
             // Manage members
-            Character* getMember(uint16 id);
-            Character* getMemberInSlot(unsigned slot);            
+            Character* getMember(uint16 id) const;
+            Character* getMemberInSlot(unsigned slot) const;
             
             void addMember(uint16 id);
             void removeMember(unsigned slot);
             void exchangeMember(unsigned slot1, unsigned slot2);
             
+            bool hasSkill(uint32 skill) const;
+
             // Manager Maze
             Valid<Maze::Map> getMap() const;
 

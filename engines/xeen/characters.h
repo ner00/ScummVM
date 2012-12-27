@@ -61,6 +61,9 @@ namespace XEEN
             enum Sex   { MALE, FEMALE, MAX_SEX };
             enum Race  { HUMAN, ELF, DWARF, GNOME, HALFORC, MAX_RACE };
             enum Class { KNIGHT, PALADIN, ARCHER, CLERIC, SORCERER, ROBBER, NINJA, BARBARIAN, DRUID, RANGER, MAX_CLASS };
+            enum Skill { THIEVERY, ARMSMASTER, ASTROLOGER, BODYBUILDER, CARTOGRAPER, CRUSADER, DIRSENSE, LINGUIST,
+                         MERCHANT, MOUNTAINEER, NAVIGATOR, PATHFINDER, PRAYERMASTER, PRESTIDIGITATOR, SWIMMER,
+                         TRACKER, SPOTSECRETDOORS, DANGERSENSE, MAX_SKILL };
 
             static const char* const sexNames[];
             static const char* const raceNames[];
@@ -76,6 +79,9 @@ namespace XEEN
         
             const char* getName() const;
 
+            uint8 hasSkill(uint32 skill) const;
+            void setSkill(uint32 skill, bool state);
+
             Statistic getStat(Stat stat) const;
         
             bool hasSpell(uint32 id) const;
@@ -90,6 +96,7 @@ namespace XEEN
             const char* getSexName() const { const uint32 sex = getValue(SEX); return (enforce(sex < MAX_SEX)) ? sexNames[sex] : "BAD SEX"; }
             const char* getRaceName() const { const uint32 race = getValue(RACE); return (enforce(race < MAX_RACE)) ? raceNames[race] : "BAD RACE"; }
             const char* getClassName() const { const uint32 clazz = getValue(CLASS); return (enforce(clazz < MAX_CLASS)) ? classNames[clazz] : "BAD CLASS"; }
+            uint32 getSkillCount() const;
 
 
         public:

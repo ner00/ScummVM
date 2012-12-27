@@ -30,6 +30,7 @@ static const int OFF_SIDE       = 0x012;
 static const int OFF_CLASS      = 0x013;
 static const int OFF_STATS      = 0x014;
 static const int OFF_LEVEL      = 0x023;
+static const int OFF_SKILLS     = 0x027;
 static const int OFF_SPELLS     = 0x079;
 static const int OFF_RESIST     = 0x137;
 static const int OFF_HP         = 0x156;
@@ -137,6 +138,22 @@ const char* XEEN::Character::getName() const
     return (const char*)_data->getBytePtrAt((_index * 354));
 }
 
+uint8 XEEN::Character::hasSkill(uint32 skill) const
+{
+    XEEN_VALID();
+    return (enforce(skill < MAX_SKILL)) ? _data->getByteAt(_index * 354 + OFF_SKILLS + skill) : 0;
+}
+
+void XEEN::Character::setSkill(uint32 skill, bool state)
+{
+    XEEN_VALID();
+    
+    if(enforce(skill < MAX_SKILL))
+    {
+        _data->setByteAt(_index * 354 + OFF_SKILLS + skill, state ? 1 : 0);
+    }
+}
+
 XEEN::Statistic XEEN::Character::getStat(Stat stat) const
 {
     XEEN_VALID();
@@ -178,4 +195,16 @@ const char* XEEN::Character::getSpellName(uint32 id)
     return (id < MAX_SPELLS) ? spellNames[divineSpells[id]] : "None Ready";
 }
 
+uint32 XEEN::Character::getSkillCount() const
+{
+    const byte* skills = _data->getPtrAt<byte>(_index * 354 + OFF_SKILLS);
+    uint32 result = 0;
+
+    for(int i = 0; i != MAX_SKILL; i ++)
+    {
+        result += skills[i] ? 1 : 0;
+    }
+
+    return result;
+}
 

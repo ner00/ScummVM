@@ -276,7 +276,8 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
             case 0x05: result = comparer(c->getValue(Character::CLASS), state.getByteAt(7)); break;
             case 0x08: result = comparer(c->getValue(Character::HP), state.getByteAt(7)); break;
             case 0x09: result = comparer(c->getValue(Character::SP), state.getByteAt(7)); break;
-            case 0x0B: result = comparer(c->getStat(LEVEL).getTemp(), state.getByteAt(7));
+            case 0x0B: result = comparer(c->getStat(LEVEL).getTemp(), state.getByteAt(7)); break;
+            case 0x0D: result = c->hasSkill(state.getByteAt(7)); break;
             case 0x14: result = p->getGameFlag(state.getByteAt(7)); break;
 
             case 0x22: result = comparer(p->getValue(Party::GOLD), state.getByteAt(7)); break; //TODO: Size?
@@ -320,7 +321,7 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
                 break;
             }
 
-
+            case 0x63: result = p->hasSkill(state.getByteAt(7)); break;
 /*          
             case 0x0A: debug("AC"); break;
             case 0x0C: debug("AGE"); break;
@@ -444,8 +445,6 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
     };
 
     const uint32 take = state.getByteAt(6);
-    const uint32 giveOffset = 7 + ((take < 0x70) ? valSize[take] : 1);
-    const uint32 give = state.getByteAt(giveOffset);
 
     Valid<Game> g = _parent->getGame();
     Character* const c = g->getActiveCharacter();
@@ -454,10 +453,11 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
     switch(take)
     {
         case 0x00: break;
-        case 0x08: c->modifyValie<Subtract>(Character::HP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
-        case 0x09: c->modifyValie<Subtract>(Character::SP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x08: c->modifyValue<Subtract>(Character::HP, state.getByteAt(7)); break; // TODO: Size
+        case 0x09: c->modifyValue<Subtract>(Character::SP, state.getByteAt(7)); break; // TODO: Size
+        case 0x0D: c->setSkill(state.getByteAt(7), false); break;
         case 0x10: c->modifyValue<Subtract>(Character::EXPERIENCE, state.getU32At(7)); break;
-        case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), false); break;
+        case 0x14: p->setGameFlag(state.getByteAt(7), false); break;
 
         case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
         {
@@ -490,11 +490,15 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
         default: debug("Unknown Take ID: %02X", take); break;
     }
 
+    const uint32 giveOffset = 7 + ((take < 0x70) ? valSize[take] : 1);
+    const uint32 give = state.getByteAt(giveOffset);
+
     switch(give)
     {
         case 0x00: break;
-        case 0x08: c->modifyValie<Add>(Character::HP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
-        case 0x09: c->modifyValie<Add>(Character::SP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x08: c->modifyValue<Add>(Character::HP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x09: c->modifyValue<Add>(Character::SP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x0D: c->setSkill(state.getByteAt(giveOffset + 1), true); break;
         case 0x10: c->modifyValue<Add>(Character::EXPERIENCE, state.getU32At(giveOffset + 1)); break;
         case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), true); break;
 

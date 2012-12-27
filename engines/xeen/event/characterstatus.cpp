@@ -116,7 +116,7 @@ namespace XEEN
                         case 10: fillStringBuffer("DANG"); break;
                         case 11: fillStringBuffer("DANG"); break;
             
-                        case 15: fillStringBuffer("DANG"); break;
+                        case 15: fillStringBuffer("%d", character->getSkillCount()); break;
             
                         case  8: fillStringBuffer("%d", party->getValue(Party::GOLD)); break;
                         case 12: fillStringBuffer("%d", party->getValue(Party::GEMS)); break;
