@@ -31,6 +31,7 @@ static const int OFF_CLASS      = 0x013;
 static const int OFF_STATS      = 0x014;
 static const int OFF_LEVEL      = 0x023;
 static const int OFF_SKILLS     = 0x027;
+static const int OFF_AWARDS     = 0x039;
 static const int OFF_SPELLS     = 0x079;
 static const int OFF_RESIST     = 0x137;
 static const int OFF_HP         = 0x156;
@@ -154,6 +155,27 @@ void XEEN::Character::setSkill(uint32 skill, bool state)
     }
 }
 
+uint8 XEEN::Character::hasAward(uint32 award) const
+{
+    // TODO: Darkside awards are stored in high nibble
+    return (enforce(award < MAX_AWARD)) ? _data->getByteAt(_index * 354 + OFF_AWARDS + award) & 0xF : 0;
+}
+
+void XEEN::Character::setAward(uint32 award, bool state)
+{
+    XEEN_VALID();
+
+    // TODO: Darkside awards are stored in high nibble
+    if(enforce(award < MAX_AWARD))
+    {
+        uint8 awardByte = _data->getByteAt(_index * 354 + OFF_AWARDS + award);
+        awardByte &= 0xF0;
+        awardByte |= state ? 1 : 0;
+        _data->setByteAt(_index * 354 + OFF_AWARDS + award, awardByte);
+    }
+}
+
+
 XEEN::Statistic XEEN::Character::getStat(Stat stat) const
 {
     XEEN_VALID();
@@ -208,3 +230,16 @@ uint32 XEEN::Character::getSkillCount() const
     return result;
 }
 
+uint32 XEEN::Character::getAwardCount() const
+{
+    const byte* awards = _data->getPtrAt<byte>(_index * 354 + OFF_AWARDS);
+    uint32 result = 0;
+
+    for(int i = 0; i != MAX_AWARD; i ++)
+    {
+        result += (awards[i] & 0xF) ? 1 : 0;
+        result += (awards[i] & 0xF0) ? 1 : 0;
+    }
+
+    return result;
+}

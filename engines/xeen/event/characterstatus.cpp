@@ -124,7 +124,7 @@ namespace XEEN
                         
             
                         case 18: fillStringBuffer("DANG"); break;
-                        case 19: fillStringBuffer("DANG"); break;
+                        case 19: fillStringBuffer("%d", character->getAwardCount()); break;
                         case 20: fillStringBuffer("DANG"); break;
                         
                         case 21:

@@ -64,6 +64,7 @@ namespace XEEN
             enum Skill { THIEVERY, ARMSMASTER, ASTROLOGER, BODYBUILDER, CARTOGRAPER, CRUSADER, DIRSENSE, LINGUIST,
                          MERCHANT, MOUNTAINEER, NAVIGATOR, PATHFINDER, PRAYERMASTER, PRESTIDIGITATOR, SWIMMER,
                          TRACKER, SPOTSECRETDOORS, DANGERSENSE, MAX_SKILL };
+            static const uint32 MAX_AWARD = 64;
 
             static const char* const sexNames[];
             static const char* const raceNames[];
@@ -82,6 +83,9 @@ namespace XEEN
             uint8 hasSkill(uint32 skill) const;
             void setSkill(uint32 skill, bool state);
 
+            uint8 hasAward(uint32 award) const;
+            void setAward(uint32 award, bool state);
+
             Statistic getStat(Stat stat) const;
         
             bool hasSpell(uint32 id) const;
@@ -97,6 +101,7 @@ namespace XEEN
             const char* getRaceName() const { const uint32 race = getValue(RACE); return (enforce(race < MAX_RACE)) ? raceNames[race] : "BAD RACE"; }
             const char* getClassName() const { const uint32 clazz = getValue(CLASS); return (enforce(clazz < MAX_CLASS)) ? classNames[clazz] : "BAD CLASS"; }
             uint32 getSkillCount() const;
+            uint32 getAwardCount() const;
 
 
         public:
