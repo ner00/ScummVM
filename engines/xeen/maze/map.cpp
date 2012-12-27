@@ -30,7 +30,6 @@
 #include "xeen/maze/map.h"
 #include "xeen/maze/eventlist_.h"
 #include "xeen/maze/segment_.h"
-#include "xeen/maze/objectdata_.h"
 #include "xeen/maze/monsterdata_.h"
 
 namespace XEEN
@@ -563,8 +562,6 @@ void XEEN::Maze::Map::processSurface(const Common::Point& pos, Direction dir, bo
 void XEEN::Maze::Map::processObjects(const Common::Point& pos, Direction dir, DrawListItem** index)
 {
     // OBJECTS
-    const ObjectData* const od = _parent->getObjectData();
-
     static const struct {uint32 id; int32 xOff; int32 yOff; } objOffsets[12] =
     {
         {OBJ_HERE, 0, 0}, {OBJ_1_1L, -1, 1}, {OBJ_1_CEN, 0, 1}, {OBJ_1_1R, 1, 1},
@@ -578,17 +575,11 @@ void XEEN::Maze::Map::processObjects(const Common::Point& pos, Direction dir, Dr
         if(getObjectAt(dir.move(pos, objOffsets[i].xOff, objOffsets[i].yOff), t))
         {
             index[objOffsets[i].id]->sprite = CCFileId("%03d.%sBJ", t.id, (t.id < 100) ? "O" : "0");
-            const uint8* const data = od->getDataForObject(t.id);
 
-            Direction facing = dir - t.dir;
-
-            if(data)
-            {
-                index[objOffsets[i].id]->frame = data[facing];
-                index[objOffsets[i].id]->count = (data[8 + facing] - data[facing]) + 1;
-                index[objOffsets[i].id]->flags &= ~0x8000;
-                index[objOffsets[i].id]->flags |= data[4 + facing] ? 0x8000 : 0;
-            }
+            Manager::ObjectData data = _parent->getObjectData(t.id, dir - t.dir);
+            index[objOffsets[i].id]->frame = data.start;
+            index[objOffsets[i].id]->setFlipped(data.flipped);
+            index[objOffsets[i].id]->count = data.end - data.start + 1;
         }
         else
         {

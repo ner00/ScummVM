@@ -27,7 +27,6 @@
 #include "xeen/maze/map.h"
 #include "xeen/maze/manager.h"
 #include "xeen/maze/segment_.h"
-#include "xeen/maze/objectdata_.h"
 #include "xeen/maze/monsterdata_.h"
 
 XEEN::Maze::Manager::Manager(Valid<Game> parent) : GameHolder(parent)
@@ -35,7 +34,30 @@ XEEN::Maze::Manager::Manager(Valid<Game> parent) : GameHolder(parent)
     memset(_maps, 0, sizeof(_maps));
     memset(_segments, 0, sizeof(_segments));
 
-    _objectData = new ObjectData(this);
+    const Game::Type gt = getGame()->getGameType();
+
+    memset(_objectData, 0, sizeof(_objectData));
+
+    if(gt == Game::CLOUDS)
+    {
+        Common::File cloudsdat;
+        if(cloudsdat.open("CLOUDS.DAT") && cloudsdat.size() == sizeof(_objectData))
+        {
+            cloudsdat.read(&_objectData, sizeof(_objectData));
+        }
+        else
+        {
+            markInvalid("CLOUDS.DAT not found or mis-sized.");
+            return;
+        }
+    }
+    else
+    {
+        markInvalid("Unrecognized game type.");
+        return;
+    }
+
+
     _monsterData = new MonsterData(this);
 }
 
@@ -47,7 +69,6 @@ XEEN::Maze::Manager::~Manager()
         delete _segments[i];
     }
 
-    delete _objectData;
     delete _monsterData;
 }
 
@@ -72,4 +93,22 @@ XEEN::Maze::Segment* XEEN::Maze::Manager::getSegment(uint16 id)
     }
     
     return _segments[id];
+}
+
+XEEN::Maze::Manager::ObjectData XEEN::Maze::Manager::getObjectData(uint32 id, Direction dir) const
+{
+    XEEN_VALID();
+
+    if(id < MAX_OBJECTS)
+    {
+        const uint32 target = id * 12 + dir;
+        const ObjectData result = {_objectData[target], _objectData[target + 4], _objectData[target + 8]};
+        return result;
+    }
+    else
+    {
+        static const ObjectData result = {0, 0, 0};
+        debug("Object ID out of range (%d)", id);
+        return result;
+    }
 }

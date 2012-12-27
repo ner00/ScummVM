@@ -15,7 +15,6 @@ MODULE_OBJS := \
     maze/map.o \
     maze/manager.o \
     maze/objects.o \
-    maze/objectdata.o \
     maze/monsterdata.o \
     maze/segment.o \
     maze/npc.o \

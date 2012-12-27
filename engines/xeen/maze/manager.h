@@ -33,13 +33,22 @@ namespace XEEN
     {
         class Map;
         class Segment;
-        class ObjectData;
         class MonsterData;
 
         class Manager : public Validateable, public GameHolder, public Common::NonCopyable
         {
             friend class XEEN::Game;
         
+            public:
+                static const uint32 MAX_OBJECTS = 121;
+                static const uint32 OBJECT_RECORD_SIZE = 12;
+                struct ObjectData
+                {
+                    uint8 start;
+                    uint8 flipped;
+                    uint8 end;
+                };
+
             private:
                 Manager(Valid<Game> parent);
                 ~Manager();
@@ -48,14 +57,15 @@ namespace XEEN
                 Map* getMap(uint16 id);
                 Segment* getSegment(uint16 id);
 
-                const ObjectData* getObjectData() const { return _objectData; }
+                ObjectData getObjectData(uint32 id, Direction dir) const;
                 const MonsterData* getMonsterData() const { return _monsterData; }
                 
             private:
                 Map* _maps[256]; // TODO: <Use a hash table!
                 Segment* _segments[256];
 
-                ObjectData* _objectData;
+                uint8 _objectData[MAX_OBJECTS * OBJECT_RECORD_SIZE];
+
                 MonsterData* _monsterData;
         };
     }
