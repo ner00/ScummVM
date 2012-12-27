@@ -36,32 +36,20 @@ namespace XEEN
         class Manager;
         class ImageBuffer;
     
-        class Sprite : public Validateable_Cleanable, public Common::NonCopyable
+        class Sprite : public Validateable, public Common::NonCopyable
         {
             friend class Manager;
         
             private:
                 Sprite(FilePtr file);
-                ~Sprite();
-    
-            protected:
-                void cleanse();
                 
             private:
                 void drawCell(NonNull<ImageBuffer> out, const Common::Point& pen, uint16 frame, bool flip = false, uint32 scale = 0);
-                void drawFrame(NonNull<ImageBuffer> out, int32 x, int32 y, bool flip, uint32 scale);
+                void drawFrame(NonNull<ImageBuffer> out, uint32 offset, int32 x, int32 y, bool flip, uint32 scale);
                 uint32 drawLine(NonNull<uint8> out);
                 
             private:
                 FilePtr _file;
-    
-                struct Cell
-                {
-                    uint16 offset[2];
-                };
-                
-                uint32 _cellCount;
-                Cell* _cells;
         };
     }
 }

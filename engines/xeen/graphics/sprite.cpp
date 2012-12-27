@@ -26,119 +26,89 @@
 #include "xeen/graphics/imagebuffer_.h"
 #include "xeen/graphics/sprite_.h"
 
-XEEN::Graphics::Sprite::Sprite(FilePtr file) : _file(file), _cellCount(0), _cells(0)
+XEEN::Graphics::Sprite::Sprite(FilePtr file) : _file(file)
 {
-    if(_file)
+    if(!(valid(_file) && _file->getSize() >= 2))
     {
-        _cellCount = _file->readUint16LE();
-        
-        if(_cellCount)
-        {
-            _cells = new Cell[_cellCount];
-            
-            if(enforce(_cells))
-            {  
-                for(unsigned i = 0; i != _cellCount; i ++)
-                {
-                    _cells[i].offset[0] = _file->readUint16LE();
-                    _cells[i].offset[1] = _file->readUint16LE();
-                }
-                
-                return;
-            }
-        }
+        markInvalid("Sprite file not found or invalid"); // TODO: Details
     }
-
-    markInvalidAndClean("Sprite file not found."); // TODO: Print name
-}
-
-XEEN::Graphics::Sprite::~Sprite()
-{
-    cleanse();
-}
-
-void XEEN::Graphics::Sprite::cleanse()
-{
-    XEEN_DELETE_ARRAY(_cells);
-    _cellCount = 0;
 }
 
 void XEEN::Graphics::Sprite::drawCell(NonNull<ImageBuffer> out, const Common::Point& pen, uint16 frame, bool flip, uint32 scale)
 {
     XEEN_VALID();
 
-    if(enforce(frame < _cellCount))
-    {
-        const Cell& cell = _cells[frame];
+    const uint16 cellCount = _file->getU16At(0);
 
-        for(int i = 0; i != 2; i ++)
-        {
-            if(cell.offset[i])
-            {
-                _file->seek(cell.offset[i]);
-                drawFrame(out, pen.x, pen.y, flip, scale);
-            }
-        }
+    if(enforce(frame < cellCount))
+    {
+        drawFrame(out, _file->getU16At(2 + (4 * frame) + 0), pen.x, pen.y, flip, scale);
+        drawFrame(out, _file->getU16At(2 + (4 * frame) + 2), pen.x, pen.y, flip, scale);
     }
 }
 
-void XEEN::Graphics::Sprite::drawFrame(NonNull<ImageBuffer> out, int32 x, int32 y, bool flip, uint32 scale)
+void XEEN::Graphics::Sprite::drawFrame(NonNull<ImageBuffer> out, uint32 offset, int32 x, int32 y, bool flip, uint32 scale)
 {
     XEEN_VALID();
 
-    // Read the frame header
-    const int16 penX = _file->readSint16LE();
-    const uint16 frameWidth = _file->readUint16LE();
-    const int16 penY = _file->readSint16LE();
-    const uint16 frameHeight = _file->readUint16LE();
-
-    if(scale == 0x8000) // Double size
+    if(offset && offset < _file->getSize())
     {
-        y += penY * 2;
+        _file->seek(offset);
 
-        for(uint32 onLine = 0; onLine != frameHeight; )
-        {
-            byte line[320];
-            const uint32 linesDrawn = drawLine(line);
-
-            out->drawLine<0>(x, y + onLine * 2, penX + frameWidth, line, 0x8000, flip);
-            out->drawLine<0>(x, y + onLine * 2 + 1, penX + frameWidth, line, 0x8000, flip);
-
-            onLine += linesDrawn;
-            assert((linesDrawn > 0) && (onLine <= frameHeight)); // < Sanity
-        }
-    }
-    else
-    {
-        const uint32 scaledWidth = out->scaleSize(penX + frameWidth, scale);
+        // Read the frame header
+        const int16 penX = _file->readSint16LE();
+        const uint16 frameWidth = _file->readUint16LE();
+        const int16 penY = _file->readSint16LE();
+        const uint16 frameHeight = _file->readUint16LE();
     
-        uint32 yoff = 0;
-        for(int16 i = 0; i != penY; i ++)
+        if(scale == 0x8000) // Double size
         {
-            yoff += (out->checkScale(i, scale)) ? 1 : 0;
-        }
+            y += penY * 2;
     
-        // Draw the lines
-        for(uint32 onLine = 0; onLine != frameHeight; )
-        {
-            uint8 line[320];
-            const uint32 linesDrawn = drawLine(line);
-    
-            if(out->checkScale(penY + onLine, scale))
+            for(uint32 onLine = 0; onLine != frameHeight; )
             {
-                out->drawLine<0>(x + (penX + frameWidth - scaledWidth) / 2, y + yoff, penX + frameWidth, line, scale, flip);
-            }
+                byte line[320];
+                const uint32 linesDrawn = drawLine(line);
     
-            for(uint32 i = 0; i != linesDrawn; i ++)
+                out->drawLine<0>(x, y + onLine * 2, penX + frameWidth, line, 0x8000, flip);
+                out->drawLine<0>(x, y + onLine * 2 + 1, penX + frameWidth, line, 0x8000, flip);
+    
+                onLine += linesDrawn;
+                assert((linesDrawn > 0) && (onLine <= frameHeight)); // < Sanity
+            }
+        }
+        else
+        {
+            const uint32 scaledWidth = out->scaleSize(penX + frameWidth, scale);
+        
+            uint32 yoff = 0;
+            for(int16 i = 0; i != penY; i ++)
             {
-                yoff += (out->checkScale(penY + onLine + i, scale)) ? 1 : 0;
+                yoff += (out->checkScale(i, scale)) ? 1 : 0;
             }
-    
-            onLine += linesDrawn;
-    
-            // Check sanity: At least one line must have been drawn, and No more than 
-            // frameHeight lines may have been drawn.
-            assert((linesDrawn > 0) && (onLine <= frameHeight));
+        
+            // Draw the lines
+            for(uint32 onLine = 0; onLine != frameHeight; )
+            {
+                uint8 line[320];
+                const uint32 linesDrawn = drawLine(line);
+        
+                if(out->checkScale(penY + onLine, scale))
+                {
+                    out->drawLine<0>(x + (penX + frameWidth - scaledWidth) / 2, y + yoff, penX + frameWidth, line, scale, flip);
+                }
+        
+                for(uint32 i = 0; i != linesDrawn; i ++)
+                {
+                    yoff += (out->checkScale(penY + onLine + i, scale)) ? 1 : 0;
+                }
+        
+                onLine += linesDrawn;
+        
+                // Check sanity: At least one line must have been drawn, and No more than 
+                // frameHeight lines may have been drawn.
+                assert((linesDrawn > 0) && (onLine <= frameHeight));
+            }
         }
     }
 }

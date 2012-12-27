@@ -44,18 +44,18 @@ namespace XEEN
                 static const uint32 HEIGHT = 200;
 
             public:
-                ImageBuffer() : _pen(0, 0), _penOffset(1, 0), _clip(0, 0, WIDTH, HEIGHT)
+                ImageBuffer() : _pen(0, 0), _clip(0, 0, WIDTH, HEIGHT)
                 {
                 
                 }
 
-                bool checkScale(uint32 offset, uint32 scale)
+                bool checkScale(uint32 offset, uint32 scale) const
                 {
                     const uint16 val = scaleTable[scale & 0xF];
                     return (val << (offset & 0xF)) & 0x8000;
                 }
 
-                uint32 scaleSize(uint32 size, uint32 scale)
+                uint32 scaleSize(uint32 size, uint32 scale) const
                 {
                     uint32 result = 0;
                     for(uint32 i = 0; i != size; i ++)
@@ -68,7 +68,6 @@ namespace XEEN
                 void reset()
                 {
                     _pen = Common::Point(0, 0);
-                    _penOffset = Common::Point(1, 0);
                     _clip = Common::Rect(0, 0, WIDTH, HEIGHT);
                 }
                 
@@ -108,87 +107,47 @@ namespace XEEN
                 template <uint8 KEY>
                 void drawLine(int32 x, int32 y, uint32 width, const uint8* pixels, uint32 scale, bool flip)
                 {
+                    const int32 offset = flip ? -1 : 1;
+
                     if(_clip.contains(_clip.left, y))
                     {
                         if(scale & 0x8000) // Double Size
                         {
-                            if(!flip)
+                            x += flip ? width * 2 : 0;
+
+                            for(uint32 i = 0; i != width; i ++)
                             {
-                                for(uint32 i = 0; i != width && x < _clip.right; i ++)
+                                const uint8 pixel = pixels[i];
+                                if(pixel != KEY && _clip.contains(Common::Point(x, y)))
                                 {
-                                    const uint8 pixel = pixels[i];
-                                    if(pixel != KEY && x >= _clip.left)
-                                    {
-                                        buffer[y * WIDTH + x] = pixel;
-                                    }
-
-                                    x ++;
-
-                                    if(pixel != KEY && x >= _clip.left && x < _clip.right)
-                                    {
-                                        buffer[y * WIDTH + x] = pixel;
-                                    }
-
-                                    x ++;
+                                    buffer[y * WIDTH + x] = pixel;
                                 }
-                            }
-                            else
-                            {
-                                x += width * 2;
 
-                                for(uint32 i = 0; i != width && x >= _clip.left; i ++)
+                                x += offset;
+
+                                if(pixel != KEY && _clip.contains(Common::Point(x, y)))
                                 {
-                                    const uint8 pixel = pixels[i];
-                                    if(pixel != KEY && x < _clip.right)
-                                    {
-                                        buffer[y * WIDTH + x] = pixel;
-                                    }
-
-                                    x --;
-
-                                    if(pixel != KEY && x < _clip.right && x >= _clip.left)
-                                    {
-                                        buffer[y * WIDTH + x] = pixel;
-                                    }
-
-                                    x --;
+                                    buffer[y * WIDTH + x] = pixel;
                                 }
+
+                                x += offset;
                             }
                         }
                         else
                         {
-                            if(!flip)
+                            x += flip ? scaleSize(width, scale) : 0;
+
+                            for(uint32 i = 0; i != width; i ++)
                             {
-                                for(uint32 i = 0; i != width && x < _clip.right; i ++)
+                                if(checkScale(i, scale))
                                 {
-                                    if(checkScale(i, scale))
+                                    const uint8 pixel = pixels[i];
+                                    if(pixel != KEY && _clip.contains(Common::Point(x, y)))
                                     {
-                                        const uint8 pixel = pixels[i];
-                                        if(pixel != KEY && x >= _clip.left)
-                                        {
-                                            buffer[y * WIDTH + x] = pixel;
-                                        }
-        
-                                        x ++;
+                                        buffer[y * WIDTH + x] = pixel;
                                     }
-                                }
-                            }
-                            else
-                            {
-                                x += scaleSize(width, scale);
     
-                                for(uint32 i = 0; i != width && x >= _clip.left; i ++)
-                                {
-                                    if(checkScale(i, scale))
-                                    {
-                                        const uint8 pixel = pixels[i];
-                                        if(pixel != KEY && x < _clip.right)
-                                        {
-                                            buffer[y * WIDTH + x] = pixel;
-                                        }
-        
-                                        x --;
-                                    }
+                                    x += offset;
                                 }
                             }
                         }
@@ -200,8 +159,6 @@ namespace XEEN
                 
             private:
                 Common::Point _pen;
-                Common::Point _penOffset;
-                
                 Common::Rect _clip;
         };
     }
