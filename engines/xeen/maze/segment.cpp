@@ -39,7 +39,7 @@ XEEN::Maze::Segment::Segment(Valid<Manager> parent, FilePtr data) : _parent(pare
 {
     memset(_surrMazes, 0, sizeof(_surrMazes));
 
-    if(!_data)
+    if(!valid(_data))
     {
         _data.reset();
         markInvalid("MAZE file not found"); // TODO: Print name
@@ -53,10 +53,7 @@ void XEEN::Maze::Segment::loadSurrounding()
     for(int i = 0; i != 4; i ++)
     {
         const uint16 segID = _data->getU16At(OFF_SURR_MAZES + i * 2);
-        if(segID)
-        {
-            _surrMazes[i] = _parent->getSegment(segID);
-        }
+        _surrMazes[i] = segID ? _parent->getSegment(segID) : 0;
     }
 }
 

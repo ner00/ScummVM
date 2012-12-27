@@ -89,7 +89,11 @@ XEEN::Maze::Segment* XEEN::Maze::Manager::getSegment(uint16 id)
         CCFileId mapID("MAZE%s%03d.DAT", (id < 100) ? "0" : "X", id);
 
         _segments[id] = new Segment(this, getGame()->getFile(mapID, true));
-        _segments[id]->loadSurrounding(); //< Can't be done is Segment's constructor
+
+        if(valid(_segments[id]))
+        {
+            _segments[id]->loadSurrounding(); //< Can't be done is Segment's constructor
+        }
     }
     
     return _segments[id];

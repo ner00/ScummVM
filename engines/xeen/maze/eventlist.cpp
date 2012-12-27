@@ -34,7 +34,7 @@
 
 XEEN::Maze::EventList::EventList(Valid<Map> parent, FilePtr data) : _parent(parent), _data(data)
 {
-    if(_data)
+    if(valid(_data))
     {
         while(!_data->eos())
         {

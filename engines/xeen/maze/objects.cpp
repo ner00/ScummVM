@@ -32,7 +32,7 @@ XEEN::Maze::Objects::Objects(FilePtr data) : _data(data)
     memset(_offsets, 0xFF, sizeof(_offsets));
     memset(_counts, 0, sizeof(_counts));
     
-    if(_data)
+    if(valid(_data))
     {
         unsigned onList = 0;
         int32 dataPos = 48;
