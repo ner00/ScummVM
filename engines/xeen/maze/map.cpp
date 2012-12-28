@@ -59,7 +59,7 @@ XEEN::Maze::Map::Map(Valid<Manager> parent, uint16 mapNumber) : GameHolder(paren
         }
 
         // Get wall type
-        static const char* const types[6] = {"TOWN", "CAVE", "TOWN", "CSTL", "TOWN", "TOWN"};
+        static const char* const types[6] = {"TOWN", "CAVE", "TOWR", "CSTL", "DUNG", "SCIFI"};
         const uint32 wallType = _base->getValue(Segment::WALLTYPE);
 
         if(wallType < 6)
@@ -230,15 +230,13 @@ uint16 XEEN::Maze::Map::getSurface(const Common::Point& pos) const
 {
     XEEN_VALID();
 
-    const uint32 flags = getFlags(pos);
-
     if(_base->getMapFlags() & Segment::MAP_OUTDOORS)
     {
-        const uint32 result = _base->lookupSurface(getTile(pos, 0) & 0xF);
-        return ((result == 0) && (flags & Segment::WATER)) ? 8 : result;
+        return _base->lookupSurface(getTile(pos, 0) & 0xF);
     }
     else
     {
+        const uint32 flags = getFlags(pos);
         return _base->lookupSurface(flags & 7);
     }
 }
@@ -282,8 +280,7 @@ void XEEN::Maze::Map::fillDrawStruct(const Common::Point& pos, Direction dir)
         outdoorDrawIndex[SKY_TOP]->setFlipped(!dir.isAlongX());
         outdoorDrawIndex[SKY_BOTTOM]->setFlipped(!dir.isAlongX());
     
-        outdoorDrawIndex[GROUND]->sprite = CCFileId("OUTDOOR.GND");
-        outdoorDrawIndex[GROUND]->setFlipped(facingFlip);
+        outdoorDrawIndex[GROUND]->sprite = 0xFFFF;
     
         processSurface(pos, dir, facingFlip, outdoorDrawIndex);
         processObjects(pos, dir, outdoorDrawIndex);
@@ -295,7 +292,7 @@ void XEEN::Maze::Map::fillDrawStruct(const Common::Point& pos, Direction dir)
             CCFileId("MOUNT.WAL"), 
             CCFileId("LTREE.WAL"),
             CCFileId("DTREE.WAL"), 
-            0xFFFF,
+            CCFileId("GRASS.WAL"),
             CCFileId("SNOTREE.WAL"), //?
             CCFileId("DSNOTREE.WAL"),
             CCFileId("SNOMNT.WAL"),
@@ -528,8 +525,8 @@ void XEEN::Maze::Map::processSurface(const Common::Point& pos, Direction dir, bo
 {
     static const CCFileId surfaceMap[16] = 
     {
-        0xFFFF, "DIRT.SRF", "GRASS.SRF", "SNOW.SRF", "SWAMP.SRF", "LAVA.SRF", "DESERT.SRF", "ROAD.SRF",
-        "WATER.SRF", "TFLR.SRF", "SKY.SRF", "CROAD.SRF", "SEWER.SRF", "CLOUD.SRF", "SCORTCH.SRF", "SPACE.SRF"
+        "WATER.SRF", "DIRT.SRF", "GRASS.SRF", "SNOW.SRF", "SWAMP.SRF", "LAVA.SRF", "DESERT.SRF", "ROAD.SRF",
+        "DWATER.SRF", "TFLR.SRF", "SKY.SRF", "CROAD.SRF", "SEWER.SRF", "CLOUD.SRF", "SCORTCH.SRF", "SPACE.SRF"
     };
 
     // TODO: Check
@@ -544,6 +541,7 @@ void XEEN::Maze::Map::processSurface(const Common::Point& pos, Direction dir, bo
     static const int16 xoff7[7] = {-3, -2, -1, 3, 2, 1, 0};
     static const int16* const xoffsets[5] = {xoff7, xoff7, xoff5, xoff3, xoff3};
     static const uint32 linelength[5] = {7, 7, 5, 3, 3};
+    const bool outdoors = _base->getMapFlags() & Segment::MAP_OUTDOORS;
 
     int surfaceTile = SURF00;
     
@@ -551,8 +549,8 @@ void XEEN::Maze::Map::processSurface(const Common::Point& pos, Direction dir, bo
     {
         for(uint32 j = 0; j != linelength[i]; j ++, surfaceTile ++)
         {
-            Common::Point cell = dir.move(pos, xoffsets[i][j], 4 - i);
-            index[surfaceTile]->sprite = surfaceMap[getSurface(cell)];
+            const uint32 surface = getSurface(dir.move(pos, xoffsets[i][j], 4 - i));
+            index[surfaceTile]->sprite = (outdoors || surface) ? (uint16)surfaceMap[surface] : 0xFFFF;
             index[surfaceTile]->frame = flipTable[facingFlip][surfaceTile - SURF00];
             index[surfaceTile]->setFlipped(facingFlip);
         }
