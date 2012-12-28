@@ -36,7 +36,7 @@ namespace XEEN
         class Map;
     }
 
-    class Party : public Validateable, public Common::NonCopyable
+    class Party : public GameHolder, public Validateable, public Common::NonCopyable
     {
         friend class Game;
 
@@ -92,7 +92,6 @@ namespace XEEN
 
                 
         private:
-            Valid<Game> _parent;
             Character* _characters[MAX_CHARACTERS];
             
             FilePtr _mazePTY;

@@ -52,12 +52,12 @@ namespace XEEN
                 FIRE, ELEC, COLD, POISON, ENERGY, MAGIC, STAT_COUNT };
 
     // Stats for a single playable character
-    class Character : public Validateable, public Common::NonCopyable
+    class Character : public Validateable, public Common::NonCopyable, public GameHolder
     {
         friend class Party;
 
         public:
-            enum Value { HP, SP, SEX, CLASS, RACE, EXPERIENCE, VALUE_MAX };
+            enum Value { HP, SP, SEX, CLASS, RACE, EXPERIENCE, TEMPAGE, BIRTHDAY, BIRTHYEAR, VALUE_MAX };
             enum Sex   { MALE, FEMALE, MAX_SEX };
             enum Race  { HUMAN, ELF, DWARF, GNOME, HALFORC, MAX_RACE };
             enum Class { KNIGHT, PALADIN, ARCHER, CLERIC, SORCERER, ROBBER, NINJA, BARBARIAN, DRUID, RANGER, MAX_CLASS };
@@ -72,13 +72,14 @@ namespace XEEN
 
     
         private:
-            Character(FilePtr data, uint8 index, CCFileId faceSprite);
+            Character(Valid<Game> parent, FilePtr data, uint8 index, CCFileId faceSprite);
         
         public:
             uint32 getValue(Value val) const;
             void setValue(Value val, uint32 data);
         
             const char* getName() const;
+            uint32 getAge() const;
 
             uint8 hasSkill(uint32 skill) const;
             void setSkill(uint32 skill, bool state);

@@ -36,6 +36,7 @@ static const int OFF_MAZE_FACING        = 0x00A;
 static const int OFF_MAZE_X             = 0x00B;
 static const int OFF_MAZE_Y             = 0x00C;
 static const int OFF_MAZE_ID            = 0x00D;
+static const int OFF_STEPS              = 0x262; // TODO: Seems to increase by one every time you turn or step, resets at 0x18
 static const int OFF_DAY                = 0x264;
 static const int OFF_YEAR               = 0x266;
 static const int OFF_MINUTES            = 0x268;
@@ -77,10 +78,10 @@ static const struct
 
 
 
-XEEN::Party::Party(Valid<Game> parent) : _parent(parent)
+XEEN::Party::Party(Valid<Game> parent) : GameHolder(parent)
 {
-    _mazePTY = _parent->getFile("MAZE.PTY", true);
-    _mazeCHR = _parent->getFile("MAZE.CHR", true);
+    _mazePTY = getGame()->getFile("MAZE.PTY", true);
+    _mazeCHR = getGame()->getFile("MAZE.CHR", true);
 
     memset(_characters, 0, sizeof(_characters));
     
@@ -90,7 +91,7 @@ XEEN::Party::Party(Valid<Game> parent) : _parent(parent)
         for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
         {
             // TODO: Only accept a character that has a matching face image
-            _characters[i] = new Character(_mazeCHR, i, CCFileId("CHAR%02d.FAC", i + 1));
+            _characters[i] = new Character(getGame(), _mazeCHR, i, CCFileId("CHAR%02d.FAC", i + 1));
         }
     }
     else
@@ -276,7 +277,7 @@ XEEN::Valid<XEEN::Maze::Map> XEEN::Party::getMap() const
 {
     XEEN_VALID();
     
-    return _parent->getMapManager()->getMap(getValue(MAZE_ID));
+    return getGame()->getMapManager()->getMap(getValue(MAZE_ID));
 }
 
 void XEEN::Party::changeMap(uint8 id)

@@ -113,7 +113,7 @@ namespace XEEN
                         case  3: fillStringBuffer("%d", character->getValue(Character::HP)); break;
                         case  4: fillStringBuffer("%d", character->getValue(Character::EXPERIENCE)); break;
                         case  7: fillStringBuffer("%d", character->getValue(Character::SP)); break;
-                        case 10: fillStringBuffer("DANG"); break;
+                        case 10: fillStringBuffer("%d", character->getAge()); break;
                         case 11: fillStringBuffer("DANG"); break;
             
                         case 15: fillStringBuffer("%d", character->getSkillCount()); break;

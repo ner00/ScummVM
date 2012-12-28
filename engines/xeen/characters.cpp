@@ -20,6 +20,7 @@
  *
  */
 
+#include "xeen/game.h"
 #include "xeen/characters.h"
 #include "xeen/party.h"
 #include "xeen/utility.h"
@@ -30,12 +31,15 @@ static const int OFF_SIDE       = 0x012;
 static const int OFF_CLASS      = 0x013;
 static const int OFF_STATS      = 0x014;
 static const int OFF_LEVEL      = 0x023;
+static const int OFF_BIRTHDAY   = 0x025;
+static const int OFF_TEMPAGE    = 0x026;
 static const int OFF_SKILLS     = 0x027;
 static const int OFF_AWARDS     = 0x039;
 static const int OFF_SPELLS     = 0x079;
 static const int OFF_RESIST     = 0x137;
 static const int OFF_HP         = 0x156;
 static const int OFF_SP         = 0x158;
+static const int OFF_BIRTHYEAR  = 0x15A;
 static const int OFF_EXPERIENCE = 0x15C;
 
 static const struct
@@ -49,7 +53,10 @@ static const struct
     { OFF_SEX, 1 },
     { OFF_CLASS, 1 },
     { OFF_RACE, 1 },
-    { OFF_EXPERIENCE, 4 }
+    { OFF_EXPERIENCE, 4 },
+    { OFF_TEMPAGE, 1},
+    { OFF_BIRTHDAY, 1},
+    { OFF_BIRTHYEAR, 2}
 };
 
 
@@ -74,7 +81,7 @@ static const int divineSpells[MAX_SPELLS] = {0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 
 ///
 /// Character
 ///
-XEEN::Character::Character(FilePtr data, uint8 index, CCFileId faceSprite) : _data(data), _index(index), face(faceSprite)
+XEEN::Character::Character(Valid<Game> parent, FilePtr data, uint8 index, CCFileId faceSprite) : GameHolder(parent), _data(data), _index(index), face(faceSprite)
 {
     if(enforce(index < Party::MAX_CHARACTERS))
     {
@@ -138,6 +145,19 @@ const char* XEEN::Character::getName() const
     
     return (const char*)_data->getBytePtrAt((_index * 354));
 }
+
+uint32 XEEN::Character::getAge() const
+{
+    XEEN_VALID();
+
+    // TODO: This seems to update once a year and not account for birthday.
+
+    const uint32 birthYear = getValue(BIRTHYEAR);
+    const uint32 currentYear = getGame()->getParty()->getValue(Party::YEAR);
+
+    return (currentYear - birthYear);
+}
+
 
 uint8 XEEN::Character::hasSkill(uint32 skill) const
 {
