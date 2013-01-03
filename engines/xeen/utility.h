@@ -347,8 +347,105 @@ namespace XEEN
         uint16 _scale;
     };
 
-    struct CCFileData;
-    typedef Common::SharedPtr<CCFileData> CCFilePtr;
+    struct File : public Common::MemoryReadStream, public Validateable, public Common::NonCopyable
+    {
+        public:
+            File(CCFileId id, byte* data, uint32 datasize, bool wantDelete) : Common::MemoryReadStream(data, datasize), _id(id), _size(datasize), _data(data), _wantDelete(wantDelete) { }
+            ~File() { if(_wantDelete) delete[] _data; }
+            
+            uint32 getSize()                        { return _size; }
+            byte* getData()                         { return _data; }
+    
+            const CCFileId& getID( )                { return _id; }
+        
+            template<typename T>
+            T* getPtrAt(uint32 loc)                 { return (enforce(loc < _size)) ? (T*)&_data[loc] : 0; }
+
+            byte getByteAt(uint16 loc) const        { return (enforce(loc < _size)) ? _data[loc] : 0; }
+            void setByteAt(uint16 loc, byte val)    { if(enforce(loc < _size)) _data[loc] = val; }
+            int8 getI8At(uint16 loc) const          { return (enforce(loc < _size)) ? *(int8*)&_data[loc] : 0; }
+            byte* getBytePtrAt(uint16 loc) const    { return (enforce(loc < _size)) ? &_data[loc] : 0; }
+            uint16 getU16At(uint16 loc) const       { return getByteAt(loc) | (getByteAt(loc + 1) << 8); }
+            void setU16At(uint16 loc, uint16 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); }
+            uint32 getU32At(uint16 loc) const       { return getByteAt(loc) | (getByteAt(loc + 1) << 8) | (getByteAt(loc + 2) << 16) | (getByteAt(loc + 3) << 24); }
+            void setU32At(uint16 loc, uint32 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); setByteAt(loc + 2, (val >> 16) & 0xFF); setByteAt(loc + 3, (val >> 24) & 0xFF); }
+    
+        private:
+            CCFileId _id;
+    
+            uint32 _size;
+            byte* _data;
+            bool _wantDelete;
+    };
+
+    typedef Common::SharedPtr<File> FilePtr;
+
+    class ValueManager
+    {
+        public:
+            struct ValueInfo { uint32 offset; uint32 size; bool isSigned; };
+
+        public:
+            ValueManager(FilePtr file, NonNull<const ValueInfo> values, uint32 valueCount, uint32 valueBase) : 
+                _file(file), _values(values), _valueCount(valueCount), _valueBase(valueBase) { }
+
+            template <typename T>
+            T getValue(uint32 index) const
+            {
+                if(enforce(index < _valueCount))
+                {
+                    if(_values[index].size == 4)
+                    {
+                        return _file->getU32At(_valueBase + _values[index].offset);
+                    }
+                    else if(_values[index].size == 2)
+                    {
+                        return _file->getU16At(_valueBase + _values[index].offset);
+                    }
+                    else
+                    {
+                        return _file->getByteAt(_valueBase + _values[index].offset);
+                    }
+                }
+                
+                return 0;
+            }
+
+            template <typename T>
+            void setValue(uint32 index, T data)
+            {
+                if(enforce(index < _valueCount))
+                {
+                    if(_values[index].size == 4)
+                    {
+                        _file->setU32At(_valueBase + _values[index].offset, data);
+                    }
+                    else if(_values[index].size == 2)
+                    {
+                        _file->setU16At(_valueBase + _values[index].offset, data);
+                    }
+                    else
+                    {
+                        _file->setByteAt(_valueBase + _values[index].offset, data);
+                    }
+                }
+            }
+
+            template <typename T, typename F>
+            void modifyValue(uint32 index, T data)
+            {
+                F modify;
+                setValue<T>(index, modify(getValue<T>(index), data));
+            }
+
+
+        private:
+            FilePtr _file;
+            const ValueInfo* const _values;
+            const uint32 _valueCount;
+            const uint32 _valueBase;
+    };
+
 }
 
 #endif // XEEN_CCFILE_H

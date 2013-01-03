@@ -211,13 +211,13 @@ void XEEN::Game::draw()
     }
 
     Valid<Maze::Map> m = _party->getMap();
-    m->fillDrawStruct(_party->getPosition(), _party->getValue(Party::MAZE_FACING));
+    m->fillDrawStruct(_party->getPosition(), _party->getValue<uint8>(Party::MAZE_FACING));
 
     _graphicsManager->setClipArea(Common::Rect(8, 8, 224, 140));    
     m->draw(_graphicsManager);
 
     _graphicsManager->setClipArea(XRect::cr(237, 12, 70, 56));
-    m->drawMini(Common::Point(237, 12), _party->getPosition(), _party->getValue(Party::MAZE_FACING), _graphicsManager);
+    m->drawMini(Common::Point(237, 12), _party->getPosition(), _party->getValue<uint8>(Party::MAZE_FACING), _graphicsManager);
 
     _graphicsManager->setClipArea(Common::Rect(0, 0, 320, 200));
 

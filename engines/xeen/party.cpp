@@ -25,8 +25,6 @@
 #include "xeen/characters.h"
 #include "xeen/utility.h"
 
-#include "xeen/archive/file.h"
-
 #include "xeen/maze/map.h"
 
 static const int OFF_PARTY_COUNT        = 0x000;
@@ -47,26 +45,23 @@ static const int OFF_GOLD_BANK          = 0x286;
 static const int OFF_GEMS_BANK          = 0x28A;
 static const int OFF_GAME_FLAGS         = 0x293;
 
-static const struct
+static const XEEN::ValueManager::ValueInfo partyValues[] =
 {
-    int offset;
-    int size;
-}   partyValues[] =
-{
-    { OFF_PARTY_COUNT, 1 },
-    { OFF_GOLD, 4 },
-    { OFF_GOLD_BANK, 4 },
-    { OFF_GEMS, 4 },
-    { OFF_GEMS_BANK, 4 },
-    { OFF_FOOD, 2 },
-    { OFF_MAZE_ID, 1 },
-    { OFF_MAZE_X, 1 },
-    { OFF_MAZE_Y, 1 },
-    { OFF_MAZE_FACING, 1 },
-    { OFF_DAY, 2 },
-    { OFF_YEAR, 2 },
-    { OFF_MINUTES, 2 }
+    { OFF_PARTY_COUNT, 1, false},
+    { OFF_GOLD, 4, false },
+    { OFF_GOLD_BANK, 4, false },
+    { OFF_GEMS, 4, false },
+    { OFF_GEMS_BANK, 4, false },
+    { OFF_FOOD, 2, false },
+    { OFF_MAZE_ID, 1, false },
+    { OFF_MAZE_X, 1, false },
+    { OFF_MAZE_Y, 1, false },
+    { OFF_MAZE_FACING, 1, false },
+    { OFF_DAY, 2, false },
+    { OFF_YEAR, 2, false },
+    { OFF_MINUTES, 2, false }
 };
+static const uint32 partyValueCount = sizeof(partyValues) / sizeof(partyValues[0]);
 
 
 #define GET8S(T)   _mazePTY->getI8At(T)
@@ -78,7 +73,7 @@ static const struct
 
 
 
-XEEN::Party::Party(Valid<Game> parent) : GameHolder(parent)
+XEEN::Party::Party(Valid<Game> parent) : GameHolder(parent), ValueManager(getGame()->getFile("MAZE.PTY", true), partyValues, partyValueCount, 0)
 {
     _mazePTY = getGame()->getFile("MAZE.PTY", true);
     _mazeCHR = getGame()->getFile("MAZE.CHR", true);
@@ -105,48 +100,6 @@ XEEN::Party::~Party()
     for(uint32 i = 0; i != MAX_CHARACTERS; i ++)
     {
         delete _characters[i];
-    }
-}
-
-uint32 XEEN::Party::getValue(PartyValue val) const
-{
-    XEEN_VALID();
-        
-    if(enforce(val < PARTY_VALUE_MAX))
-    {
-        if(partyValues[val].size == 4)
-        {
-            return GET32(partyValues[val].offset);
-        }
-        else if(partyValues[val].size == 2)
-        {
-            return GET16(partyValues[val].offset);
-        }
-        else
-        {
-            return GET8(partyValues[val].offset);
-        }
-    }
-    
-    return 0;
-}
-
-void XEEN::Party::setValue(PartyValue val, uint32 data)
-{
-    if(enforce(val < PARTY_VALUE_MAX))
-    {
-        if(partyValues[val].size == 4)
-        {
-            _mazePTY->setU32At(partyValues[val].offset, data);
-        }
-        else if(partyValues[val].size == 2)
-        {
-            _mazePTY->setU16At(partyValues[val].offset, data);
-        }
-        else
-        {
-            _mazePTY->setByteAt(partyValues[val].offset, data);
-        }
     }
 }
 
@@ -206,7 +159,7 @@ void XEEN::Party::addMember(uint16 id)
 {
     XEEN_VALID();
 
-    const uint8 memberCount = getValue(PARTY_COUNT);
+    const uint8 memberCount = getValue<uint8>(PARTY_COUNT);
     
     if(enforce(id < MAX_CHARACTERS) && memberCount < MAX_SLOTS)
     {
@@ -256,7 +209,7 @@ bool XEEN::Party::hasSkill(uint32 skill) const
 
     if(enforce(skill < Character::MAX_SKILL))
     {
-        const uint32 partyCount = getValue(PARTY_COUNT);
+        const uint8 partyCount = getValue<uint8>(PARTY_COUNT);
         uint32 count = 0;
     
         for(uint32 i = 0; i != partyCount; i ++)
@@ -277,7 +230,7 @@ XEEN::Valid<XEEN::Maze::Map> XEEN::Party::getMap() const
 {
     XEEN_VALID();
     
-    return getGame()->getMapManager()->getMap(getValue(MAZE_ID));
+    return getGame()->getMapManager()->getMap(getValue<uint8>(MAZE_ID));
 }
 
 void XEEN::Party::changeMap(uint8 id)
@@ -302,7 +255,7 @@ void XEEN::Party::moveRelative(Direction dir)
 {
     XEEN_VALID();
 
-    const Direction facing = getValue(MAZE_FACING);
+    const Direction facing = getValue<uint8>(MAZE_FACING);
     const Common::Point position = getPosition();
     const Direction moving = facing.relativeTo(dir);
 
@@ -323,7 +276,7 @@ void XEEN::Party::bash()
     XEEN_VALID();
 
     const Common::Point pos = getPosition();
-    const Direction dir = getValue(MAZE_FACING);
+    const Direction dir = getValue<uint8>(MAZE_FACING);
 
     if(getMap()->tryBash(pos, dir))
     {

@@ -22,7 +22,6 @@
 #define XEEN_MAZE_SOURCE
 
 #include "xeen/game.h"
-#include "xeen/archive/file.h"
 #include "xeen/maze/monsterdata_.h"
 
 XEEN::Maze::MonsterData::MonsterData(Valid<Manager> parent) : _parent(parent)

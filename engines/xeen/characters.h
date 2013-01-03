@@ -24,7 +24,6 @@
 #define XEEN_CHARACTERS_H
 
 #include "xeen/utility.h"
-#include "xeen/archive/file.h"
 
 namespace XEEN
 {
@@ -52,12 +51,21 @@ namespace XEEN
                 FIRE, ELEC, COLD, POISON, ENERGY, MAGIC, STAT_COUNT };
 
     // Stats for a single playable character
-    class Character : public Validateable, public Common::NonCopyable, public GameHolder
+    class Character : public Validateable, public Common::NonCopyable, public GameHolder, public ValueManager
     {
         friend class Party;
 
         public:
-            enum Value { HP, SP, SEX, CLASS, RACE, EXPERIENCE, TEMPAGE, BIRTHDAY, BIRTHYEAR, VALUE_MAX };
+            static const uint32 HP = 0;
+            static const uint32 SP = 1;
+            static const uint32 SEX = 2;
+            static const uint32 CLASS = 3;
+            static const uint32 RACE = 4;
+            static const uint32 EXPERIENCE = 5;
+            static const uint32 TEMPAGE = 6;
+            static const uint32 BIRTHDAY = 7;
+            static const uint32 BIRTHYEAR = 8;
+
             enum Sex   { MALE, FEMALE, MAX_SEX };
             enum Race  { HUMAN, ELF, DWARF, GNOME, HALFORC, MAX_RACE };
             enum Class { KNIGHT, PALADIN, ARCHER, CLERIC, SORCERER, ROBBER, NINJA, BARBARIAN, DRUID, RANGER, MAX_CLASS };
@@ -75,8 +83,7 @@ namespace XEEN
             Character(Valid<Game> parent, FilePtr data, uint8 index, CCFileId faceSprite);
         
         public:
-            uint32 getValue(Value val) const;
-            void setValue(Value val, uint32 data);
+            void giveDamage(uint16 amount, uint8 type);
         
             const char* getName() const;
             uint32 getAge() const;
@@ -93,14 +100,9 @@ namespace XEEN
             static const char* getSpellName(uint32 id);
 
         public:
-            template <typename T>
-            void modifyValue(Value val, uint32 data) { T modify; setValue(val, modify(getValue(val), data)); }
-
-
-        public:
-            const char* getSexName() const { const uint32 sex = getValue(SEX); return (enforce(sex < MAX_SEX)) ? sexNames[sex] : "BAD SEX"; }
-            const char* getRaceName() const { const uint32 race = getValue(RACE); return (enforce(race < MAX_RACE)) ? raceNames[race] : "BAD RACE"; }
-            const char* getClassName() const { const uint32 clazz = getValue(CLASS); return (enforce(clazz < MAX_CLASS)) ? classNames[clazz] : "BAD CLASS"; }
+            const char* getSexName() const { const uint8 sex = getValue<uint8>(SEX); return (enforce(sex < MAX_SEX)) ? sexNames[sex] : "BAD SEX"; }
+            const char* getRaceName() const { const uint8 race = getValue<uint8>(RACE); return (enforce(race < MAX_RACE)) ? raceNames[race] : "BAD RACE"; }
+            const char* getClassName() const { const uint8 clazz = getValue<uint8>(CLASS); return (enforce(clazz < MAX_CLASS)) ? classNames[clazz] : "BAD CLASS"; }
             uint32 getSkillCount() const;
             uint32 getAwardCount() const;
 

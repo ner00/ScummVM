@@ -24,7 +24,6 @@
 #define XEEN_PARTY_H
 
 #include "xeen/utility.h"
-#include "xeen/archive/file.h"
 
 namespace XEEN
 {
@@ -36,7 +35,7 @@ namespace XEEN
         class Map;
     }
 
-    class Party : public GameHolder, public Validateable, public Common::NonCopyable
+    class Party : public GameHolder, public Validateable, public Common::NonCopyable, public ValueManager
     {
         friend class Game;
 
@@ -46,19 +45,25 @@ namespace XEEN
             static const uint32 INVALID_CHARACTER = 255;
             static const uint32 INVALID_SLOT = 255;
 
-            enum PartyValue {
-                PARTY_COUNT, GOLD, GOLD_BANK, GEMS, GEMS_BANK, FOOD, MAZE_ID,
-                MAZE_X, MAZE_Y, MAZE_FACING, DAY, YEAR, MINUTES, PARTY_VALUE_MAX };
+            static const uint32 PARTY_COUNT = 0;
+            static const uint32 GOLD = 1;
+            static const uint32 GOLD_BANK = 2;
+            static const uint32 GEMS = 3;
+            static const uint32 GEMS_BANK = 4;
+            static const uint32 FOOD = 5;
+            static const uint32 MAZE_ID = 6;
+            static const uint32 MAZE_X = 7;
+            static const uint32 MAZE_Y = 8;
+            static const uint32 MAZE_FACING = 9;
+            static const uint32 DAY = 10;
+            static const uint32 YEAR = 11;
+            static const uint32 MINUTES = 12;
 
         private:
             Party(Valid<Game> parent);
             ~Party();
 
         public:
-            // Read basic values
-            uint32 getValue(PartyValue val) const;
-            void setValue(PartyValue val, uint32 data);
-
             Common::Point getPosition() const;
             Direction getFacing() const;
             uint8 getMemberIdFromSlot(unsigned slot) const;            
@@ -85,11 +90,6 @@ namespace XEEN
             void moveRelative(Direction dir);
             void turn(bool left);
             void bash();
-
-        public:
-            template <typename T>
-            void modifyValue(PartyValue val, uint32 data) { T modify; setValue(val, modify(getValue(val), data)); }
-
                 
         private:
             Character* _characters[MAX_CHARACTERS];

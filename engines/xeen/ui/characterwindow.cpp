@@ -51,7 +51,7 @@ void XEEN::CharacterWindow::show()
     // TODO: Update when needed
     Party* party = getGame()->getParty();
     
-    for(unsigned i = 0; i != party->getValue(Party::PARTY_COUNT); i ++)
+    for(unsigned i = 0; i != party->getValue<uint8>(Party::PARTY_COUNT); i ++)
     {
         CCFileId file("CHAR%02d.FAC", party->getMemberIdFromSlot(i) + 1);
         _buttons[i * 2].normalFrame = CCSpriteId(file);

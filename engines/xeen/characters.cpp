@@ -42,23 +42,19 @@ static const int OFF_SP         = 0x158;
 static const int OFF_BIRTHYEAR  = 0x15A;
 static const int OFF_EXPERIENCE = 0x15C;
 
-static const struct
+static const XEEN::ValueManager::ValueInfo charValues[] =
 {
-    int offset;
-    int size;
-}   valueList[] =
-{
-    { OFF_HP, 2 },
-    { OFF_SP, 2 },
-    { OFF_SEX, 1 },
-    { OFF_CLASS, 1 },
-    { OFF_RACE, 1 },
-    { OFF_EXPERIENCE, 4 },
-    { OFF_TEMPAGE, 1},
-    { OFF_BIRTHDAY, 1},
-    { OFF_BIRTHYEAR, 2}
+    { OFF_HP, 2, true },
+    { OFF_SP, 2, true },
+    { OFF_SEX, 1, false },
+    { OFF_CLASS, 1, false },
+    { OFF_RACE, 1, false },
+    { OFF_EXPERIENCE, 4, false },
+    { OFF_TEMPAGE, 1, false },
+    { OFF_BIRTHDAY, 1, false },
+    { OFF_BIRTHYEAR, 2, false }
 };
-
+static const uint32 valueCount = sizeof(charValues) / sizeof(charValues[0]);
 
 const char* const XEEN::Character::sexNames[] =   { "Male", "Female" };
 const char* const XEEN::Character::raceNames[] =  { "Human", "Elf", "Dwarf", "Gnome", "Half-orc" };
@@ -81,7 +77,8 @@ static const int divineSpells[MAX_SPELLS] = {0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 
 ///
 /// Character
 ///
-XEEN::Character::Character(Valid<Game> parent, FilePtr data, uint8 index, CCFileId faceSprite) : GameHolder(parent), _data(data), _index(index), face(faceSprite)
+XEEN::Character::Character(Valid<Game> parent, FilePtr data, uint8 index, CCFileId faceSprite) : 
+    GameHolder(parent), ValueManager(data, charValues, valueCount, index * 354), _data(data), _index(index), face(faceSprite)
 {
     if(enforce(index < Party::MAX_CHARACTERS))
     {
@@ -93,50 +90,10 @@ XEEN::Character::Character(Valid<Game> parent, FilePtr data, uint8 index, CCFile
     }
 }
 
-uint32 XEEN::Character::getValue(Value val) const
+void XEEN::Character::giveDamage(uint16 amount, uint8 type)
 {
-    XEEN_VALID();
-        
-    if(enforce(val < VALUE_MAX))
-    {
-        if(valueList[val].size == 4)
-        {
-            return _data->getU32At((_index * 354) + valueList[val].offset);
-        }
-        else if(valueList[val].size == 2)
-        {
-            return _data->getU16At((_index * 354) + valueList[val].offset);
-        }
-        else
-        {
-            return _data->getByteAt((_index * 354) + valueList[val].offset);
-        }
-    }
-    
-    return 0;
-}
-
-void XEEN::Character::setValue(Value val, uint32 data)
-{
-    XEEN_VALID();
-        
-    if(enforce(val < VALUE_MAX))
-    {
-        if(valueList[val].size == 4)
-        {
-            _data->setU32At((_index * 354) + valueList[val].offset, data);
-        }
-        else if(valueList[val].size == 2)
-        {
-            _data->setU16At((_index * 354) + valueList[val].offset, data);
-        }
-        else
-        {
-            _data->setByteAt((_index * 354) + valueList[val].offset, data);
-        }
-    }
-    
-    return;
+    // TODO: Actual calculation!
+    setValue<int16>(HP, getValue<int16>(HP) - amount);
 }
 
 const char* XEEN::Character::getName() const
@@ -152,8 +109,8 @@ uint32 XEEN::Character::getAge() const
 
     // TODO: This seems to update once a year and not account for birthday.
 
-    const uint32 birthYear = getValue(BIRTHYEAR);
-    const uint32 currentYear = getGame()->getParty()->getValue(Party::YEAR);
+    const uint32 birthYear = getValue<uint8>(BIRTHYEAR);
+    const uint32 currentYear = getGame()->getParty()->getValue<uint16>(Party::YEAR);
 
     return (currentYear - birthYear);
 }

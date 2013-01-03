@@ -25,7 +25,6 @@
 
 #include "xeen/utility.h"
 
-#include "xeen/archive/file.h"
 #include "xeen/archive/toc.h"
 
 namespace XEEN

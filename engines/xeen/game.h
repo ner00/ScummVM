@@ -30,8 +30,6 @@
 
 #include "xeen/graphics/manager.h"
 
-#include "xeen/archive/file.h"
-
 #include "xeen/maze/manager.h"
 
 #include "xeen/ui/window.h"

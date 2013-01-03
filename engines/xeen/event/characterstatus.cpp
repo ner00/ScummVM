@@ -110,17 +110,17 @@ namespace XEEN
                         case 17: fillStringBuffer("%d", character->getStat(SPEED).getValue()); break;                
                         case 14: fillStringBuffer("%d", character->getStat(LEVEL).getValue()); break;
             
-                        case  3: fillStringBuffer("%d", character->getValue(Character::HP)); break;
-                        case  4: fillStringBuffer("%d", character->getValue(Character::EXPERIENCE)); break;
-                        case  7: fillStringBuffer("%d", character->getValue(Character::SP)); break;
+                        case  3: fillStringBuffer("%d", character->getValue<int32>(Character::HP)); break;
+                        case  4: fillStringBuffer("%d", character->getValue<uint32>(Character::EXPERIENCE)); break;
+                        case  7: fillStringBuffer("%d", character->getValue<int16>(Character::SP)); break;
                         case 10: fillStringBuffer("%d", character->getAge()); break;
                         case 11: fillStringBuffer("DANG"); break;
             
                         case 15: fillStringBuffer("%d", character->getSkillCount()); break;
             
-                        case  8: fillStringBuffer("%d", party->getValue(Party::GOLD)); break;
-                        case 12: fillStringBuffer("%d", party->getValue(Party::GEMS)); break;
-                        case 16: fillStringBuffer("%d", party->getValue(Party::FOOD)); break; // TODO: / 3 / PARTY_COUNT: needs to be shown in days!
+                        case  8: fillStringBuffer("%d", party->getValue<uint32>(Party::GOLD)); break;
+                        case 12: fillStringBuffer("%d", party->getValue<uint32>(Party::GEMS)); break;
+                        case 16: fillStringBuffer("%d", party->getValue<uint16>(Party::FOOD)); break; // TODO: / 3 / PARTY_COUNT: needs to be shown in days!
                         
             
                         case 18: fillStringBuffer("DANG"); break;

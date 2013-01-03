@@ -28,7 +28,6 @@
 #endif
 
 #include "xeen/utility.h"
-#include "xeen/archive/file.h"
 #include "xeen/ui/window.h"
 
 namespace XEEN
@@ -69,6 +68,7 @@ namespace XEEN
                 bool evWHOWILL(const EventState& state);
                 bool evCALL(const EventState& state);
                 bool evALTERMAP(const EventState& state);
+                bool evDAMAGE(const EventState& state);
 
             private:
                 struct Event

@@ -59,9 +59,9 @@ namespace XEEN
 
                 Party* party = getGame()->getParty();
             
-                const unsigned day = party->getValue(Party::DAY);
-                const unsigned year = party->getValue(Party::YEAR);
-                const unsigned mins = party->getValue(Party::MINUTES);
+                const unsigned day = party->getValue<uint16>(Party::DAY);
+                const unsigned year = party->getValue<uint16>(Party::YEAR);
+                const unsigned mins = party->getValue<uint16>(Party::MINUTES);
             
                 // TODO: Check day names
                 static const char* const daynames[10] =

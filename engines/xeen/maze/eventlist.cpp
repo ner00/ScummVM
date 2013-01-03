@@ -152,7 +152,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x13: { return evALTERMAP(state); }
         case 0x14: { return true; }
         case 0x15: { return true; }
-        case 0x16: { return true; }
+        case 0x16: { return evDAMAGE(state); }
         case 0x17: { return true; }
         case 0x18: { return evALTEREVENT(state); }
         case 0x19: { return evCALL(state); }
@@ -271,18 +271,18 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
 
         switch(valueID)
         {
-            case 0x03: result = comparer(c->getValue(Character::SEX), state.getByteAt(7)); break;
-            case 0x04: result = comparer(c->getValue(Character::RACE), state.getByteAt(7)); break;
-            case 0x05: result = comparer(c->getValue(Character::CLASS), state.getByteAt(7)); break;
-            case 0x08: result = comparer(c->getValue(Character::HP), state.getByteAt(7)); break;
-            case 0x09: result = comparer(c->getValue(Character::SP), state.getByteAt(7)); break;
+            case 0x03: result = comparer(c->getValue<uint8>(Character::SEX), state.getByteAt(7)); break;
+            case 0x04: result = comparer(c->getValue<uint8>(Character::RACE), state.getByteAt(7)); break;
+            case 0x05: result = comparer(c->getValue<uint8>(Character::CLASS), state.getByteAt(7)); break;
+            case 0x08: result = comparer(c->getValue<int16>(Character::HP), state.getByteAt(7)); break;
+            case 0x09: result = comparer(c->getValue<int16>(Character::SP), state.getByteAt(7)); break;
             case 0x0B: result = comparer(c->getStat(LEVEL).getTemp(), state.getByteAt(7)); break;
             case 0x0D: result = c->hasSkill(state.getByteAt(7)); break;
             case 0x0F: result = c->hasAward(state.getByteAt(7)); break;
-            case 0x10: result = comparer(c->getValue(Character::EXPERIENCE), state.getU32At(7)); break;
+            case 0x10: result = comparer(c->getValue<uint32>(Character::EXPERIENCE), state.getU32At(7)); break;
             case 0x14: result = p->getGameFlag(state.getByteAt(7)); break;
-            case 0x22: result = comparer(p->getValue(Party::GOLD), state.getByteAt(7)); break; //TODO: Size?
-            case 0x23: result = comparer(p->getValue(Party::GEMS), state.getByteAt(7)); break; //TODO: Size?
+            case 0x22: result = comparer(p->getValue<uint32>(Party::GOLD), state.getByteAt(7)); break; //TODO: Size?
+            case 0x23: result = comparer(p->getValue<uint32>(Party::GEMS), state.getByteAt(7)); break; //TODO: Size?
 
             case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
             {
@@ -313,7 +313,7 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
             }
 
             case 0x40: result = comparer(c->getStat(LEVEL).getReal(), state.getByteAt(7)); break;
-            case 0x41: result = comparer(p->getValue(Party::FOOD), state.getByteAt(7)); break; //TODO: Size?
+            case 0x41: result = comparer(p->getValue<uint16>(Party::FOOD), state.getByteAt(7)); break; //TODO: Size?
 
             case 0x56: case 0x57: case 0x58: case 0x59: case 0x5A: case 0x5B: case 0x5C:
             {
@@ -451,17 +451,17 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
     switch(take)
     {
         case 0x00: break;
-        case 0x08: c->modifyValue<Subtract>(Character::HP, state.getByteAt(7)); break; // TODO: Size
-        case 0x09: c->modifyValue<Subtract>(Character::SP, state.getByteAt(7)); break; // TODO: Size
+        case 0x08: c->modifyValue<uint16, Subtract>(Character::HP, state.getByteAt(7)); break; // TODO: Size
+        case 0x09: c->modifyValue<uint16, Subtract>(Character::SP, state.getByteAt(7)); break; // TODO: Size
         case 0x0D: c->setSkill(state.getByteAt(7), false); break;
         case 0x0F: c->setAward(state.getByteAt(7), false); break;
-        case 0x10: c->modifyValue<Subtract>(Character::EXPERIENCE, state.getU32At(7)); break;
+        case 0x10: c->modifyValue<uint32, Subtract>(Character::EXPERIENCE, state.getU32At(7)); break;
         case 0x14: p->setGameFlag(state.getByteAt(7), false); break;
 
         case 0x22: case 0x23:
         {
-            const Party::PartyValue moddedVal = (take == 0x22) ? Party::GOLD : Party::GEMS;
-            const uint32 current = p->getValue(moddedVal);
+            const uint32 moddedVal = ((take == 0x22) ? +Party::GOLD : +Party::GEMS);
+            const uint32 current = p->getValue<uint32>(moddedVal);
             const uint32 modifier = (take == 0x22) ? state.getU32At(7) : state.getU16At(7);
 
             if(modifier <= current)
@@ -516,14 +516,14 @@ bool XEEN::Maze::EventList::evGIVETAKE(const EventState& state)
     switch(give)
     {
         case 0x00: break;
-        case 0x08: c->modifyValue<Add>(Character::HP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
-        case 0x09: c->modifyValue<Add>(Character::SP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x08: c->modifyValue<uint16, Add>(Character::HP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
+        case 0x09: c->modifyValue<uint16, Add>(Character::SP, state.getByteAt(giveOffset + 1)); break; // TODO: Size
         case 0x0D: c->setSkill(state.getByteAt(giveOffset + 1), true); break;
         case 0x0F: c->setAward(state.getByteAt(giveOffset + 1), true); break;
-        case 0x10: c->modifyValue<Add>(Character::EXPERIENCE, state.getU32At(giveOffset + 1)); break;
+        case 0x10: c->modifyValue<uint32, Add>(Character::EXPERIENCE, state.getU32At(giveOffset + 1)); break;
         case 0x14: p->setGameFlag(state.getByteAt(giveOffset + 1), true); break;
-        case 0x22: p->modifyValue<Add>(Party::GOLD, state.getU32At(giveOffset + 1)); break;
-        case 0x23: p->modifyValue<Add>(Party::GEMS, state.getU16At(giveOffset + 1)); break;
+        case 0x22: p->modifyValue<uint32, Add>(Party::GOLD, state.getU32At(giveOffset + 1)); break;
+        case 0x23: p->modifyValue<uint32, Add>(Party::GEMS, state.getU16At(giveOffset + 1)); break;
 
         case 0x25: case 0x26: case 0x27: case 0x28: case 0x29: case 0x2A: case 0x2B:
         {
@@ -650,6 +650,17 @@ bool XEEN::Maze::EventList::evALTERMAP(const EventState& state)
     {
         _parent->setTile(pos, dir, value);
     }
+
+    return true;
+}
+
+bool XEEN::Maze::EventList::evDAMAGE(const EventState& state)
+{
+    const uint16 amount = state.getU16At(6);
+    const uint8 type = state.getByteAt(8);
+
+    _parent->getGame()->getActiveCharacter()->giveDamage(amount, type);
+        
 
     return true;
 }

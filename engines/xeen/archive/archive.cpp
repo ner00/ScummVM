@@ -47,7 +47,7 @@ XEEN::Archive::Archive(NonNull<const char> name) : _saveData(0), _saveSize(0)
         for(uint32 i = 0; i != SAVEID_COUNT; i ++)
         {
             FilePtr file = getFile(SAVEID[i], false);
-            if(file)
+            if(valid(file))
             {
                 file->read(&_saveData[offset], file->size());
                 offset += file->size();
@@ -74,27 +74,29 @@ XEEN::FilePtr XEEN::Archive::getFile(CCFileId id, bool inSave)
     XEEN_VALID();
 
     Toc& usedToc = (inSave) ? _saveToc : _mainToc;
-    Common::SeekableReadStream& usedStream = (inSave) ? (Common::SeekableReadStream&)(*_save) : (Common::SeekableReadStream&)_file;
-
     const Toc::Entry* entry = usedToc.getEntry(id);
     
     if(entry)
     {
-        // Read bytes
-        byte* data = new byte[entry->size];
-        usedStream.seek(entry->offset);
-        usedStream.read(data, entry->size);        
-        
-        // De-obfuscate
         if(!inSave)
         {
+            // Read bytes
+            byte* data = new byte[entry->size];
+            _file.seek(entry->offset);
+            _file.read(data, entry->size);        
+            
+            // De-obfuscate
             for(uint32 i = 0; i != entry->size; i ++)
             {
                 data[i] ^= 0x35;
             }
+
+            return FilePtr(new File(id, data, entry->size, true));
         }
-    
-        return FilePtr(new File(id, data, entry->size));
+        else
+        {
+            return FilePtr(new File(id, &_saveData[entry->offset], entry->size, false));
+        }
     }
     else
     {

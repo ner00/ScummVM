@@ -28,7 +28,6 @@
 #endif
 
 #include "xeen/utility.h"
-#include "xeen/archive/file.h"
 #include "xeen/maze/objects_.h"
 
 namespace XEEN
