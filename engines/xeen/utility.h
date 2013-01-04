@@ -355,20 +355,41 @@ namespace XEEN
             
             uint32 getSize()                        { return _size; }
             byte* getData()                         { return _data; }
-    
             const CCFileId& getID( )                { return _id; }
         
             template<typename T>
-            T* getPtrAt(uint32 loc)                 { return (enforce(loc < _size)) ? (T*)&_data[loc] : 0; }
+            T* getPtrAt(uint32 loc)
+            {
+                return (enforce(loc < _size)) ? (T*)&_data[loc] : 0;
+            }
 
-            byte getByteAt(uint16 loc) const        { return (enforce(loc < _size)) ? _data[loc] : 0; }
-            void setByteAt(uint16 loc, byte val)    { if(enforce(loc < _size)) _data[loc] = val; }
-            int8 getI8At(uint16 loc) const          { return (enforce(loc < _size)) ? *(int8*)&_data[loc] : 0; }
-            byte* getBytePtrAt(uint16 loc) const    { return (enforce(loc < _size)) ? &_data[loc] : 0; }
-            uint16 getU16At(uint16 loc) const       { return getByteAt(loc) | (getByteAt(loc + 1) << 8); }
-            void setU16At(uint16 loc, uint16 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); }
-            uint32 getU32At(uint16 loc) const       { return getByteAt(loc) | (getByteAt(loc + 1) << 8) | (getByteAt(loc + 2) << 16) | (getByteAt(loc + 3) << 24); }
-            void setU32At(uint16 loc, uint32 val)   { setByteAt(loc, val & 0xFF); setByteAt(loc + 1, (val >> 8) & 0xFF); setByteAt(loc + 2, (val >> 16) & 0xFF); setByteAt(loc + 3, (val >> 24) & 0xFF); }
+            template<typename T>
+            T get(uint16 loc) const
+            {
+                T result = 0;
+
+                if(enforce((sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4) && loc + sizeof(T) <= _size))
+                {
+                    for(uint32 i = 0; i != sizeof(T); i ++)
+                    {
+                        result |= _data[loc + i] << (i * 8);
+                    }
+                }
+
+                return result;
+            }
+
+            template<typename T>
+            void set(uint16 loc, T value)
+            {
+                if(enforce((sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4) && loc + sizeof(T) <= _size))
+                {
+                    for(uint32 i = 0; i != sizeof(T); i ++)
+                    {
+                        _data[loc + i] = (value >> (i * 8)) & 0xFF;
+                    }
+                }
+            }
     
         private:
             CCFileId _id;
@@ -392,19 +413,37 @@ namespace XEEN
             template <typename T>
             T getValue(uint32 index) const
             {
-                if(enforce(index < _valueCount))
+                if(enforce(index < _valueCount && sizeof(T) == _values[index].size))
                 {
-                    if(_values[index].size == 4)
+                    if(!_values[index].isSigned)
                     {
-                        return _file->getU32At(_valueBase + _values[index].offset);
-                    }
-                    else if(_values[index].size == 2)
-                    {
-                        return _file->getU16At(_valueBase + _values[index].offset);
+                        if(_values[index].size == 4)
+                        {
+                            return _file->get<uint32>(_valueBase + _values[index].offset);
+                        }
+                        else if(_values[index].size == 2)
+                        {
+                            return _file->get<uint16>(_valueBase + _values[index].offset);
+                        }
+                        else
+                        {
+                            return _file->get<uint8>(_valueBase + _values[index].offset);
+                        }
                     }
                     else
                     {
-                        return _file->getByteAt(_valueBase + _values[index].offset);
+                        if(_values[index].size == 4)
+                        {
+                            return _file->get<int32>(_valueBase + _values[index].offset);
+                        }
+                        else if(_values[index].size == 2)
+                        {
+                            return _file->get<int16>(_valueBase + _values[index].offset);
+                        }
+                        else
+                        {
+                            return _file->get<int8>(_valueBase + _values[index].offset);
+                        }
                     }
                 }
                 
@@ -414,19 +453,37 @@ namespace XEEN
             template <typename T>
             void setValue(uint32 index, T data)
             {
-                if(enforce(index < _valueCount))
+                if(enforce(index < _valueCount && sizeof(T) == _values[index].size))
                 {
-                    if(_values[index].size == 4)
+                    if(!_values[index].isSigned)
                     {
-                        _file->setU32At(_valueBase + _values[index].offset, data);
-                    }
-                    else if(_values[index].size == 2)
-                    {
-                        _file->setU16At(_valueBase + _values[index].offset, data);
+                        if(_values[index].size == 4)
+                        {
+                            _file->set<uint32>(_valueBase + _values[index].offset, data);
+                        }
+                        else if(_values[index].size == 2)
+                        {
+                            _file->set<uint16>(_valueBase + _values[index].offset, data);
+                        }
+                        else
+                        {
+                            _file->set<uint8>(_valueBase + _values[index].offset, data);
+                        }
                     }
                     else
                     {
-                        _file->setByteAt(_valueBase + _values[index].offset, data);
+                        if(_values[index].size == 4)
+                        {
+                            _file->set<int32>(_valueBase + _values[index].offset, data);
+                        }
+                        else if(_values[index].size == 2)
+                        {
+                            _file->set<int16>(_valueBase + _values[index].offset, data);
+                        }
+                        else
+                        {
+                            _file->set<int8>(_valueBase + _values[index].offset, data);
+                        }
                     }
                 }
             }

@@ -86,7 +86,7 @@ void XEEN::Maze::EventList::runEventAt(const Common::Point& pos, Direction facin
         for(; state.line < ev.lines.size(); state.line ++)
         {
             state.offset = ev.lines[state.line];
-            if(!runEventLine(state, ev.lines[state.line]))
+            if(!runEventLine(state))
             {
                 break;
             }
@@ -94,11 +94,11 @@ void XEEN::Maze::EventList::runEventAt(const Common::Point& pos, Direction facin
     }
 }
 
-bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
+bool XEEN::Maze::EventList::runEventLine(const EventState& state)
 {
     XEEN_VALID();
 
-    const uint8 opcode = _data->getByteAt(offset + 5);
+    const uint8 opcode = state.getByteAt(5);
 
     const char* const names[0x3D] = 
     {
@@ -131,16 +131,16 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
     switch(opcode)
     {
         case 0x00: { return true; }
-        case 0x01: { return evMESSAGE(state, offset); }
-        case 0x02: { return evMAPTEXT(state, offset); }
-        case 0x03: { return evMAPTEXT(state, offset); }
-        case 0x04: { return evMAPTEXT(state, offset); }
-        case 0x05: { return evNPC(state, offset); }
+        case 0x01: { return evMESSAGE(state); }
+        case 0x02: { return evMAPTEXT(state); }
+        case 0x03: { return evMAPTEXT(state); }
+        case 0x04: { return evMAPTEXT(state); }
+        case 0x05: { return evNPC(state); }
         case 0x06: { return true; }
-        case 0x07: { return evTELEPORT(state, offset); }
-        case 0x08: { return evIF(state, offset); }
-        case 0x09: { return evIF(state, offset); }
-        case 0x0A: { return evIF(state, offset); }
+        case 0x07: { return evTELEPORT(state); }
+        case 0x08: { return evIF(state); }
+        case 0x09: { return evIF(state); }
+        case 0x0A: { return evIF(state); }
         case 0x0B: { return evMOVEOBJ(state); }
         case 0x0C: { return evGIVETAKE(state); }
         case 0x0D: { return true; }
@@ -161,7 +161,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x1C: { debug("UNSUPPORTED OP"); return true; }
         case 0x1D: { debug("UNSUPPORTED OP"); return true; }
         case 0x1E: { return true; }
-        case 0x1F: { return evTELEPORT(state, offset); }
+        case 0x1F: { return evTELEPORT(state); }
         case 0x20: { return evWHOWILL(state); }
         case 0x21: { return true; }
         case 0x22: { return true; }
@@ -169,9 +169,9 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x24: { return true; }
         case 0x25: { return true; }
         case 0x26: { debug("UNSUPPORTED OP"); return true; }
-        case 0x27: { return evMAPTEXT(state, offset); }
+        case 0x27: { return evMAPTEXT(state); }
         case 0x28: { return true; }
-        case 0x29: { return evMESSAGE(state, offset); }
+        case 0x29: { return evMESSAGE(state); }
         case 0x2A: { return evIFMAPFLAG(state); }
         case 0x2B: { return true; }
         case 0x2C: { return true; }
@@ -183,7 +183,7 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
         case 0x32: { return true; }
         case 0x33: { return evMOVEOBJ(state); }
         case 0x34: { return true; }
-        case 0x35: { return evMESSAGE(state, offset); }
+        case 0x35: { return evMESSAGE(state); }
         case 0x36: { return true; }
         case 0x37: { return true; }
         case 0x38: { return true; }
@@ -195,42 +195,42 @@ bool XEEN::Maze::EventList::runEventLine(const EventState& state, int32 offset)
     }
 }
 
-bool XEEN::Maze::EventList::evMAPTEXT(const EventState& state, int32 offset)
+bool XEEN::Maze::EventList::evMAPTEXT(const EventState& state)
 {
     // TODO: Add values for each opcode
-    _parent->setSignMessage(_parent->getString(_data->getByteAt(offset + 6)), Common::Rect(8, 8, 200, 100), 0);
+    _parent->setSignMessage(_parent->getString(state.getByteAt(6)), Common::Rect(8, 8, 200, 100), 0);
     return true;
 }
 
-bool XEEN::Maze::EventList::evMESSAGE(const EventState& state, int32 offset)
+bool XEEN::Maze::EventList::evMESSAGE(const EventState& state)
 {
-    const char* msg = _parent->getString(_data->getByteAt(offset + 6));
+    const char* msg = _parent->getString(state.getByteAt(6));
     _parent->getGame()->setEvent(new Message(_parent->getGame(), state, msg));
     return false; // TODO: ?
 }
 
-bool XEEN::Maze::EventList::evNPC(const EventState& state, int32 offset)
+bool XEEN::Maze::EventList::evNPC(const EventState& state)
 {
     // TODO
-    const char* name = _parent->getString(_data->getByteAt(offset + 6));
-    const char* msg = _parent->getString(_data->getByteAt(offset + 7));
+    const char* name = _parent->getString(state.getByteAt(6));
+    const char* msg = _parent->getString(state.getByteAt(7));
 
     _parent->getGame()->setEvent(new NPC(_parent->getGame(), state, name, msg));
 
     return false;
 }
 
-bool XEEN::Maze::EventList::evTELEPORT(const EventState& state, int32 offset)
+bool XEEN::Maze::EventList::evTELEPORT(const EventState& state)
 {
     // TODO: Handle map == 0 for mirrors!
     Valid<Party> p = _parent->getGame()->getParty();
-    p->changeMap(_data->getByteAt(offset + 6));
-    p->moveTo(Common::Point(_data->getByteAt(offset + 7), _data->getByteAt(offset + 8)), 4);
+    p->changeMap(state.getByteAt(6));
+    p->moveTo(Common::Point(state.getByteAt(7), state.getByteAt(8)), 4);
     
-    return _data->getByteAt(offset + 5) == 0x07;
+    return state.getByteAt(5) == 0x07;
 }
 
-bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
+bool XEEN::Maze::EventList::evIF(const EventState& state)
 {
     struct Comparinator
     {
@@ -254,7 +254,7 @@ bool XEEN::Maze::EventList::evIF(const EventState& state, int32 offset)
     const Comparinator comparer(state.getByteAt(5));
 
     // TODO
-    const uint8 valueID = _data->getByteAt(offset + 6);
+    const uint8 valueID = state.getByteAt(6);
 
     if(valueID == 0x2C) // YES/NO
     {
@@ -571,7 +571,7 @@ bool XEEN::Maze::EventList::evREMOVE(const EventState& state)
         Event& ev = _events[key];
         for(uint32 i = 0; i != ev.lines.size(); i ++)
         {
-            _data->setByteAt(ev.lines[i] + 5, 0);
+            _data->set<uint8>(ev.lines[i] + 5, 0);
         }
     }
 
@@ -589,12 +589,12 @@ bool XEEN::Maze::EventList::evALTEREVENT(const EventState& state)
         Event& ev = _events[key];
         if(enforce(line < ev.lines.size()))
         {
-            const uint32 oldop = _data->getByteAt(ev.lines[line] + 5);
-            _data->setByteAt(ev.lines[line] + 5, newop);
+            const uint32 oldop = _data->get<uint8>(ev.lines[line] + 5);
+            _data->set<uint8>(ev.lines[line] + 5, newop);
 
             if(oldop == 0x3C && ev.lines.size() >= line) // PLAY_CD
             {
-                _data->setByteAt(ev.lines[line + 1], newop);
+                _data->set<uint8>(ev.lines[line + 1], newop);
             }
         }
     }

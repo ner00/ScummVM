@@ -110,7 +110,7 @@ namespace XEEN
                         case 17: fillStringBuffer("%d", character->getStat(SPEED).getValue()); break;                
                         case 14: fillStringBuffer("%d", character->getStat(LEVEL).getValue()); break;
             
-                        case  3: fillStringBuffer("%d", character->getValue<int32>(Character::HP)); break;
+                        case  3: fillStringBuffer("%d", character->getValue<int16>(Character::HP)); break;
                         case  4: fillStringBuffer("%d", character->getValue<uint32>(Character::EXPERIENCE)); break;
                         case  7: fillStringBuffer("%d", character->getValue<int16>(Character::SP)); break;
                         case 10: fillStringBuffer("%d", character->getAge()); break;

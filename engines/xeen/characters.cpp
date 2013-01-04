@@ -100,7 +100,7 @@ const char* XEEN::Character::getName() const
 {
     XEEN_VALID();
     
-    return (const char*)_data->getBytePtrAt((_index * 354));
+    return (const char*)_data->getPtrAt<const char>((_index * 354));
 }
 
 uint32 XEEN::Character::getAge() const
@@ -109,7 +109,7 @@ uint32 XEEN::Character::getAge() const
 
     // TODO: This seems to update once a year and not account for birthday.
 
-    const uint32 birthYear = getValue<uint8>(BIRTHYEAR);
+    const uint32 birthYear = getValue<uint16>(BIRTHYEAR);
     const uint32 currentYear = getGame()->getParty()->getValue<uint16>(Party::YEAR);
 
     return (currentYear - birthYear);
@@ -119,7 +119,7 @@ uint32 XEEN::Character::getAge() const
 uint8 XEEN::Character::hasSkill(uint32 skill) const
 {
     XEEN_VALID();
-    return (enforce(skill < MAX_SKILL)) ? _data->getByteAt(_index * 354 + OFF_SKILLS + skill) : 0;
+    return (enforce(skill < MAX_SKILL)) ? _data->get<uint8>(_index * 354 + OFF_SKILLS + skill) : 0;
 }
 
 void XEEN::Character::setSkill(uint32 skill, bool state)
@@ -128,14 +128,14 @@ void XEEN::Character::setSkill(uint32 skill, bool state)
     
     if(enforce(skill < MAX_SKILL))
     {
-        _data->setByteAt(_index * 354 + OFF_SKILLS + skill, state ? 1 : 0);
+        _data->set<uint8>(_index * 354 + OFF_SKILLS + skill, state ? 1 : 0);
     }
 }
 
 uint8 XEEN::Character::hasAward(uint32 award) const
 {
     // TODO: Darkside awards are stored in high nibble
-    return (enforce(award < MAX_AWARD)) ? _data->getByteAt(_index * 354 + OFF_AWARDS + award) & 0xF : 0;
+    return (enforce(award < MAX_AWARD)) ? _data->get<uint8>(_index * 354 + OFF_AWARDS + award) & 0xF : 0;
 }
 
 void XEEN::Character::setAward(uint32 award, bool state)
@@ -145,10 +145,10 @@ void XEEN::Character::setAward(uint32 award, bool state)
     // TODO: Darkside awards are stored in high nibble
     if(enforce(award < MAX_AWARD))
     {
-        uint8 awardByte = _data->getByteAt(_index * 354 + OFF_AWARDS + award);
+        uint8 awardByte = _data->get<uint8>(_index * 354 + OFF_AWARDS + award);
         awardByte &= 0xF0;
         awardByte |= state ? 1 : 0;
-        _data->setByteAt(_index * 354 + OFF_AWARDS + award, awardByte);
+        _data->set<uint8>(_index * 354 + OFF_AWARDS + award, awardByte);
     }
 }
 
@@ -161,20 +161,20 @@ XEEN::Statistic XEEN::Character::getStat(Stat stat) const
     {
         if(stat < LEVEL)
         {
-            int8* real = (int8*)_data->getBytePtrAt((_index * 354) + OFF_STATS + (2 * stat) + 0);
-            int8* temp = (int8*)_data->getBytePtrAt((_index * 354) + OFF_STATS + (2 * stat) + 1);
+            int8* real = (int8*)_data->getPtrAt<int8>((_index * 354) + OFF_STATS + (2 * stat) + 0);
+            int8* temp = (int8*)_data->getPtrAt<int8>((_index * 354) + OFF_STATS + (2 * stat) + 1);
             return Statistic(real, temp);
         }
         else if(stat == LEVEL)
         {
-            int8* real = (int8*)_data->getBytePtrAt((_index * 354) + OFF_LEVEL + 0);
-            int8* temp = (int8*)_data->getBytePtrAt((_index * 354) + OFF_LEVEL + 1);
+            int8* real = (int8*)_data->getPtrAt<int8>((_index * 354) + OFF_LEVEL + 0);
+            int8* temp = (int8*)_data->getPtrAt<int8>((_index * 354) + OFF_LEVEL + 1);
             return Statistic(real, temp);            
         }
         else if(stat > LEVEL)
         {
-            int8* real = (int8*)_data->getBytePtrAt((_index * 354) + OFF_RESIST + (2 * (stat - FIRE)) + 0);
-            int8* temp = (int8*)_data->getBytePtrAt((_index * 354) + OFF_RESIST + (2 * (stat - FIRE)) + 1);
+            int8* real = (int8*)_data->getPtrAt<int8>((_index * 354) + OFF_RESIST + (2 * (stat - FIRE)) + 0);
+            int8* temp = (int8*)_data->getPtrAt<int8>((_index * 354) + OFF_RESIST + (2 * (stat - FIRE)) + 1);
             return Statistic(real, temp);
         }
     }
@@ -186,7 +186,7 @@ bool XEEN::Character::hasSpell(uint32 id) const
 {
     XEEN_VALID();
 
-    return (id < MAX_SPELLS) ? _data->getByteAt(OFF_SPELLS + id) : false;
+    return (id < MAX_SPELLS) ? _data->get<uint8>(OFF_SPELLS + id) : false;
 }
 
 const char* XEEN::Character::getSpellName(uint32 id)

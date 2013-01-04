@@ -104,7 +104,7 @@ void XEEN::Graphics::Font::drawLine(NonNull<ImageBuffer> out, int32 x, int32 y, 
     {
         const uint32 character = (flags & SMALL) ? *btext + 128 : *btext;
         const uint32 ascii = character & 0x7F;
-        const uint32 spacing = _data->getByteAt(SPACING_OFFSET + character);
+        const uint32 spacing = _data->get<uint8>(SPACING_OFFSET + character);
         uint32 offset = character * CHARACTER_SIZE;
 
         if(ascii > 0x20)
@@ -114,7 +114,7 @@ void XEEN::Graphics::Font::drawLine(NonNull<ImageBuffer> out, int32 x, int32 y, 
             for(int i = 0; i != 8; i ++, offset += 2)
             {
                 uint8 pixels[8];
-                uint16 line = _data->getU16At(offset);
+                uint16 line = _data->get<uint16>(offset);
     
                 for(int j = 0; j != 8; j ++, line >>= 2)
                 {
@@ -138,7 +138,7 @@ unsigned XEEN::Graphics::Font::measureString(NonNull<const byte> text, uint32 fl
     for(; *btext; btext ++)
     {
         uint32 character = (flags & SMALL) ? *btext + 128 : *btext;
-        result += _data->getByteAt(SPACING_OFFSET + character);
+        result += _data->get<uint8>(SPACING_OFFSET + character);
     }
 
     return result;

@@ -41,7 +41,7 @@ XEEN::Maze::Objects::Objects(FilePtr data) : _data(data)
         
         for(; dataPos < _data->size() && onList != 3; dataPos += 4)
         {
-            if(_data->getU32At(dataPos) == 0xFFFFFFFF)
+            if(_data->get<uint32>(dataPos) == 0xFFFFFFFF)
             {
                 onList ++;
                 
@@ -54,7 +54,7 @@ XEEN::Maze::Objects::Objects(FilePtr data) : _data(data)
             {
                 _counts[onList] ++;
 
-                if(_data->getByteAt(dataPos + 2) >= 16)//TODO: || _data->getByteAt(dataPos + 3) >= 4) (Fails on Winterkill where a monster has facing 6?)
+                if(_data->get<uint8>(dataPos + 2) >= 16)//TODO: || _data->get<uint8>(dataPos + 3) >= 4) (Fails on Winterkill where a monster has facing 6?)
                 {
                     markInvalidAndClean("Maze object ID or Facing invalid?");
                     return;
@@ -85,13 +85,13 @@ bool XEEN::Maze::Objects::getObjectAt(const Common::Point& pos, ObjectEntry& dat
 
     for(unsigned i = 0; i != _counts[0]; i ++)
     {
-        const Common::Point objPos(_data->getI8At(_offsets[0] + (i * 4)), _data->getI8At(_offsets[0] + (i * 4) + 1));
+        const Common::Point objPos(_data->get<int8>(_offsets[0] + (i * 4)), _data->get<int8>(_offsets[0] + (i * 4) + 1));
     
         if(pos == objPos)
         {
-            data.id = _data->getByteAt(_data->getByteAt(_offsets[0] + (i * 4) + 2));
+            data.id = _data->get<uint8>(_data->get<uint8>(_offsets[0] + (i * 4) + 2));
             data.pos = pos;
-            data.dir = _data->getByteAt(_offsets[0] + (i * 4) + 3);
+            data.dir = _data->get<uint8>(_offsets[0] + (i * 4) + 3);
             
             return true;
         }
@@ -110,10 +110,10 @@ XEEN::Maze::ObjectEntry XEEN::Maze::Objects::getObjectData(uint32 id) const
     {
         const uint32 base = _offsets[0] + (id * 4);
 
-        result.id = _data->getByteAt(16 + _data->getByteAt(base + 2));
-        result.pos.x = _data->getI8At(base + 0);
-        result.pos.y = _data->getI8At(base + 1);
-        result.dir = _data->getByteAt(base + 3);
+        result.id = _data->get<uint8>(16 + _data->get<uint8>(base + 2));
+        result.pos.x = _data->get<int8>(base + 0);
+        result.pos.y = _data->get<int8>(base + 1);
+        result.dir = _data->get<uint8>(base + 3);
     }
 
     return result;
@@ -126,8 +126,8 @@ void XEEN::Maze::Objects::moveObject(uint32 id, const Common::Point& pos)
     if(enforce(id < _counts[0]))
     {
         const uint32 offset = _offsets[0] + (4 * id);
-        _data->setByteAt(offset + 0, pos.x);
-        _data->setByteAt(offset + 1, pos.y);
+        _data->set<uint8>(offset + 0, pos.x);
+        _data->set<uint8>(offset + 1, pos.y);
     }
 }
 
@@ -139,13 +139,13 @@ uint32 XEEN::Maze::Objects::getMonstersAt(const Common::Point& pos, NonNull<Obje
 
     for(unsigned i = 0; i != _counts[1] && foundMonsters != 3; i ++)
     {
-        const Common::Point objPos(_data->getI8At(_offsets[1] + (i * 4)), _data->getI8At(_offsets[1] + (i * 4) + 1));
+        const Common::Point objPos(_data->get<int8>(_offsets[1] + (i * 4)), _data->get<int8>(_offsets[1] + (i * 4) + 1));
     
         if(pos == objPos)
         {
             data[foundMonsters  ].pos = pos;
-            data[foundMonsters  ].dir = _data->getByteAt(_offsets[0] + (i * 4) + 3);
-            data[foundMonsters++].id = _data->getByteAt(16 + _data->getByteAt(_offsets[1] + (i * 4) + 2));
+            data[foundMonsters  ].dir = _data->get<uint8>(_offsets[0] + (i * 4) + 3);
+            data[foundMonsters++].id = _data->get<uint8>(16 + _data->get<uint8>(_offsets[1] + (i * 4) + 2));
         }
     }
 
@@ -162,10 +162,10 @@ XEEN::Maze::ObjectEntry XEEN::Maze::Objects::getMonsterData(uint32 id) const
     {
         const uint32 base = _offsets[1] + (id * 4);
 
-        result.id = _data->getByteAt(16 + _data->getByteAt(base + 2));
-        result.pos.x = _data->getI8At(base + 0);
-        result.pos.y = _data->getI8At(base + 1);
-        result.dir = _data->getByteAt(base + 3);
+        result.id = _data->get<uint8>(16 + _data->get<uint8>(base + 2));
+        result.pos.x = _data->get<int8>(base + 0);
+        result.pos.y = _data->get<int8>(base + 1);
+        result.dir = _data->get<uint8>(base + 3);
     }
 
     return result;
@@ -179,8 +179,8 @@ void XEEN::Maze::Objects::moveMonster(uint32 id, const Common::Point& pos, bool 
     if(id < _counts[1])
     {
         const uint32 offset = _offsets[1] + (4 * id);
-        _data->setByteAt(offset + 0, pos.x);
-        _data->setByteAt(offset + 1, pos.y);
+        _data->set<uint8>(offset + 0, pos.x);
+        _data->set<uint8>(offset + 1, pos.y);
 
         // TODO: Handle 'spawn'
     }

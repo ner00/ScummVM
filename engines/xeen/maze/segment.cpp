@@ -52,14 +52,14 @@ void XEEN::Maze::Segment::loadSurrounding()
 
     for(int i = 0; i != 4; i ++)
     {
-        const uint16 segID = _data->getU16At(OFF_SURR_MAZES + i * 2);
+        const uint16 segID = _data->get<uint16>(OFF_SURR_MAZES + i * 2);
         _surrMazes[i] = segID ? _parent->getSegment(segID) : 0;
     }
 }
 
 uint16 XEEN::Maze::Segment::getSurrounding(Direction dir) const
 {
-    return _data->getU16At(OFF_SURR_MAZES + dir * 2);
+    return _data->get<uint16>(OFF_SURR_MAZES + dir * 2);
 }
 
 void XEEN::Maze::Segment::setWall(Common::Point pos, Direction dir, LessThan<uint32, 16> type)
@@ -81,7 +81,7 @@ uint16 XEEN::Maze::Segment::getTile(Common::Point pos, Direction dir) const
 
     if(Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg))
     {
-        uint16 result = seg->_data->getU16At(OFF_WALLS + (pos.y * 32 + pos.x * 2));
+        uint16 result = seg->_data->get<uint16>(OFF_WALLS + (pos.y * 32 + pos.x * 2));
     
         switch(dir)
         {
@@ -105,7 +105,7 @@ void XEEN::Maze::Segment::setTile(Common::Point pos, Direction dir, uint16 value
 
     if((Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg)))
     {
-        seg->_data->setU16At(OFF_WALLS + (pos.y * 32 + pos.x * 2), value);
+        seg->_data->set<uint16>(OFF_WALLS + (pos.y * 32 + pos.x * 2), value);
     }
 }
 
@@ -114,7 +114,7 @@ uint8 XEEN::Maze::Segment::getCellFlags(Common::Point pos) const
     XEEN_VALID();
 
     const Segment* const seg = resolveSegment(pos);
-    return (Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg)) ? seg->_data->getByteAt(OFF_CELL_FLAGS + (pos.y * 16 + pos.x)) : 0;
+    return (Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg)) ? seg->_data->get<uint8>(OFF_CELL_FLAGS + (pos.y * 16 + pos.x)) : 0;
 }
 
 void XEEN::Maze::Segment::setCellFlags(Common::Point pos, uint8 value)
@@ -124,32 +124,32 @@ void XEEN::Maze::Segment::setCellFlags(Common::Point pos, uint8 value)
     const Segment* const seg = resolveSegment(pos);
     if((Common::Rect(0, 0, 16, 16).contains(pos) && valid(seg)))
     {
-        seg->_data->setByteAt(OFF_CELL_FLAGS + (pos.y * 16 + pos.y), value);
+        seg->_data->set<uint8>(OFF_CELL_FLAGS + (pos.y * 16 + pos.y), value);
     }
 }
 
 uint32 XEEN::Maze::Segment::getMapFlags() const
 {
     XEEN_VALID();
-    return _data->getU32At(OFF_MAP_FLAGS);
+    return _data->get<uint32>(OFF_MAP_FLAGS);
 }
 
 uint8 XEEN::Maze::Segment::lookupSurface(uint8 id) const
 {
     XEEN_VALID();
-    return enforce(id < 16) ? _data->getByteAt(OFF_SURFACE_TYPES + id) : 0;
+    return enforce(id < 16) ? _data->get<uint8>(OFF_SURFACE_TYPES + id) : 0;
 }
 
 uint8 XEEN::Maze::Segment::lookupWall(uint8 id) const
 {
     XEEN_VALID();
-    return enforce(id < 16) ? _data->getByteAt(OFF_WALL_TYPES + id) : 0;
+    return enforce(id < 16) ? _data->get<uint8>(OFF_WALL_TYPES + id) : 0;
 }
 
 uint32 XEEN::Maze::Segment::getValue(SegmentValue val) const
 {
     XEEN_VALID();
-    return enforce(val < MAX_VALUE) ? _data->getByteAt(OFF_VALUES + val) : 0;
+    return enforce(val < MAX_VALUE) ? _data->get<uint8>(OFF_VALUES + val) : 0;
 }
 
 XEEN::Maze::Segment* XEEN::Maze::Segment::resolveSegment(Common::Point& pos) const

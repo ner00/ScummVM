@@ -64,9 +64,9 @@ static const XEEN::ValueManager::ValueInfo partyValues[] =
 static const uint32 partyValueCount = sizeof(partyValues) / sizeof(partyValues[0]);
 
 
-#define GET8S(T)   _mazePTY->getI8At(T)
-#define GET8(T)    _mazePTY->getByteAt(T)
-#define SET8(T, V) _mazePTY->setByteAt(T, V)
+#define GET8S(T)   _mazePTY->get<int8>(T)
+#define GET8(T)    _mazePTY->get<uint8>(T)
+#define SET8(T, V) _mazePTY->set<uint8>(T, V)
 
 #define GET16(T)   _mazePTY->getU16At(T)
 #define GET32(T)   _mazePTY->getU32At(T)
@@ -126,7 +126,7 @@ bool XEEN::Party::getGameFlag(LessThan<uint32, 256> id) const
 {
     // TODO: Handle game sides
     // TODO: MSB or LSB?
-    const uint32 byte = _mazePTY->getByteAt(OFF_GAME_FLAGS + (id / 8));
+    const uint32 byte = _mazePTY->get<uint8>(OFF_GAME_FLAGS + (id / 8));
     return byte & (1 << (id & 7));
 }
 
@@ -134,10 +134,10 @@ void XEEN::Party::setGameFlag(LessThan<uint32, 256> id, bool set)
 {
     // TODO: Handle game sides
     // TODO: MSB or LSB?
-    uint32 byte = _mazePTY->getByteAt(OFF_GAME_FLAGS + (id / 8));
+    uint32 byte = _mazePTY->get<uint8>(OFF_GAME_FLAGS + (id / 8));
     byte &= ~(1 << (id & 7));
     byte |= set ? (1 << (id & 7)) : 0;
-    _mazePTY->setByteAt(OFF_GAME_FLAGS + (id / 8), byte);
+    _mazePTY->set<uint8>(OFF_GAME_FLAGS + (id / 8), byte);
 }
 
 
@@ -172,7 +172,7 @@ void XEEN::Party::removeMember(unsigned slot)
 {
     XEEN_VALID();
     
-/*    const uint8 memberCount = getByteAt(_mazePTY, 0);
+/*    const uint8 memberCount = get<uint8>(_mazePTY, 0);
     
     if(enforce(slot < MAX_SLOTS) && slot < memberCount)
     {

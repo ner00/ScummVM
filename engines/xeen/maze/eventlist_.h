@@ -52,12 +52,12 @@ namespace XEEN
                 void runEventAt(const Common::Point& pos, Direction facing, uint32 line = 0);
 
             private:
-                bool runEventLine(const EventState& state, int32 offset);
-                bool evMAPTEXT(const EventState& state, int32 offset);
-                bool evMESSAGE(const EventState& state, int32 offset);
-                bool evNPC(const EventState& state, int32 offset);
-                bool evTELEPORT(const EventState& state, int32 offset);
-                bool evIF(const EventState& state, int32 offset);
+                bool runEventLine(const EventState& state);
+                bool evMAPTEXT(const EventState& state);
+                bool evMESSAGE(const EventState& state);
+                bool evNPC(const EventState& state);
+                bool evTELEPORT(const EventState& state);
+                bool evIF(const EventState& state);
                 bool evMOVEOBJ(const EventState& state);
                 bool evSPAWN(const EventState& state);
                 bool evSETCELLFLAGS(const EventState& state);
@@ -97,9 +97,9 @@ namespace XEEN
                 
             }
 
-            uint8  getByteAt(uint32 off) const { return parent->_data->getByteAt(offset + off); }
-            uint16 getU16At(uint32 off) const { return parent->_data->getU16At(offset + off); }
-            uint32 getU32At(uint32 off) const { return parent->_data->getU32At(offset + off); }
+            uint8  getByteAt(uint32 off) const { return parent->_data->get<uint8>(offset + off); }
+            uint16 getU16At(uint32 off) const { return parent->_data->get<uint16>(offset + off); }
+            uint32 getU32At(uint32 off) const { return parent->_data->get<uint32>(offset + off); }
 
             void runFrom(uint32 fromLine)
             {

@@ -90,7 +90,7 @@ const char* XEEN::Maze::Map::getString(uint32 id) const
     uint32 result = 0;
     for(uint32 offset = 0; offset != _text->getSize() && id; offset ++)
     {
-        if(_text->getByteAt(offset) == 0)
+        if(_text->get<uint8>(offset) == 0)
         {
             result = offset + 1;
             id --;

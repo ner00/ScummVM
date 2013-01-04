@@ -38,12 +38,12 @@ void XEEN::Graphics::Sprite::drawCell(NonNull<ImageBuffer> out, const Common::Po
 {
     XEEN_VALID();
 
-    const uint16 cellCount = _file->getU16At(0);
+    const uint16 cellCount = _file->get<uint16>(0);
 
     if(enforce(frame < cellCount))
     {
-        drawFrame(out, _file->getU16At(2 + (4 * frame) + 0), pen.x, pen.y, flip, scale);
-        drawFrame(out, _file->getU16At(2 + (4 * frame) + 2), pen.x, pen.y, flip, scale);
+        drawFrame(out, _file->get<uint16>(2 + (4 * frame) + 0), pen.x, pen.y, flip, scale);
+        drawFrame(out, _file->get<uint16>(2 + (4 * frame) + 2), pen.x, pen.y, flip, scale);
     }
 }
 
