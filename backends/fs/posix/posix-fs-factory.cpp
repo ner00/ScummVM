@@ -70,3 +70,4 @@ AbstractFSNode *POSIXFilesystemFactory::makeFileNodePath(const Common::String &p
 	return new POSIXFilesystemNode(path);
 }
 #endif
+
