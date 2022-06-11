@@ -340,6 +340,12 @@ ScummVM Team
     Touche:
        Gregory Montoir              - (retired)
 
+    Trecision:
+       Daniel Albano
+       Arnaud Boutonne
+       Thomas Fach-Pedersen           - Smacker video support
+       Filippos Karapetis
+
     TsAGE:
        Arnaud Boutonne
        Paul Gilbert
@@ -867,4 +873,6 @@ Special thanks to
 
    Steffen Dingel for sharing the source code of the Mission Supernova game
    with us.
+   Fabrizio Lagorio from Trecision S.p.A., for finding and providing the
+   source code of many of their games.
 

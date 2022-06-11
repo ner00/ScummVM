@@ -5,9 +5,9 @@
 # of the credits in other places from this source. In particular:
 # - The AUTHORS file
 # - The gui/credits.h header file
-# - The Credits.rtf file used by the Mac OS X port
-# - The credits.xml file, part of the DocBook manual
-# - Finally, credits.xml, for use on the website (different format than the DocBook one)
+# - The Credits.rtf file used by the macOS port
+# - The credits.yaml, alternative version for use on the website
+# - The credits.rst file used by the manual
 #
 # Initial version written by Fingolfin in December 2004.
 #
@@ -1517,6 +1517,9 @@ begin_credits("Credits");
     add_paragraph(
     "Steffen Dingel for sharing the source code of the Mission Supernova game with us.");
 
+		add_paragraph(
+			"Fabrizio Lagorio from Trecision S.p.A., for finding and providing the source code ".
+			"of many of their games.");
 	end_section();
 
 end_credits();
