@@ -117,6 +117,7 @@
 					<Add option="-DENABLE_TONY" />
 					<Add option="-DENABLE_TOON" />
 					<Add option="-DENABLE_TOUCHE" />
+					<Add option="-DENABLE_TRECISION" />
 					<Add option="-DENABLE_TSAGE" />
 					<Add option="-DENABLE_TUCKER" />
 					<Add option="-DENABLE_VOYEUR" />
