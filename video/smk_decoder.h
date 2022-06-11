@@ -22,8 +22,10 @@
 #ifndef VIDEO_SMK_PLAYER_H
 #define VIDEO_SMK_PLAYER_H
 
+#include "common/bitarray.h"
 #include "common/bitstream.h"
 #include "common/rational.h"
+#include "common/rect.h"
 #include "graphics/pixelformat.h"
 #include "graphics/surface.h"
 #include "video/video_decoder.h"
